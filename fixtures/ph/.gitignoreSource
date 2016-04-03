@@ -1,0 +1,9 @@
+node_modules
+##- ph customIgnore -##
+##- endph -##
+
+##- stamp customStamp -##
+.travis.yml
+##- endstamp -##
+
+.logs
