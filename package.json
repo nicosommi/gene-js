@@ -17,6 +17,7 @@
 	"license": "UNLICENSED",
 	"dependencies": {
 		"block-js": "file:../block-js",
+		"fs-extra": "^0.26.7",
 		"babybird": "0.0.1",
 		"prfun": "^2.1.3"
 	},

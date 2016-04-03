@@ -13,40 +13,24 @@ var _incognito = require("incognito");
 
 var _incognito2 = _interopRequireDefault(_incognito);
 
-var _flowsync = require("flowsync");
-
-var _flowsync2 = _interopRequireDefault(_flowsync);
-
-var _fs = require("fs");
-
-var _fs2 = _interopRequireDefault(_fs);
-
-var _readline = require("readline");
-
-var _readline2 = _interopRequireDefault(_readline);
-
 var _blockJs = require("block-js");
 
 var _blockJs2 = _interopRequireDefault(_blockJs);
 
-var _mkdirp = require("mkdirp");
+var _synchronize = require("./synchronize.js");
 
-var _mkdirp2 = _interopRequireDefault(_mkdirp);
+var _synchronize2 = _interopRequireDefault(_synchronize);
 
-var _path = require("path");
+var _cleanTo = require("./cleanTo.js");
 
-var _path2 = _interopRequireDefault(_path);
-
-var _regexParser = require("regex-parser");
-
-var _regexParser2 = _interopRequireDefault(_regexParser);
+var _cleanTo2 = _interopRequireDefault(_cleanTo);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var executeReplacements = Symbol("executeReplacements");
 /*
+DEPRECATED: just for backwards compatibility
 * placeholder.js is mented to be used in certain blocks on certains files
 * in order to improve the development process, then some assumptions were made
 */
@@ -79,268 +63,31 @@ var Ph = function () {
 			return this;
 		}
 	}, {
-		key: executeReplacements,
-		value: function value(line) {
-			var _this = this;
-
-			var thereAreReplacements = _get__("_")(this).replacements != null;
-			if (thereAreReplacements && line && line.length > 0) {
-				var _ret = function () {
-					var finalLine = line;
-					Object.keys(_get__("_")(_this).replacements).forEach(function (replacementKey) {
-						var key = _get__("regexParser")(replacementKey);
-						if (replacementKey && replacementKey.indexOf("/") === 0 && replacementKey.lastIndexOf("/") > 0) {
-							key = _get__("regexParser")(replacementKey);
-						} else {
-							key = new RegExp(replacementKey, "g");
-						}
-						finalLine = finalLine.replace(key, _get__("_")(_this).replacements[replacementKey]);
-					});
-					return {
-						v: finalLine
-					};
-				}();
-
-				if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
-			} else {
-				return line;
-			}
-		}
-	}, {
 		key: "cleanTo",
 		value: function cleanTo(cleanFilePath, callback) {
-			var _this2 = this;
-
-			// TODO: clean placeholders
-			var blocks = void 0;
-			_get__("flowsync").series([function (next) {
-				_get__("fs").stat(cleanFilePath, function (errorCleanFilePath) {
-					if (errorCleanFilePath) {
-						_get__("mkdirp")(_get__("path").dirname(cleanFilePath), function () {
-							_get__("fs").writeFile(cleanFilePath, "", { encoding: "utf8" }, function (error) {
-								next(error);
-							});
-						});
-					} else {
-						next();
-					}
-				});
-			}, function (next) {
-				_get__("Ph").getPlaceHolders(_get__("_")(_this2).targetFilePath, _get__("_")(_this2).customDelimiters).extractBlocks().then(function (_blocks) {
-					blocks = _blocks;
-					next();
-				}).catch(next);
-			}, function (next) {
-				_get__("Ph").getStamps(_get__("_")(_this2).targetFilePath, _get__("_")(_this2).customDelimiters).extractBlocks().then(function (_blocks) {
-					blocks = blocks.concat(_blocks);
-					next();
-				}).catch(next);
-			}], function (errors) {
-				if (errors) {
-					callback(errors);
-				} else {
-					(function () {
-						// read file line by line creating a concrete new file
-						// prepare concrete contents
-						var concreteFileContent = "";
-						// read template file line by line
-						var lineReader = _get__("readline").createInterface({ input: _get__("fs").createReadStream(_get__("_")(_this2).targetFilePath, { encoding: "utf8" }) });
-						var lineNumber = 0;
-						var ignoreLines = false;
-						lineReader.on("line", function (line) {
-							lineNumber++;
-							var beginPh = blocks.find(function (currentPh) {
-								return currentPh.from === lineNumber;
-							});
-							var endPh = blocks.find(function (currentPh) {
-								return currentPh.to === lineNumber;
-							});
-
-							// core block to ignore block delimiters and deprecated content
-							if (!beginPh && !endPh && !ignoreLines) {
-								concreteFileContent += line + "\n";
-							} else if (beginPh && !ignoreLines && beginPh.name === "deprecated") {
-								ignoreLines = true;
-							} else if (endPh && ignoreLines) {
-								ignoreLines = false;
-							}
-						});
-						lineReader.on("close", function () {
-							_get__("fs").writeFile(cleanFilePath, concreteFileContent, { encoding: "utf8" }, function (error) {
-								callback(error);
-							});
-						});
-					})();
-				}
+			var options = {
+				delimiters: _get__("_")(this).customDelimiters,
+				replacements: _get__("_")(this).replacements,
+				ignoringStamps: _get__("_")(this).ignoringStamps
+			};
+			_get__("cleanTo")(_get__("_")(this).targetFilePath, cleanFilePath, options).then(function () {
+				return callback();
+			}).catch(function (error) {
+				return callback(error);
 			});
 		}
 	}, {
 		key: "with",
 		value: function _with(templateFilePath, callback) {
-			var _this3 = this;
-
-			var commentStringStart = void 0;
-			var commentStringEnd = void 0;
-			_get__("flowsync").series([function (next) {
-				// TODO: this is not clean
-				var temporalBlock = _get__("Ph").getPlaceHolders(templateFilePath, _get__("_")(_this3).customDelimiters);
-				commentStringStart = temporalBlock.startBlockString;
-				commentStringEnd = temporalBlock.endBlockString;
-				next();
-			}, function (next) {
-				_get__("Ph").getPlaceHolders(templateFilePath, _get__("_")(_this3).customDelimiters).extractBlocks().then(function (_blocks) {
-					_get__("_")(_this3).templatePlaceHolders = _blocks;
-					next();
-				}).catch(next);
-			}, function (next) {
-				_get__("Ph").getStamps(templateFilePath, _get__("_")(_this3).customDelimiters).extractBlocks().then(function (_blocks) {
-					_get__("_")(_this3).templateStamps = _blocks;
-					next();
-				}).catch(next);
-			}, function (next) {
-				_get__("fs").stat(_get__("_")(_this3).targetFilePath, function (errorTargetFilePath) {
-					if (errorTargetFilePath) {
-						_get__("mkdirp")(_get__("path").dirname(_get__("_")(_this3).targetFilePath), function () {
-							_get__("fs").writeFile(_get__("_")(_this3).targetFilePath, "", { encoding: "utf8" }, function (error) {
-								next(error);
-							});
-						});
-					} else {
-						next();
-					}
-				});
-			}, function (next) {
-				_get__("Ph").getPlaceHolders(_get__("_")(_this3).targetFilePath, _get__("_")(_this3).customDelimiters).extractBlocks().then(function (_blocks) {
-					_get__("_")(_this3).targetPlaceHolders = _blocks;
-					next();
-				}).catch(next);
-			}], function (errors) {
-				if (errors) {
-					callback(errors);
-				} else {
-					(function () {
-						var result = [];
-						var deprecated = void 0;
-
-						_get__("_")(_this3).templatePlaceHolders.forEach(function (templatePlaceHolder) {
-							var placeHolder = _get__("_")(_this3).targetPlaceHolders.find(function (targetPlaceHolder) {
-								var found = targetPlaceHolder.name === templatePlaceHolder.name;
-								if (found) {
-									targetPlaceHolder.found = true;
-								}
-								return found;
-							});
-							if (!placeHolder) {
-								placeHolder = templatePlaceHolder;
-							}
-							result.push(placeHolder);
-						});
-
-						deprecated = _get__("_")(_this3).targetPlaceHolders.find(function (targetPlaceHolder) {
-							return targetPlaceHolder.name === "deprecated";
-						});
-
-						// find if there is a deprecated ph already there
-						if (!deprecated) {
-							deprecated = { name: "deprecated", content: "" };
-						}
-
-						var deprecatedPhs = _get__("_")(_this3).targetPlaceHolders.filter(function (ph) {
-							return ph.name !== "deprecated" && !ph.found;
-						});
-
-						deprecatedPhs.forEach(function (deprecatedPh) {
-							if (deprecated.content.length > 0) {
-								deprecated.content += "\n";
-							}
-							var replacedContent = deprecatedPh.content.replace(/\n/g, " " + commentStringEnd + "\n" + commentStringStart);
-							deprecated.content += commentStringStart + " name: " + deprecatedPh.name + " " + commentStringEnd + "\n" + commentStringStart + " content: " + replacedContent + " " + commentStringEnd;
-						});
-
-						if (deprecated.content.length > 0) {
-							result.push(deprecated);
-						}
-
-						// prepare concrete contents
-						var concreteFileContent = "";
-						// read template file line by line
-						var lineReader = _get__("readline").createInterface({ input: _get__("fs").createReadStream(templateFilePath, { encoding: "utf8" }) });
-						var lineNumber = 0;
-						var ignoreLines = false;
-						lineReader.on("line", function (line) {
-							lineNumber++;
-							var endPlaceholder = _get__("_")(_this3).templatePlaceHolders.find(function (templatePlaceholder) {
-								return templatePlaceholder.to === lineNumber;
-							});
-							if (endPlaceholder) {
-								ignoreLines = false;
-							}
-
-							// if the line matches the line of a newPhs element, put the contents from the ph there
-							var placeholder = _get__("_")(_this3).templatePlaceHolders.find(function (templatePlaceholder) {
-								return templatePlaceholder.from === lineNumber;
-							});
-
-							var stampBegin = _get__("_")(_this3).templateStamps.find(function (templateStamp) {
-								return templateStamp.from === lineNumber;
-							});
-
-							var stampEnd = _get__("_")(_this3).templateStamps.find(function (templateStamp) {
-								return templateStamp.to === lineNumber;
-							});
-
-							var addLine = !ignoreLines;
-							var isSpecialLine = placeholder || endPlaceholder || stampBegin || stampEnd;
-
-							if (addLine) {
-								var finalLine = line;
-								if (!isSpecialLine) {
-									//do not replace ph/stamp lines!
-									finalLine = _this3[executeReplacements](line);
-								}
-								concreteFileContent += finalLine + "\n";
-							}
-
-							if (placeholder) {
-								var targetPlaceholder = _get__("_")(_this3).targetPlaceHolders.find(function (targetPlaceHolder) {
-									return targetPlaceHolder.name === placeholder.name;
-								});
-								if (targetPlaceholder) {
-									ignoreLines = true;
-									concreteFileContent += targetPlaceholder.content + "\n";
-								}
-							} else {
-								if (stampBegin) {
-									ignoreLines = true;
-									var ignored = _get__("_")(_this3).ignoringStamps.find(function (stampsToIgnore) {
-										return stampsToIgnore === stampBegin.name;
-									});
-									if (!ignored) {
-										var _finalLine = _this3[executeReplacements](stampBegin.content);
-										if (_finalLine) {
-											concreteFileContent += _finalLine + "\n";
-										}
-									} else {
-										concreteFileContent += ""; //nothing
-									}
-								} else {
-										if (stampEnd) {
-											ignoreLines = false;
-											concreteFileContent += line + "\n";
-										}
-									}
-							}
-						});
-						lineReader.on("close", function () {
-							//put the deprecated ph if there is one
-							if (deprecated && deprecated.content && deprecated.content.length > 0) {
-								concreteFileContent += commentStringStart + " ph deprecated " + commentStringEnd + "\n" + deprecated.content + "\n" + commentStringStart + " endph " + commentStringEnd + "\n";
-							}
-							_get__("fs").writeFileSync(_get__("_")(_this3).targetFilePath, concreteFileContent, { encoding: "utf8" });
-							callback();
-						});
-					})();
-				}
+			var options = {
+				delimiters: _get__("_")(this).customDelimiters,
+				replacements: _get__("_")(this).replacements,
+				ignoringStamps: _get__("_")(this).ignoringStamps
+			};
+			_get__("synchronize")(templateFilePath, _get__("_")(this).targetFilePath, options).then(function () {
+				return callback();
+			}).catch(function (error) {
+				return callback(error);
 			});
 		}
 	}], [{
@@ -405,23 +152,11 @@ function _get_original__(variableName) {
 		case "Blocks":
 			return _blockJs2.default;
 
-		case "regexParser":
-			return _regexParser2.default;
+		case "cleanTo":
+			return _cleanTo2.default;
 
-		case "flowsync":
-			return _flowsync2.default;
-
-		case "fs":
-			return _fs2.default;
-
-		case "mkdirp":
-			return _mkdirp2.default;
-
-		case "path":
-			return _path2.default;
-
-		case "readline":
-			return _readline2.default;
+		case "synchronize":
+			return _synchronize2.default;
 	}
 
 	return undefined;

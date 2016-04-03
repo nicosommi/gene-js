@@ -2,6 +2,10 @@ import Ph from "../es6/lib/ph.js";
 import fs from "fs";
 import del from "del";
 
+/*
+DEPRECATED: just for backwards compatibility
+*/
+
 function prepareResult(resultFilePath, sourceFilePath) {
 	const initialContents = fs.readFileSync(sourceFilePath, {encoding: "utf8"});
 	fs.writeFileSync(resultFilePath, initialContents, {encoding: "utf8"});
@@ -18,7 +22,7 @@ describe("Gene-js", () => {
 		cleanedUpFilePath,
 		cleanedUpResultFilePath;
 
-	before(() => {
+	beforeEach(() => {
 		concreteFilePath = `${__dirname}/../fixtures/ph/concrete.spec.js`;
 		resultFilePath = `${__dirname}/../fixtures/ph/newResult.spec.js`;
 		templateFileName = `${__dirname}/../fixtures/ph/template.spec.js`;
@@ -29,6 +33,8 @@ describe("Gene-js", () => {
 		cleanedUpFilePath = `${__dirname}/../fixtures/ph/expectations/cleanedUp.spec.js`;
 		cleanedUpResultFilePath = `${__dirname}/../fixtures/ph/expectations/cleanedUp.result.spec.js`;
 	});
+
+	afterEach(() => Promise.all([del(resultFilePath), del(cleanedUpResultFilePath)]));
 
 	describe(".getPlaceHolders", () => {
 		it("should call getBlocks with ph", () => {
@@ -188,6 +194,8 @@ describe("Gene-js", () => {
 					});
 				});
 
+				afterEach(() => del(resultFilePath));
+
 				it("should refresh with the template contents for a new file including placeholder contents with replacements done", () => {
 					resultingContents.should.eql(expectedContents);
 				});
@@ -282,7 +290,7 @@ describe("Gene-js", () => {
 				beforeEach(done => {
 					removedStampTemplateFileName = `${__dirname}/../fixtures/ph/templateRemovedStampFileName.spec.js`;
 					expectedContents = fs.readFileSync(`${__dirname}/../fixtures/ph/expectations/removedStampExpectation.spec.js`, {encoding: "utf8"});
-					fs.writeFileSync(resultFilePath, concreteFilePath, {encoding: "utf8"});
+					prepareResult(resultFilePath, concreteFilePath);
 					Ph.refresh(resultFilePath).with(removedStampTemplateFileName,
 						()=> {
 							//pick the result the process left in the hard drive just to assert
@@ -302,7 +310,7 @@ describe("Gene-js", () => {
 
 				beforeEach(done => {
 					expectedContents = fs.readFileSync(`${__dirname}/../fixtures/ph/expectations/ignoringStampExpectation.spec.js`, {encoding: "utf8"});
-					fs.writeFileSync(resultFilePath, concreteFilePath, {encoding: "utf8"});
+					prepareResult(resultFilePath, concreteFilePath);
 					Ph.refresh(resultFilePath).ignoringStamps(["isFruit"]).with(templateFileName,
 						() => {
 							//pick the result the process left in the hard drive just to assert
@@ -326,7 +334,6 @@ describe("Gene-js", () => {
 				beforeEach(done => {
 					replaceTemplateFileName = `${__dirname}/../fixtures/ph/replaceTemplate.js`;
 					expectedContents = fs.readFileSync(`${__dirname}/../fixtures/ph/expectations/toNewOrangeExpectation.spec.js`, {encoding: "utf8"});
-					fs.writeFileSync(resultFilePath, "", {encoding: "utf8"});
 					Ph.refresh(resultFilePath)
 						.replacing({
 							"Apple": "Orange",
@@ -355,7 +362,6 @@ describe("Gene-js", () => {
 				beforeEach(done => {
 					replaceTemplateFileName = `${__dirname}/../fixtures/ph/replaceTemplate.js`;
 					expectedContents = fs.readFileSync(`${__dirname}/../fixtures/ph/expectations/toNewOrangeExpectation.spec.js`, {encoding: "utf8"});
-					fs.writeFileSync(resultFilePath, "", {encoding: "utf8"});
 					Ph.refresh(resultFilePath)
 						.replacing({
 							[/Apple/g]: "Orange",

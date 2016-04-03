@@ -1,7 +1,7 @@
 export default class Apple {
 	/* ph appleTopMethods */
 	constructor() {
-		this.washed = false;
+		this.worm = true;
 	}
 	/* endph */
 
@@ -11,10 +11,14 @@ export default class Apple {
 	bite() {
 		let input;
 		/* ph staticMethodImplementation */
+		input = "you got it";
 		/* endph */
 		return input;
 	}
 
 	/* ph appleBottomMethods */
+	eat() {
+		return "yum";
+	}
 	/* endph */
 }
