@@ -5,9 +5,9 @@ import fs from "fs-extra";
 const readFile = Promise.promisify(fs.readFile);
 
 function cleanToMechanism(source, target, expectation, options, customAssertion = false) {
-	const sourceComplete = `${__dirname}/../fixtures/sourceCodeFiles/sources/${source}`;
-	const expectationComplete = `${__dirname}/../fixtures/sourceCodeFiles/expectations/${expectation}`;
-	const targetResult = `${__dirname}/../fixtures/sourceCodeFiles/results/${target}`;
+	const sourceComplete = `${__dirname}/../fixtures/genes/sources/${source}`;
+	const expectationComplete = `${__dirname}/../fixtures/genes/expectations/${expectation}`;
+	const targetResult = `${__dirname}/../fixtures/genes/results/${target}`;
 
 	let targetContents;
 
@@ -22,7 +22,7 @@ function cleanToMechanism(source, target, expectation, options, customAssertion 
 			})
 		// read expectation
 			.then(() => readFile(expectationComplete));
-	if(!customAssertion) {
+	if(customAssertion) {
 		return processPromise.then((contents) => contents.toString("utf8").should.eql(targetContents));
 	} else {
 		return processPromise;
@@ -34,16 +34,7 @@ describe(".cleanTo(targetPath)", () => {
 		return cleanToMechanism("apple.js", "cleanedApple.js", "cleanedApple.js");
 	});
 
-	it("should accept a dirty ph array", () => {
-		return cleanToMechanism("apple.js", "cleanedApple.js", "cleanedApple.js", { dirtyPhs: ["anextraph"] });
-	});
+	it("should create the path if it does not exists");
 
-	it("should create the path if it does not exists", () => {
-		return cleanToMechanism("apple.js", "newFolder/ToIt/cleanedApple.js", "cleanedApple.js");
-	});
-
-	it("should throw an error if the source does not exist", () => {
-		return cleanToMechanism("apple.unexisting.js", "cleanedApple.js", "cleanedApple.js", null, true)
-			.should.be.rejectedWith(/ENOENT/);
-	});
+	it("should throw an error if the source does not exist");
 });

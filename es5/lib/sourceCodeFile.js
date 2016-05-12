@@ -7,87 +7,61 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-exports.default = cleanTo;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _synchronize = require("./synchronize.js");
+
+var _synchronize2 = _interopRequireDefault(_synchronize);
+
+var _cleanTo = require("./cleanTo.js");
+
+var _cleanTo2 = _interopRequireDefault(_cleanTo);
 
 var _promise = require("./promise.js");
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _blockJs = require("block-js");
-
-var _blockJs2 = _interopRequireDefault(_blockJs);
-
-var _fsExtra = require("fs-extra");
-
-var _fsExtra2 = _interopRequireDefault(_fsExtra);
-
-var _readline = require("readline");
-
-var _readline2 = _interopRequireDefault(_readline);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var writeFile = _get__("Promise").promisify(_get__("fs").writeFile);
-var ensureFile = _get__("Promise").promisify(_get__("fs").ensureFile);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function cleanTo(source, target, options) {
-	return new (_get__("Promise"))(function (resolve, reject) {
-		var delimiters = void 0;
-		var dirtyPhs = ["replacements", "ignoringStamps"];
-		if (options) {
-			delimiters = options.delimiters;
-			if (options.dirtyPhs && Array.isArray(dirtyPhs)) {
-				dirtyPhs = options.dirtyPhs.concat(dirtyPhs);
+var SourceCodeFile = function () {
+	function SourceCodeFile(name, filePath, cleanPath, options) {
+		_classCallCheck(this, SourceCodeFile);
+
+		this.name = name;
+		this.path = filePath;
+		this.cleanPath = cleanPath;
+		this.options = options;
+	}
+
+	_createClass(SourceCodeFile, [{
+		key: "synchronizeWith",
+		value: function synchronizeWith(rootSourceCodeFile) {
+			if (!rootSourceCodeFile.path) {
+				return _get__("Promise").reject(new Error("No path defined for root file " + rootSourceCodeFile.name));
+			} else {
+				return _get__("synchronize")(rootSourceCodeFile.path, this.path, this.options);
 			}
 		}
+	}, {
+		key: "clean",
+		value: function clean(dirtyPhs) {
+			if (!this.cleanPath) {
+				return _get__("Promise").reject(new Error("No clean path defined for file " + this.name));
+			} else if (!this.path) {
+				return _get__("Promise").reject(new Error("No path defined for file " + this.name));
+			} else {
+				this.options.dirtyPhs = dirtyPhs || [];
+				return _get__("cleanTo")(this.path, this.cleanPath, this.options);
+			}
+		}
+	}]);
 
-		var sourcePhsBlocksClass = new (_get__("Blocks"))(source, "ph", delimiters);
-		var sourceStampsBlocksClass = new (_get__("Blocks"))(source, "stamp", delimiters);
+	return SourceCodeFile;
+}();
 
-		_get__("ensureFile")(target).then(function () {
-			_get__("Promise").props({
-				sourcePhBlocks: sourcePhsBlocksClass.extractBlocks(),
-				sourceStampBlocks: sourceStampsBlocksClass.extractBlocks()
-			}).then(function (results) {
-				var blocks = results.sourcePhBlocks;
-				blocks = blocks.concat(results.sourceStampBlocks);
-
-				// read file line by line creating a concrete new file
-				// prepare concrete contents
-				var concreteFileContent = "";
-				// read template file line by line
-				var lineReader = _get__("readline").createInterface({ input: _get__("fs").createReadStream(source, { encoding: "utf8" }) });
-				var lineNumber = 0;
-				var ignoreLines = false;
-				lineReader.on("line", function (line) {
-					lineNumber++;
-					var beginPh = blocks.find(function (currentPh) {
-						return currentPh.from === lineNumber;
-					});
-					var endPh = blocks.find(function (currentPh) {
-						return currentPh.to === lineNumber;
-					});
-
-					// core block to ignore block delimiters and deprecated content
-					if (!beginPh && !endPh && !ignoreLines) {
-						concreteFileContent += line + "\n";
-					} else if (beginPh && !ignoreLines && (beginPh.name === "deprecated" || dirtyPhs.find(function (dirtyPhName) {
-						return beginPh.name === dirtyPhName;
-					}))) {
-						ignoreLines = true;
-					} else if (endPh && ignoreLines) {
-						ignoreLines = false;
-					}
-				});
-				lineReader.on("close", function () {
-					_get__("writeFile")(target, concreteFileContent, { encoding: "utf8" }).then(function () {
-						return resolve();
-					}).catch(reject);
-				});
-			}).catch(reject);
-		}).catch(reject);
-	});
-}
+exports.default = SourceCodeFile;
 var _RewiredData__ = {};
 var _RewireAPI__ = {};
 
@@ -118,20 +92,11 @@ function _get_original__(variableName) {
 		case "Promise":
 			return _promise2.default;
 
-		case "fs":
-			return _fsExtra2.default;
+		case "synchronize":
+			return _synchronize2.default;
 
-		case "Blocks":
-			return _blockJs2.default;
-
-		case "ensureFile":
-			return ensureFile;
-
-		case "readline":
-			return _readline2.default;
-
-		case "writeFile":
-			return writeFile;
+		case "cleanTo":
+			return _cleanTo2.default;
 	}
 
 	return undefined;
@@ -196,17 +161,17 @@ function _with__(object) {
 	};
 }
 
-var _typeOfOriginalExport = typeof cleanTo === "undefined" ? "undefined" : _typeof(cleanTo);
+var _typeOfOriginalExport = typeof SourceCodeFile === "undefined" ? "undefined" : _typeof(SourceCodeFile);
 
 function addNonEnumerableProperty(name, value) {
-	Object.defineProperty(cleanTo, name, {
+	Object.defineProperty(SourceCodeFile, name, {
 		value: value,
 		enumerable: false,
 		configurable: true
 	});
 }
 
-if ((_typeOfOriginalExport === 'object' || _typeOfOriginalExport === 'function') && Object.isExtensible(cleanTo)) {
+if ((_typeOfOriginalExport === 'object' || _typeOfOriginalExport === 'function') && Object.isExtensible(SourceCodeFile)) {
 	addNonEnumerableProperty('__get__', _get__);
 	addNonEnumerableProperty('__GetDependency__', _get__);
 	addNonEnumerableProperty('__Rewire__', _set__);

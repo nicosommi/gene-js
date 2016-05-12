@@ -4,22 +4,19 @@ import fs from "fs-extra";
 
 const readFile = Promise.promisify(fs.readFile);
 const copy = Promise.promisify(fs.copy);
-const stat = Promise.promisify(fs.stat);
 
 function synchronizeMechanism(source, target, expectation, options, customAssertion = false) {
-	const sourceComplete = `${__dirname}/../fixtures/sourceCodeFiles/sources/${source}`;
-	const expectationComplete = `${__dirname}/../fixtures/sourceCodeFiles/expectations/${expectation}`;
-	const targetSource = `${__dirname}/../fixtures/sourceCodeFiles/sources/${target}`;
-	const targetResult = `${__dirname}/../fixtures/sourceCodeFiles/results/${target}`;
+	const sourceComplete = `${__dirname}/../fixtures/genes/sources/${source}`;
+	const expectationComplete = `${__dirname}/../fixtures/genes/expectations/${expectation}`;
+	const targetSource = `${__dirname}/../fixtures/genes/sources/${target}`;
+	const targetResult = `${__dirname}/../fixtures/genes/results/${target}`;
 
 	let targetContents;
 
 	// read source
 	const processPromise = readFile(sourceComplete)
 		// prepareTargetFile
-			.then(stat(targetSource))
 			.then(() => copy(targetSource, targetResult))
-			.catch(() => Promise.resolve())
 		// synchronize target
 			.then(() => synchronize(sourceComplete, targetResult, options))
 		// read new target
@@ -29,7 +26,7 @@ function synchronizeMechanism(source, target, expectation, options, customAssert
 			})
 		// read expectation
 			.then(() => readFile(expectationComplete));
-	if(!customAssertion) {
+	if(customAssertion) {
 		return processPromise.then((contents) => contents.toString("utf8").should.eql(targetContents));
 	} else {
 		return processPromise;
@@ -45,19 +42,9 @@ const bananaOptions = {
 
 describe("synchronize", () => {
 	describe("(error handling)", () => {
-		it("should throw a warning if there is no blocks on the existing target and 2 or more on the source", () => {
-			return synchronizeMechanism("apple.js", "emptyVegetable.js", "emptyVegetable.js", null, true)
-				.should.be.rejectedWith(/Warning, there is too much difference between apple.js and emptyVegetable.js. Make sure it's OK and use force flag./);
-		});
-
-		it("should not throw when much different phs but force option is set to true", () => {
-			const options = { force: true };
-			return synchronizeMechanism("apple.js", "emptyVegetable.js", "emptyVegetable.js", options);
-		});
-
-		it("should not throw when target is new", () => {
-			return synchronizeMechanism("apple.js", "newEmptyVegetable.js", "emptyVegetable.js");
-		});
+		it("should throw a warning if there is no blocks on the existing target and 2 or more on the source");
+		it("should not throw when much different phs but force option is set to true");
+		it("should not throw when target is new");
 	});
 
 	describe("(in file options)", () => {
@@ -88,15 +75,15 @@ describe("synchronize", () => {
 				return synchronizeMechanism("simpleApple.js", "banana.js", "banana.js");
 			});
 
-			it("should allow empty replacement phs", () => {
-				return synchronizeMechanism("staticKiwi.js", "incompleteApple.js", "diminishedApple.js");
+			it("shuold allow empty replacement phs", () => {
+				return synchronizeMechanism("staticKiwi.js", "incompleteApple.js", "apple.js");
 			});
 
-			it("should allow no replacement ph", () => {
+			it("shuold allow no replacement ph", () => {
 				return synchronizeMechanism("staticKiwi.js", "staticKiwi.js", "staticKiwi.js");
 			});
 
-			it("should throw if the target has a replacement that was not found on the source", () => {
+			it("shuold throw if the target has a replacement that was not found on the source", () => {
 				return synchronizeMechanism("staticKiwi.js", "banana.js", "banana.js", null, true)
 					.should.be.rejectedWith(/Missing replacement placeholer on the source/);
 			});
@@ -118,8 +105,8 @@ describe("synchronize", () => {
 	});
 
 	describe("(stamps)", () => {
-		it("should set the stamp content to the content from the source file", () => {
-			return synchronizeMechanism("apple.js", "newBanana.js", "applenana.js");
-		});
+		it("should set the stamp content to the content from the source file");
+		it("should create a deprecated ph for the removed stamps on the source that weren't ignored");
+		it("should accumulate on the existing deprecated ph, the removed stamps on the source that weren't ignored");
 	});
 });

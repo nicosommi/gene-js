@@ -10,8 +10,12 @@ export default function cleanTo (source, target, options) {
 	return new Promise(
 		(resolve, reject) => {
 			let delimiters;
+			let dirtyPhs = [ "replacements", "ignoringStamps" ];
 			if(options) {
 				delimiters = options.delimiters;
+				if(options.dirtyPhs && Array.isArray(dirtyPhs)) {
+					dirtyPhs = options.dirtyPhs.concat(dirtyPhs);
+				}
 			}
 
 			const sourcePhsBlocksClass = new Blocks(source, "ph", delimiters);
@@ -55,7 +59,11 @@ export default function cleanTo (source, target, options) {
 										// core block to ignore block delimiters and deprecated content
 										if(!beginPh && !endPh && !ignoreLines) {
 											concreteFileContent += `${line}\n`;
-										} else if(beginPh && !ignoreLines && beginPh.name === "deprecated") {
+										} else if((beginPh
+											&& !ignoreLines)
+											&& (beginPh.name === "deprecated"
+												|| dirtyPhs.find(dirtyPhName => (beginPh.name === dirtyPhName)))
+											) {
 											ignoreLines = true;
 										} else if(endPh && ignoreLines) {
 											ignoreLines = false;

@@ -7,87 +7,93 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-exports.default = cleanTo;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _swBlock = require("./swBlock.js");
+
+var _swBlock2 = _interopRequireDefault(_swBlock);
 
 var _promise = require("./promise.js");
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _blockJs = require("block-js");
-
-var _blockJs2 = _interopRequireDefault(_blockJs);
-
-var _fsExtra = require("fs-extra");
-
-var _fsExtra2 = _interopRequireDefault(_fsExtra);
-
-var _readline = require("readline");
-
-var _readline2 = _interopRequireDefault(_readline);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var writeFile = _get__("Promise").promisify(_get__("fs").writeFile);
-var ensureFile = _get__("Promise").promisify(_get__("fs").ensureFile);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function cleanTo(source, target, options) {
-	return new (_get__("Promise"))(function (resolve, reject) {
-		var delimiters = void 0;
-		var dirtyPhs = ["replacements", "ignoringStamps"];
-		if (options) {
-			delimiters = options.delimiters;
-			if (options.dirtyPhs && Array.isArray(dirtyPhs)) {
-				dirtyPhs = options.dirtyPhs.concat(dirtyPhs);
-			}
+var SwComponent = function () {
+	function SwComponent(name, type, options) {
+		_classCallCheck(this, SwComponent);
+
+		this.name = name;
+		this.type = type;
+		this.options = options;
+		this.swBlocks = [];
+	}
+
+	_createClass(SwComponent, [{
+		key: "addSwBlock",
+		value: function addSwBlock(swBlock) {
+			var newOptions = Object.assign({}, this.options, swBlock.options); // passing options through
+			var newSwBlock = new (_get__("SwBlock"))(swBlock.name, swBlock.type, newOptions);
+			newSwBlock.addSourceCodeFiles(swBlock.sourceCodeFiles);
+			this.swBlocks.push(newSwBlock);
+			return newSwBlock;
 		}
+	}, {
+		key: "addSwBlocks",
+		value: function addSwBlocks(swBlocks) {
+			var _this = this;
 
-		var sourcePhsBlocksClass = new (_get__("Blocks"))(source, "ph", delimiters);
-		var sourceStampsBlocksClass = new (_get__("Blocks"))(source, "stamp", delimiters);
+			swBlocks.forEach(function (swBlock) {
+				return _this.addSwBlock(swBlock);
+			});
+		}
+	}, {
+		key: "synchronizeWith",
+		value: function synchronizeWith(rootBlock) {
+			var _this2 = this;
 
-		_get__("ensureFile")(target).then(function () {
-			_get__("Promise").props({
-				sourcePhBlocks: sourcePhsBlocksClass.extractBlocks(),
-				sourceStampBlocks: sourceStampsBlocksClass.extractBlocks()
-			}).then(function (results) {
-				var blocks = results.sourcePhBlocks;
-				blocks = blocks.concat(results.sourceStampBlocks);
+			return new (_get__("Promise"))(function (resolve, reject) {
+				var promise = void 0;
 
-				// read file line by line creating a concrete new file
-				// prepare concrete contents
-				var concreteFileContent = "";
-				// read template file line by line
-				var lineReader = _get__("readline").createInterface({ input: _get__("fs").createReadStream(source, { encoding: "utf8" }) });
-				var lineNumber = 0;
-				var ignoreLines = false;
-				lineReader.on("line", function (line) {
-					lineNumber++;
-					var beginPh = blocks.find(function (currentPh) {
-						return currentPh.from === lineNumber;
-					});
-					var endPh = blocks.find(function (currentPh) {
-						return currentPh.to === lineNumber;
-					});
-
-					// core block to ignore block delimiters and deprecated content
-					if (!beginPh && !endPh && !ignoreLines) {
-						concreteFileContent += line + "\n";
-					} else if (beginPh && !ignoreLines && (beginPh.name === "deprecated" || dirtyPhs.find(function (dirtyPhName) {
-						return beginPh.name === dirtyPhName;
-					}))) {
-						ignoreLines = true;
-					} else if (endPh && ignoreLines) {
-						ignoreLines = false;
-					}
+				// find this.swBlock
+				var matchingSwBlocks = _this2.swBlocks.filter(function (swBlock) {
+					return swBlock.type === rootBlock.type;
 				});
-				lineReader.on("close", function () {
-					_get__("writeFile")(target, concreteFileContent, { encoding: "utf8" }).then(function () {
-						return resolve();
-					}).catch(reject);
-				});
-			}).catch(reject);
-		}).catch(reject);
-	});
-}
+				if (matchingSwBlocks && matchingSwBlocks.length > 0) {
+					promise = _get__("Promise").all(matchingSwBlocks.map(function (matchingSwBlock) {
+						return matchingSwBlock.synchronizeWith(rootBlock);
+					}));
+				} else {
+					var newSwBlock = _this2.addSwBlock({
+						name: rootBlock.name,
+						type: rootBlock.type,
+						options: _this2.options,
+						sourceCodeFiles: []
+					});
+					promise = newSwBlock.synchronizeWith(rootBlock);
+				}
+
+				promise.then(function () {
+					return resolve();
+				}).catch(reject);
+			});
+		}
+	}, {
+		key: "clean",
+		value: function clean(dirtyPhs) {
+			var promises = this.swBlocks.map(function (swBlock) {
+				return swBlock.clean(dirtyPhs);
+			});
+			return _get__("Promise").all(promises);
+		}
+	}]);
+
+	return SwComponent;
+}();
+
+exports.default = SwComponent;
 var _RewiredData__ = {};
 var _RewireAPI__ = {};
 
@@ -115,23 +121,11 @@ function _get__(variableName) {
 
 function _get_original__(variableName) {
 	switch (variableName) {
+		case "SwBlock":
+			return _swBlock2.default;
+
 		case "Promise":
 			return _promise2.default;
-
-		case "fs":
-			return _fsExtra2.default;
-
-		case "Blocks":
-			return _blockJs2.default;
-
-		case "ensureFile":
-			return ensureFile;
-
-		case "readline":
-			return _readline2.default;
-
-		case "writeFile":
-			return writeFile;
 	}
 
 	return undefined;
@@ -196,17 +190,17 @@ function _with__(object) {
 	};
 }
 
-var _typeOfOriginalExport = typeof cleanTo === "undefined" ? "undefined" : _typeof(cleanTo);
+var _typeOfOriginalExport = typeof SwComponent === "undefined" ? "undefined" : _typeof(SwComponent);
 
 function addNonEnumerableProperty(name, value) {
-	Object.defineProperty(cleanTo, name, {
+	Object.defineProperty(SwComponent, name, {
 		value: value,
 		enumerable: false,
 		configurable: true
 	});
 }
 
-if ((_typeOfOriginalExport === 'object' || _typeOfOriginalExport === 'function') && Object.isExtensible(cleanTo)) {
+if ((_typeOfOriginalExport === 'object' || _typeOfOriginalExport === 'function') && Object.isExtensible(SwComponent)) {
 	addNonEnumerableProperty('__get__', _get__);
 	addNonEnumerableProperty('__GetDependency__', _get__);
 	addNonEnumerableProperty('__Rewire__', _set__);
