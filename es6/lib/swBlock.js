@@ -21,6 +21,17 @@ export default class SwBlock {
 		sourceCodeFiles.forEach(sourceCodeFile => this.addSourceCodeFile(sourceCodeFile));
 	}
 
+	getMeta() {
+		return Promise.all(this.sourceCodeFiles.map(sourceCodeFile => sourceCodeFile.getMeta()))
+			.then(results => {
+				return Promise.resolve({
+					name: this.name,
+					type: this.type,
+					sourceCodeFiles: results
+				});
+			});
+	}
+
 	synchronizeWith(rootBlock) {
 		return new Promise(
 			(resolve, reject) => {

@@ -53,15 +53,30 @@ var SwBlock = function () {
 			});
 		}
 	}, {
+		key: "getMeta",
+		value: function getMeta() {
+			var _this2 = this;
+
+			return _get__("Promise").all(this.sourceCodeFiles.map(function (sourceCodeFile) {
+				return sourceCodeFile.getMeta();
+			})).then(function (results) {
+				return _get__("Promise").resolve({
+					name: _this2.name,
+					type: _this2.type,
+					sourceCodeFiles: results
+				});
+			});
+		}
+	}, {
 		key: "synchronizeWith",
 		value: function synchronizeWith(rootBlock) {
-			var _this2 = this;
+			var _this3 = this;
 
 			return new (_get__("Promise"))(function (resolve, reject) {
 				var errors = [];
 				var promises = rootBlock.sourceCodeFiles.map(function (rootSourceCodeFile) {
 					// find this.sourceCodeFile
-					var matchingSourceCodeFile = _this2.sourceCodeFiles.find(function (sourceCodeFile) {
+					var matchingSourceCodeFile = _this3.sourceCodeFiles.find(function (sourceCodeFile) {
 						return sourceCodeFile.name === rootSourceCodeFile.name;
 					});
 					if (matchingSourceCodeFile) {
@@ -76,15 +91,15 @@ var SwBlock = function () {
 						// add promess to process list
 						// promises.push(promiseSynchronize);
 						var newSourceCodeFile = void 0;
-						if (_this2.options && _this2.options.basePath) {
+						if (_this3.options && _this3.options.basePath) {
 							if (rootSourceCodeFile.options.basePath) {
-								var targetBasePath = _get__("path").normalize(_this2.options.basePath);
-								var targetCleanBasePath = _get__("path").normalize(_this2.options.basePath + "/..");
+								var targetBasePath = _get__("path").normalize(_this3.options.basePath);
+								var targetCleanBasePath = _get__("path").normalize(_this3.options.basePath + "/..");
 								var originalPath = _get__("path").normalize(rootSourceCodeFile.path);
 								var originalBasePath = _get__("path").normalize(rootSourceCodeFile.options.basePath);
 								var targetPath = originalPath.replace(originalBasePath, targetBasePath);
 								var targetCleanPath = originalPath.replace(originalBasePath, targetCleanBasePath);
-								newSourceCodeFile = _this2.addSourceCodeFile({
+								newSourceCodeFile = _this3.addSourceCodeFile({
 									name: rootSourceCodeFile.name,
 									path: "" + _get__("path").normalize(targetPath),
 									clean: "" + _get__("path").normalize(targetCleanPath)
@@ -94,7 +109,7 @@ var SwBlock = function () {
 								errors.push(new Error("ERROR: there is no base path provided for the source file " + rootSourceCodeFile.name + " on the block of name " + rootBlock.name + " and type " + rootBlock.type + ". Please ammend that and try again."));
 							}
 						} else {
-							errors.push(new Error("ERROR: there is no base path provided for the block " + _this2.name + ", so the new source code file " + rootSourceCodeFile.name + " cannot be added."));
+							errors.push(new Error("ERROR: there is no base path provided for the block " + _this3.name + ", so the new source code file " + rootSourceCodeFile.name + " cannot be added."));
 						}
 					}
 				});

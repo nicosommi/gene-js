@@ -1,9 +1,9 @@
 import Promise from "./promise.js";
-import Blocks from "block-js";
 import fs from "fs-extra";
 import path from "path";
 import readline from "readline";
 import regexParser from "regex-parser";
+import { takeMeta, getBlocks } from "./getMeta.js";
 
 const ensureFile = Promise.promisify(fs.ensureFile);
 const stat = Promise.promisify(fs.stat);
@@ -34,62 +34,6 @@ export function executeReplacements(line, replacements) {
 	}
 }
 
-function cleanContent(content, dirtyStrings) {
-	dirtyStrings.forEach((dirtyString) => {
-		content = content.replace(dirtyString, "");
-	});
-	return content;
-}
-
-function takeReplacements(blocks, commentStringStart, commentStringEnd) {
-	const replacementsPh = blocks.find(targetBlock => (targetBlock.name === "replacements"));
-	if(replacementsPh) {
-		const replacements = {};
-		if(replacementsPh.content) {
-			const replacementLines = replacementsPh.content.split("\n");
-			replacementLines.forEach(
-				replacementLine => {
-					const tokens = cleanContent(replacementLine, [commentStringStart, commentStringEnd])
-						.split(", ")
-						.map(token => token.trim());
-					const name = tokens[0];
-					const regex = tokens[1];
-					const value = tokens[2];
-					replacements[name] = { regex, value };
-				}
-			);
-			return replacements;
-		} else {
-			return {};
-		}
-	} else {
-		return {};
-	}
-}
-
-function takeIgnoringStamps(blocks, commentStringStart, commentStringEnd) {
-	const ignoringStampsPh = blocks.find(targetBlock => (targetBlock.name === "ignoringStamps"));
-	if(ignoringStampsPh) {
-		let ignoringStamps = [];
-		if(ignoringStampsPh.content) {
-			const ignoringStampLines = ignoringStampsPh.content.split("\n");
-			ignoringStampLines.forEach(
-				ignoringStampLine => {
-					const tokens = cleanContent(ignoringStampLine, [commentStringStart, commentStringEnd])
-						.split(",")
-						.map(token => token.trim());
-					ignoringStamps = ignoringStamps.concat(tokens);
-				}
-			);
-			return ignoringStamps;
-		} else {
-			return [];
-		}
-	} else {
-		return [];
-	}
-}
-
 function mergeReplacements(sourceReplacements, targetReplacements) {
 	const replacements = {};
 	const sourceReplacementKeys = Object.keys(sourceReplacements);
@@ -111,29 +55,23 @@ function mergeReplacements(sourceReplacements, targetReplacements) {
 
 function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
 	const options = {};
-	const sourceReplacements = takeReplacements(sourceBlocks, commentStringStart, commentStringEnd);
-	const targetReplacements = takeReplacements(targetBlocks, commentStringStart, commentStringEnd);
-	options.replacements = mergeReplacements(sourceReplacements, targetReplacements);
-	options.ignoringStamps = takeIgnoringStamps(targetBlocks, commentStringStart, commentStringEnd);
+	const sourceReplacements = takeMeta(sourceBlocks, commentStringStart, commentStringEnd).replacements;
+	const { replacements, ignoringStamps } = takeMeta(targetBlocks, commentStringStart, commentStringEnd);
+	options.replacements = mergeReplacements(sourceReplacements, replacements);
+	options.ignoringStamps = ignoringStamps;
 	return options;
 }
 
 export default function synchronize(source, target, options) {
 	return new Promise(
 		(resolve, reject) => {
-			let delimiters;
 			let force;
 			if(options) {
-				delimiters = options.delimiters;
 				force = options.force;
 			}
-			// TODO: suppport block array name on blocks to reduce file reading
-			const sourcePhsBlocksClass = new Blocks(source, "ph", delimiters);
-			const sourceStampsBlocksClass = new Blocks(source, "stamp", delimiters);
-			const targetPhsBlocksClass = new Blocks(target, "ph", delimiters);
-			const targetStampsBlocksClass = new Blocks(target, "stamp", delimiters);
-			const commentStringStart = sourcePhsBlocksClass.startBlockString;
-			const commentStringEnd = sourcePhsBlocksClass.endBlockString;
+
+			let commentStringStart;
+			let commentStringEnd;
 
 			let fileExist = true;
 
@@ -150,17 +88,17 @@ export default function synchronize(source, target, options) {
 				.then(
 					() => {
 						Promise.props({
-							sourcePhBlocks: sourcePhsBlocksClass.extractBlocks(),
-							sourceStampBlocks: sourceStampsBlocksClass.extractBlocks(),
-							targetPhBlocks: targetPhsBlocksClass.extractBlocks(),
-							targetStampBlocks: targetStampsBlocksClass.extractBlocks()
+							source: getBlocks(source),
+							target: getBlocks(target)
 						})
 						.then(
 							(results) => {
-								sourcePhBlocks = results.sourcePhBlocks;
-								sourceStampBlocks = results.sourceStampBlocks;
-								targetPhBlocks = results.targetPhBlocks;
-								// targetStampBlocks = results.targetStampBlocks; //not needed yet
+								sourcePhBlocks = results.source.phBlocks;
+								sourceStampBlocks = results.source.stampBlocks;
+								targetPhBlocks = results.target.phBlocks;
+								// targetStampBlocks = results.targe.stampBlocks; //not needed yet
+								commentStringStart = results.source.commentStringStart;
+								commentStringEnd = results.source.commentStringEnd;
 
 								if(!options || (!options.replacements && !options.ignoringStamps)) {
 									options = takeOptions(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd);

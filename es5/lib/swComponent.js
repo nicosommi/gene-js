@@ -50,15 +50,32 @@ var SwComponent = function () {
 			});
 		}
 	}, {
+		key: "getMeta",
+		value: function getMeta() {
+			var _this2 = this;
+
+			return _get__("Promise").all(this.swBlocks.map(function (swBlock) {
+				console.log("results swBlock", { getMeta: swBlock.getMeta });
+				return swBlock.getMeta();
+			})).then(function (results) {
+				console.log("results ", { results: results });
+				return _get__("Promise").resolve({
+					name: _this2.name,
+					type: _this2.type,
+					swBlocks: results
+				});
+			});
+		}
+	}, {
 		key: "synchronizeWith",
 		value: function synchronizeWith(rootBlock) {
-			var _this2 = this;
+			var _this3 = this;
 
 			return new (_get__("Promise"))(function (resolve, reject) {
 				var promise = void 0;
 
 				// find this.swBlock
-				var matchingSwBlocks = _this2.swBlocks.filter(function (swBlock) {
+				var matchingSwBlocks = _this3.swBlocks.filter(function (swBlock) {
 					return swBlock.type === rootBlock.type;
 				});
 				if (matchingSwBlocks && matchingSwBlocks.length > 0) {
@@ -66,10 +83,10 @@ var SwComponent = function () {
 						return matchingSwBlock.synchronizeWith(rootBlock);
 					}));
 				} else {
-					var newSwBlock = _this2.addSwBlock({
+					var newSwBlock = _this3.addSwBlock({
 						name: rootBlock.name,
 						type: rootBlock.type,
-						options: _this2.options,
+						options: _this3.options,
 						sourceCodeFiles: []
 					});
 					promise = newSwBlock.synchronizeWith(rootBlock);

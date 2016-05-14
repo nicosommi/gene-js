@@ -21,6 +21,21 @@ export default class SwComponent {
 		swBlocks.forEach(swBlock => this.addSwBlock(swBlock));
 	}
 
+	getMeta() {
+		return Promise.all(this.swBlocks.map(swBlock => {
+			console.log("results swBlock", { getMeta: swBlock.getMeta });
+			return swBlock.getMeta();
+		}))
+			.then(results => {
+				console.log("results ", { results });
+				return Promise.resolve({
+					name: this.name,
+					type: this.type,
+					swBlocks: results
+				});
+			});
+	}
+
 	synchronizeWith(rootBlock) {
 		return new Promise(
 			(resolve, reject) => {

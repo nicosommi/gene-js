@@ -13,6 +13,10 @@ var _synchronize = require("./synchronize.js");
 
 var _synchronize2 = _interopRequireDefault(_synchronize);
 
+var _getMeta = require("./getMeta.js");
+
+var _getMeta2 = _interopRequireDefault(_getMeta);
+
 var _cleanTo = require("./cleanTo.js");
 
 var _cleanTo2 = _interopRequireDefault(_cleanTo);
@@ -36,6 +40,24 @@ var SourceCodeFile = function () {
 	}
 
 	_createClass(SourceCodeFile, [{
+		key: "getMeta",
+		value: function getMeta() {
+			var _this = this;
+
+			return _get__("getMeta")(this.path, this.options).then(function (fileMetaInfo) {
+				var replacements = fileMetaInfo.replacements;
+				var ignoringStamps = fileMetaInfo.ignoringStamps;
+
+
+				return _get__("Promise").resolve({
+					name: _this.name,
+					path: _this.path,
+					replacements: replacements,
+					ignoringStamps: ignoringStamps
+				});
+			});
+		}
+	}, {
 		key: "synchronizeWith",
 		value: function synchronizeWith(rootSourceCodeFile) {
 			if (!rootSourceCodeFile.path) {
@@ -89,6 +111,9 @@ function _get__(variableName) {
 
 function _get_original__(variableName) {
 	switch (variableName) {
+		case "getMeta":
+			return _getMeta2.default;
+
 		case "Promise":
 			return _promise2.default;
 

@@ -14,10 +14,6 @@ var _promise = require("./promise.js");
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _blockJs = require("block-js");
-
-var _blockJs2 = _interopRequireDefault(_blockJs);
-
 var _fsExtra = require("fs-extra");
 
 var _fsExtra2 = _interopRequireDefault(_fsExtra);
@@ -33,6 +29,8 @@ var _readline2 = _interopRequireDefault(_readline);
 var _regexParser = require("regex-parser");
 
 var _regexParser2 = _interopRequireDefault(_regexParser);
+
+var _getMeta = require("./getMeta.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -64,78 +62,6 @@ function executeReplacements(line, replacements) {
 	}
 }
 
-function cleanContent(content, dirtyStrings) {
-	dirtyStrings.forEach(function (dirtyString) {
-		content = content.replace(dirtyString, "");
-	});
-	return content;
-}
-
-function takeReplacements(blocks, commentStringStart, commentStringEnd) {
-	var replacementsPh = blocks.find(function (targetBlock) {
-		return targetBlock.name === "replacements";
-	});
-	if (replacementsPh) {
-		var _ret2 = function () {
-			var replacements = {};
-			if (replacementsPh.content) {
-				var replacementLines = replacementsPh.content.split("\n");
-				replacementLines.forEach(function (replacementLine) {
-					var tokens = _get__("cleanContent")(replacementLine, [commentStringStart, commentStringEnd]).split(", ").map(function (token) {
-						return token.trim();
-					});
-					var name = tokens[0];
-					var regex = tokens[1];
-					var value = tokens[2];
-					replacements[name] = { regex: regex, value: value };
-				});
-				return {
-					v: replacements
-				};
-			} else {
-				return {
-					v: {}
-				};
-			}
-		}();
-
-		if ((typeof _ret2 === "undefined" ? "undefined" : _typeof(_ret2)) === "object") return _ret2.v;
-	} else {
-		return {};
-	}
-}
-
-function takeIgnoringStamps(blocks, commentStringStart, commentStringEnd) {
-	var ignoringStampsPh = blocks.find(function (targetBlock) {
-		return targetBlock.name === "ignoringStamps";
-	});
-	if (ignoringStampsPh) {
-		var _ret3 = function () {
-			var ignoringStamps = [];
-			if (ignoringStampsPh.content) {
-				var ignoringStampLines = ignoringStampsPh.content.split("\n");
-				ignoringStampLines.forEach(function (ignoringStampLine) {
-					var tokens = _get__("cleanContent")(ignoringStampLine, [commentStringStart, commentStringEnd]).split(",").map(function (token) {
-						return token.trim();
-					});
-					ignoringStamps = ignoringStamps.concat(tokens);
-				});
-				return {
-					v: ignoringStamps
-				};
-			} else {
-				return {
-					v: []
-				};
-			}
-		}();
-
-		if ((typeof _ret3 === "undefined" ? "undefined" : _typeof(_ret3)) === "object") return _ret3.v;
-	} else {
-		return [];
-	}
-}
-
 function mergeReplacements(sourceReplacements, targetReplacements) {
 	var replacements = {};
 	var sourceReplacementKeys = Object.keys(sourceReplacements);
@@ -157,28 +83,27 @@ function mergeReplacements(sourceReplacements, targetReplacements) {
 
 function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
 	var options = {};
-	var sourceReplacements = _get__("takeReplacements")(sourceBlocks, commentStringStart, commentStringEnd);
-	var targetReplacements = _get__("takeReplacements")(targetBlocks, commentStringStart, commentStringEnd);
-	options.replacements = _get__("mergeReplacements")(sourceReplacements, targetReplacements);
-	options.ignoringStamps = _get__("takeIgnoringStamps")(targetBlocks, commentStringStart, commentStringEnd);
+	var sourceReplacements = _get__("takeMeta")(sourceBlocks, commentStringStart, commentStringEnd).replacements;
+
+	var _get__2 = _get__("takeMeta")(targetBlocks, commentStringStart, commentStringEnd);
+
+	var replacements = _get__2.replacements;
+	var ignoringStamps = _get__2.ignoringStamps;
+
+	options.replacements = _get__("mergeReplacements")(sourceReplacements, replacements);
+	options.ignoringStamps = ignoringStamps;
 	return options;
 }
 
 function synchronize(source, target, options) {
 	return new (_get__("Promise"))(function (resolve, reject) {
-		var delimiters = void 0;
 		var force = void 0;
 		if (options) {
-			delimiters = options.delimiters;
 			force = options.force;
 		}
-		// TODO: suppport block array name on blocks to reduce file reading
-		var sourcePhsBlocksClass = new (_get__("Blocks"))(source, "ph", delimiters);
-		var sourceStampsBlocksClass = new (_get__("Blocks"))(source, "stamp", delimiters);
-		var targetPhsBlocksClass = new (_get__("Blocks"))(target, "ph", delimiters);
-		var targetStampsBlocksClass = new (_get__("Blocks"))(target, "stamp", delimiters);
-		var commentStringStart = sourcePhsBlocksClass.startBlockString;
-		var commentStringEnd = sourcePhsBlocksClass.endBlockString;
+
+		var commentStringStart = void 0;
+		var commentStringEnd = void 0;
 
 		var fileExist = true;
 
@@ -194,15 +119,15 @@ function synchronize(source, target, options) {
 			return _get__("ensureFile")(target);
 		}).then(function () {
 			_get__("Promise").props({
-				sourcePhBlocks: sourcePhsBlocksClass.extractBlocks(),
-				sourceStampBlocks: sourceStampsBlocksClass.extractBlocks(),
-				targetPhBlocks: targetPhsBlocksClass.extractBlocks(),
-				targetStampBlocks: targetStampsBlocksClass.extractBlocks()
+				source: _get__("getBlocks")(source),
+				target: _get__("getBlocks")(target)
 			}).then(function (results) {
-				sourcePhBlocks = results.sourcePhBlocks;
-				sourceStampBlocks = results.sourceStampBlocks;
-				targetPhBlocks = results.targetPhBlocks;
-				// targetStampBlocks = results.targetStampBlocks; //not needed yet
+				sourcePhBlocks = results.source.phBlocks;
+				sourceStampBlocks = results.source.stampBlocks;
+				targetPhBlocks = results.target.phBlocks;
+				// targetStampBlocks = results.targe.stampBlocks; //not needed yet
+				commentStringStart = results.source.commentStringStart;
+				commentStringEnd = results.source.commentStringEnd;
 
 				if (!options || !options.replacements && !options.ignoringStamps) {
 					options = _get__("takeOptions")(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd);
@@ -383,26 +308,20 @@ function _get_original__(variableName) {
 		case "regexParser":
 			return _regexParser2.default;
 
-		case "cleanContent":
-			return cleanContent;
-
-		case "takeReplacements":
-			return takeReplacements;
+		case "takeMeta":
+			return _getMeta.takeMeta;
 
 		case "mergeReplacements":
 			return mergeReplacements;
-
-		case "takeIgnoringStamps":
-			return takeIgnoringStamps;
-
-		case "Blocks":
-			return _blockJs2.default;
 
 		case "stat":
 			return stat;
 
 		case "ensureFile":
 			return ensureFile;
+
+		case "getBlocks":
+			return _getMeta.getBlocks;
 
 		case "takeOptions":
 			return takeOptions;

@@ -154,5 +154,58 @@ describe("SwBlock", () => {
 					});
 			});
 		});
+
+		describe(".getMeta", () => {
+			let getMetaSpy;
+
+			beforeEach(() => {
+				getMetaSpy = sinon.spy(() => Promise.resolve(
+					{
+						replacements: {
+							className: {
+								regex: "/Banana/g",
+								value: "Banana"
+							}
+						},
+						ignoringStamps: ["throwAway"]
+					}
+				));
+				SourceCodeFile.__Rewire__("getMeta", getMetaSpy);
+				swBlock = new SwBlock(name, type);
+				swBlock.addSourceCodeFiles([{ name: "banana", path: "banana.js" }, { name: "banana2", path: "banana2.js" }]);
+			});
+
+			it("should allow to retrieve the meta information for all his block genes", () => {
+				return swBlock.getMeta()
+					.should.be.fulfilledWith({
+						name,
+						type,
+						sourceCodeFiles: [
+							{
+								name: "banana",
+								path: "banana.js",
+								replacements: {
+									className: {
+										regex: "/Banana/g",
+										value: "Banana"
+									}
+								},
+								ignoringStamps: ["throwAway"]
+							},
+							{
+								name: "banana2",
+								path: "banana2.js",
+								replacements: {
+									className: {
+										regex: "/Banana/g",
+										value: "Banana"
+									}
+								},
+								ignoringStamps: ["throwAway"]
+							}
+						]
+					});
+			});
+		});
 	});
 });

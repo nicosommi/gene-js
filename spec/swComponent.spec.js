@@ -10,7 +10,8 @@ describe("SwComponent", () => {
 		synchronizeSpy,
 		constructorSpy,
 		addSourceCodeFilesSpy,
-		cleanToSpy;
+		cleanToSpy,
+		getMetaSpy;
 
 	class SwBlockClass {
 		constructor() {
@@ -22,6 +23,10 @@ describe("SwComponent", () => {
 
 		addSourceCodeFiles(...args) {
 			addSourceCodeFilesSpy.apply(this, args);
+		}
+
+		getMeta() {
+			return getMetaSpy();
 		}
 
 		clean() {
@@ -37,6 +42,13 @@ describe("SwComponent", () => {
 		name = "fruitService";
 		type = "service";
 		options = {};
+		getMetaSpy = sinon.spy(() => Promise.resolve(
+			{
+				name: "backboneui",
+				type: "uimvc",
+				sourceCodeFiles: []
+			}
+		));
 		synchronizeSpy = sinon.spy(() => Promise.resolve());
 		constructorSpy = sinon.spy(() => Promise.resolve());
 		addSourceCodeFilesSpy = sinon.spy(() => Promise.resolve());
@@ -155,6 +167,31 @@ describe("SwComponent", () => {
 				return swComponent.clean()
 					.then(() => {
 						cleanToSpy.callCount.should.equal(2);
+					});
+			});
+		});
+
+		describe(".getMeta", () => {
+			beforeEach(() => {
+				swComponent = new SwComponent(name, type, options);
+				swComponent.addSwBlocks([{name: "backboneui", type: "uimvc"}, {name: "reactui", type: "uiv"}]);
+			});
+
+			it("should allow to retrieve the meta information for all his block genes", () => {
+				return swComponent.getMeta()
+					.should.be.fulfilledWith({
+						name,
+						type,
+						swBlocks: [{
+							name: "backboneui",
+							type: "uimvc",
+							sourceCodeFiles: []
+						},
+						{
+							name: "backboneui",
+							type: "uimvc",
+							sourceCodeFiles: []
+						}]
 					});
 			});
 		});

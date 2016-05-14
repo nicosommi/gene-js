@@ -113,6 +113,33 @@ describe("SourceCodeFile", () => {
 			});
 		});
 
+		describe(".getMeta", () => {
+			it("should return undefined if there is no meta info", () => {
+				const path = `${__dirname}/../fixtures/sourceCodeFiles/sources/emptyVegetable.js`;
+				sourceCodeFile = new SourceCodeFile(sourceCodeFileName, path);
+				return sourceCodeFile.getMeta()
+					.should.be.fulfilledWith({
+						name: sourceCodeFileName,
+						path,
+						replacements: {},
+						ignoringStamps: []
+					});
+			});
 
+			it("should allow to retrieve the meta information from the file", () => {
+				return sourceCodeFile.getMeta()
+					.should.be.fulfilledWith({
+						name: sourceCodeFileName,
+						path: target,
+						replacements: {
+							className: {
+								regex: "/Banana/g",
+								value: "Banana"
+							}
+						},
+						ignoringStamps: ["throwAway"]
+					});
+			});
+		});
 	});
 });

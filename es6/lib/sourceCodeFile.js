@@ -1,4 +1,5 @@
 import synchronize from "./synchronize.js";
+import getMeta from "./getMeta.js";
 import cleanTo from "./cleanTo.js";
 import Promise from "./promise.js";
 
@@ -8,6 +9,21 @@ export default class SourceCodeFile {
 		this.path = filePath;
 		this.cleanPath = cleanPath;
 		this.options = options;
+	}
+
+	getMeta() {
+		return getMeta(this.path, this.options)
+			.then((fileMetaInfo) => {
+				let { replacements,
+					ignoringStamps } = fileMetaInfo;
+
+				return Promise.resolve({
+					name: this.name,
+					path: this.path,
+					replacements,
+					ignoringStamps
+				});
+			});
 	}
 
 	synchronizeWith(rootSourceCodeFile) {
