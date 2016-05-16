@@ -2,12 +2,12 @@ import synchronize from "./synchronize.js";
 import getMeta from "./getMeta.js";
 import cleanTo from "./cleanTo.js";
 import Promise from "./promise.js";
+import path from "path";
 
 export default class SourceCodeFile {
-	constructor(name, filePath, cleanPath, options) {
+	constructor(name, filePath, options) {
 		this.name = name;
 		this.path = filePath;
-		this.cleanPath = cleanPath;
 		this.options = options;
 	}
 
@@ -26,22 +26,30 @@ export default class SourceCodeFile {
 			});
 	}
 
+	getFullPath() {
+		return path.normalize(`${this.options.basePath}/${this.path}`);
+	}
+
+	getFullCleanPath() {
+		return path.normalize(`${this.options.basePath}/${this.options.cleanPath}/${this.path}`);
+	}
+
 	synchronizeWith(rootSourceCodeFile) {
 		if(!rootSourceCodeFile.path) {
 			return Promise.reject(new Error(`No path defined for root file ${rootSourceCodeFile.name}`));
 		} else {
-			return synchronize(rootSourceCodeFile.path, this.path, this.options);
+			return synchronize(rootSourceCodeFile.getFullPath(), this.getFullPath(), this.options);
 		}
 	}
 
 	clean(dirtyPhs) {
-		if(!this.cleanPath) {
+		if(!this.options.cleanPath) {
 			return Promise.reject(new Error(`No clean path defined for file ${this.name}`));
 		} else if(!this.path) {
 			return Promise.reject(new Error(`No path defined for file ${this.name}`));
 		} else {
 			this.options.dirtyPhs = dirtyPhs || [];
-			return cleanTo(this.path, this.cleanPath, this.options);
+			return cleanTo(this.getFullPath(), this.getFullCleanPath(), this.options);
 		}
 	}
 }

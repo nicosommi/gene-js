@@ -14,7 +14,9 @@ describe("SwBlock", () => {
 		name = "fruitBasketBlock";
 		type = "basket";
 		version = "0.0.1";
-		options = {};
+		options = {
+			cleanPath: "clean"
+		};
 		swBlock = new SwBlock(name, type, version, options);
 	});
 
@@ -46,11 +48,11 @@ describe("SwBlock", () => {
 				sourceCodeFileName = "";
 				path = "";
 				clean = "";
-				swBlock.addSourceCodeFile({name: sourceCodeFileName, path, clean});
+				swBlock.addSourceCodeFile({name: sourceCodeFileName, path, options});
 			});
 
 			it("should add the source file to the array", () => {
-				swBlock.sourceCodeFiles.should.eql([new SourceCodeFile(sourceCodeFileName, path, clean, options)]);
+				swBlock.sourceCodeFiles.should.eql([new SourceCodeFile(sourceCodeFileName, path, options)]);
 			});
 
 			it("should pass the option properties to the source code options along with the specific ones", () => {
@@ -65,15 +67,15 @@ describe("SwBlock", () => {
 				expectedArray;
 
 			beforeEach(() => {
-				const firstElement = { name: "firstElement", path: "sourceCodeFileExample", clean: "sourceCodeFileExampleClean", options: {} };
-				const secondElement = { name: "secondElement", path: "oneMoreSourceCodeFileExample", clean: "oneMoreSourceCodeFileExampleClean", options: {} };
+				const firstElement = { name: "firstElement", path: "sourceCodeFileExample", options: {} };
+				const secondElement = { name: "secondElement", path: "oneMoreSourceCodeFileExample", options: {} };
 				inputArray = [];
 				inputArray.push(firstElement);
 				inputArray.push(secondElement);
 
 				expectedArray = [];
-				expectedArray.push(new SourceCodeFile(firstElement.name, firstElement.path, firstElement.clean, options));
-				expectedArray.push(new SourceCodeFile(secondElement.name, secondElement.path, secondElement.clean, options));
+				expectedArray.push(new SourceCodeFile(firstElement.name, firstElement.path, options));
+				expectedArray.push(new SourceCodeFile(secondElement.name, secondElement.path, options));
 				swBlock.addSourceCodeFiles(inputArray);
 			});
 
@@ -88,8 +90,8 @@ describe("SwBlock", () => {
 			sourceSwBlock;
 
 		beforeEach(() => {
-			const firstElement = { name: "firstElement", path: "sourceCodeFileExample", clean: "sourceCodeFileExampleClean", options: {} };
-			const secondElement = { name: "secondElement", path: "oneMoreSourceCodeFileExample", clean: "oneMoreSourceCodeFileExampleClean", options: {} };
+			const firstElement = { name: "firstElement", path: "sourceCodeFileExample", options: {} };
+			const secondElement = { name: "secondElement", path: "oneMoreSourceCodeFileExample", options: {} };
 			inputArray = [];
 			inputArray.push(firstElement);
 			inputArray.push(secondElement);
@@ -124,30 +126,36 @@ describe("SwBlock", () => {
 					});
 			});
 
-			it("should add the new files using the supplied base path and the basename", () => {
-				swBlock.options.basePath = "/apath/but/different/dna";
-				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "/apath/that/isLong/afile.js", clean: ""});
+			it("should throw if there is no base path provided", () => {
+				swBlock.options.basePath = undefined;
+				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "apath/that/isLong/afile.js"});
 				return swBlock.synchronizeWith(sourceSwBlock)
 					.catch((errors) => Promise.reject(errors[0]))
-					.should.be.rejectedWith(/ERROR: there is no base path provided for the source file thirdElement on the block of name rootFruitBasketBlock and type basket. Please ammend that and try again\./);
+					.should.be.rejectedWith(/ERROR: there is no base path provided for the block fruitBasketBlock, so the new source code file thirdElement cannot be added\./);
 			});
 
-			it("should replace base path if both provided to avoid flatten files", () => {
-				swBlock.options.basePath = "/afolder/asecond/../adifferentpath/dna";
-				const rootOptions = {
-					basePath: "/afolder/asecond/../abasepath/dna"
-				};
-				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "/afolder/asecond/../abasepath/dna/afile.js", clean: "", options: rootOptions});
+			it("should throw if there is no path provided on the source file", () => {
+				swBlock.options.basePath = "/some/path";
+				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: undefined});
+				return swBlock.synchronizeWith(sourceSwBlock)
+					.catch((errors) => Promise.reject(errors[0]))
+					.should.be.rejectedWith(/ERROR: there is no path provided for the source file thirdElement on the block of name rootFruitBasketBlock and type basket. Please ammend that and try again\./);
+			});
+
+			it("should replace build the paths for the source file correctly", () => {
+				swBlock.options.basePath = "/afolder/asecond/../adifferentpath";
+				swBlock.options.cleanPath = ".clean-files";
+				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "abasepath/to/a/file.js"});
 				return swBlock.synchronizeWith(sourceSwBlock)
 					.then(() => {
 						synchronizeSpy.callCount.should.equal(3);
-						swBlock.sourceCodeFiles[2].should.eql(new SourceCodeFile("thirdElement", "/afolder/adifferentpath/dna/afile.js", "/afolder/adifferentpath/afile.js", options));
+						swBlock.sourceCodeFiles[2].should.eql(new SourceCodeFile("thirdElement", "abasepath/to/a/file.js", options));
 						return Promise.resolve();
 					});
 			});
 
 			it("should throw if there are new files and there is no base path provided", () => {
-				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "/apath/that/isLong/afile.js", clean: ""});
+				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "apath/that/isLong/afile.js"});
 				return swBlock.synchronizeWith(sourceSwBlock)
 					.catch((errors) => Promise.reject(errors[0]))
 					.should.be.rejectedWith(/ERROR: there is no base path provided for the block fruitBasketBlock, so the new source code file thirdElement cannot be added./);

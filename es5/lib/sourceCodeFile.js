@@ -25,17 +25,20 @@ var _promise = require("./promise.js");
 
 var _promise2 = _interopRequireDefault(_promise);
 
+var _path = require("path");
+
+var _path2 = _interopRequireDefault(_path);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var SourceCodeFile = function () {
-	function SourceCodeFile(name, filePath, cleanPath, options) {
+	function SourceCodeFile(name, filePath, options) {
 		_classCallCheck(this, SourceCodeFile);
 
 		this.name = name;
 		this.path = filePath;
-		this.cleanPath = cleanPath;
 		this.options = options;
 	}
 
@@ -58,24 +61,34 @@ var SourceCodeFile = function () {
 			});
 		}
 	}, {
+		key: "getFullPath",
+		value: function getFullPath() {
+			return _get__("path").normalize(this.options.basePath + "/" + this.path);
+		}
+	}, {
+		key: "getFullCleanPath",
+		value: function getFullCleanPath() {
+			return _get__("path").normalize(this.options.basePath + "/" + this.options.cleanPath + "/" + this.path);
+		}
+	}, {
 		key: "synchronizeWith",
 		value: function synchronizeWith(rootSourceCodeFile) {
 			if (!rootSourceCodeFile.path) {
 				return _get__("Promise").reject(new Error("No path defined for root file " + rootSourceCodeFile.name));
 			} else {
-				return _get__("synchronize")(rootSourceCodeFile.path, this.path, this.options);
+				return _get__("synchronize")(rootSourceCodeFile.getFullPath(), this.getFullPath(), this.options);
 			}
 		}
 	}, {
 		key: "clean",
 		value: function clean(dirtyPhs) {
-			if (!this.cleanPath) {
+			if (!this.options.cleanPath) {
 				return _get__("Promise").reject(new Error("No clean path defined for file " + this.name));
 			} else if (!this.path) {
 				return _get__("Promise").reject(new Error("No path defined for file " + this.name));
 			} else {
 				this.options.dirtyPhs = dirtyPhs || [];
-				return _get__("cleanTo")(this.path, this.cleanPath, this.options);
+				return _get__("cleanTo")(this.getFullPath(), this.getFullCleanPath(), this.options);
 			}
 		}
 	}]);
@@ -116,6 +129,9 @@ function _get_original__(variableName) {
 
 		case "Promise":
 			return _promise2.default;
+
+		case "path":
+			return _path2.default;
 
 		case "synchronize":
 			return _synchronize2.default;

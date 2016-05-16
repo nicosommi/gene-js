@@ -14,7 +14,7 @@ export default class SwBlock {
 
 	addSourceCodeFile(sourceCodeFile) {
 		const newOptions = Object.assign({}, this.options, sourceCodeFile.options); // passing options through
-		const newSourceCodeFile = new SourceCodeFile(sourceCodeFile.name, sourceCodeFile.path, sourceCodeFile.clean, newOptions);
+		const newSourceCodeFile = new SourceCodeFile(sourceCodeFile.name, sourceCodeFile.path, newOptions);
 		this.sourceCodeFiles.push(newSourceCodeFile);
 		return newSourceCodeFile;
 	}
@@ -57,21 +57,15 @@ export default class SwBlock {
 								// promises.push(promiseSynchronize);
 								let newSourceCodeFile;
 								if(this.options && this.options.basePath) {
-									if(rootSourceCodeFile.options.basePath) {
-										const targetBasePath = path.normalize(this.options.basePath);
-										const targetCleanBasePath = path.normalize(`${this.options.basePath}/..`);
-										const originalPath = path.normalize(rootSourceCodeFile.path);
-										const originalBasePath = path.normalize(rootSourceCodeFile.options.basePath);
-										const targetPath = originalPath.replace(originalBasePath, targetBasePath);
-										const targetCleanPath = originalPath.replace(originalBasePath, targetCleanBasePath);
+									if(rootSourceCodeFile.path) {
 										newSourceCodeFile = this.addSourceCodeFile({
 											name: rootSourceCodeFile.name,
-											path: `${path.normalize(targetPath)}`,
-											clean: `${path.normalize(targetCleanPath)}`
+											path: path.normalize(`${rootSourceCodeFile.path}`),
+											options: this.options
 										});
 										return newSourceCodeFile.synchronizeWith(rootSourceCodeFile);
 									} else {
-										errors.push(new Error(`ERROR: there is no base path provided for the source file ${rootSourceCodeFile.name} on the block of name ${rootBlock.name} and type ${rootBlock.type}. Please ammend that and try again.`));
+										errors.push(new Error(`ERROR: there is no path provided for the source file ${rootSourceCodeFile.name} on the block of name ${rootBlock.name} and type ${rootBlock.type}. Please ammend that and try again.`));
 									}
 								} else {
 									errors.push(new Error(`ERROR: there is no base path provided for the block ${this.name}, so the new source code file ${rootSourceCodeFile.name} cannot be added.`));

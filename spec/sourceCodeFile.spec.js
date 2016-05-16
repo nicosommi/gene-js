@@ -18,18 +18,17 @@ describe("SourceCodeFile", () => {
 		options;
 
 	beforeEach(() => {
-		source = `${__dirname}/../fixtures/sourceCodeFiles/results/apple.js`;
-		clean = `${__dirname}/../fixtures/sourceCodeFiles/results/cleanApple.js`;
+		source = `apple.js`;
 		sourceTemplate = `${__dirname}/../fixtures/sourceCodeFiles/sources/apple.js`;
 		target = `${__dirname}/../fixtures/sourceCodeFiles/results/banana.js`;
 		targetTemplate = `${__dirname}/../fixtures/sourceCodeFiles/sources/banana.js`;
 
-		options = { force: true };
+		options = { force: true, basePath: "${__dirname}/../fixtures/sourceCodeFiles/results/", cleanPath: "clean"};
 
 		sourceCodeFileName = "sourceCodeFileName";
 
-		sourceCodeFile = new SourceCodeFile(sourceCodeFileName, target, clean, options);
-		sourceSourceCodeFile = new SourceCodeFile("rootFileName", source, "", options);
+		sourceCodeFile = new SourceCodeFile(sourceCodeFileName, target, options);
+		sourceSourceCodeFile = new SourceCodeFile("rootFileName", source, options);
 
 		return Promise.all(
 			[
@@ -54,10 +53,6 @@ describe("SourceCodeFile", () => {
 
 		it("should set the source sourceCodeFile file path", () => {
 			sourceCodeFile.path.should.equal(target);
-		});
-
-		it("should set the source sourceCodeFile file clean path", () => {
-			sourceCodeFile.cleanPath.should.equal(clean);
 		});
 
 		it("should set the options if provided", () => {
@@ -91,7 +86,7 @@ describe("SourceCodeFile", () => {
 			});
 
 			it("should throw if there is no cleanPath", () => {
-				delete sourceCodeFile.cleanPath;
+				delete sourceCodeFile.options.cleanPath;
 				return sourceCodeFile.clean()
 					.should.be.rejectedWith(/No clean path defined for file sourceCodeFileName/);
 			});

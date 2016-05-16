@@ -44,7 +44,7 @@ var SwBlock = function () {
 		key: "addSourceCodeFile",
 		value: function addSourceCodeFile(sourceCodeFile) {
 			var newOptions = Object.assign({}, this.options, sourceCodeFile.options); // passing options through
-			var newSourceCodeFile = new (_get__("SourceCodeFile"))(sourceCodeFile.name, sourceCodeFile.path, sourceCodeFile.clean, newOptions);
+			var newSourceCodeFile = new (_get__("SourceCodeFile"))(sourceCodeFile.name, sourceCodeFile.path, newOptions);
 			this.sourceCodeFiles.push(newSourceCodeFile);
 			return newSourceCodeFile;
 		}
@@ -100,21 +100,15 @@ var SwBlock = function () {
 								// promises.push(promiseSynchronize);
 								var newSourceCodeFile = void 0;
 								if (_this3.options && _this3.options.basePath) {
-									if (rootSourceCodeFile.options.basePath) {
-										var targetBasePath = _get__("path").normalize(_this3.options.basePath);
-										var targetCleanBasePath = _get__("path").normalize(_this3.options.basePath + "/..");
-										var originalPath = _get__("path").normalize(rootSourceCodeFile.path);
-										var originalBasePath = _get__("path").normalize(rootSourceCodeFile.options.basePath);
-										var targetPath = originalPath.replace(originalBasePath, targetBasePath);
-										var targetCleanPath = originalPath.replace(originalBasePath, targetCleanBasePath);
+									if (rootSourceCodeFile.path) {
 										newSourceCodeFile = _this3.addSourceCodeFile({
 											name: rootSourceCodeFile.name,
-											path: "" + _get__("path").normalize(targetPath),
-											clean: "" + _get__("path").normalize(targetCleanPath)
+											path: _get__("path").normalize("" + rootSourceCodeFile.path),
+											options: _this3.options
 										});
 										return newSourceCodeFile.synchronizeWith(rootSourceCodeFile);
 									} else {
-										errors.push(new Error("ERROR: there is no base path provided for the source file " + rootSourceCodeFile.name + " on the block of name " + rootBlock.name + " and type " + rootBlock.type + ". Please ammend that and try again."));
+										errors.push(new Error("ERROR: there is no path provided for the source file " + rootSourceCodeFile.name + " on the block of name " + rootBlock.name + " and type " + rootBlock.type + ". Please ammend that and try again."));
 									}
 								} else {
 									errors.push(new Error("ERROR: there is no base path provided for the block " + _this3.name + ", so the new source code file " + rootSourceCodeFile.name + " cannot be added."));
