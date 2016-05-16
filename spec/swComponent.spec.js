@@ -18,7 +18,8 @@ describe("SwComponent", () => {
 			constructorSpy.apply(this, arguments);
 			this.name = arguments[0];
 			this.type = arguments[1];
-			this.options = arguments[2];
+			this.version = arguments[2];
+			this.options = arguments[3];
 		}
 
 		addSourceCodeFiles(...args) {
@@ -46,6 +47,7 @@ describe("SwComponent", () => {
 			{
 				name: "backboneui",
 				type: "uimvc",
+				version: "0.0.1",
 				sourceCodeFiles: []
 			}
 		));
@@ -75,22 +77,24 @@ describe("SwComponent", () => {
 		describe(".addSwBlock(source, clean, options)", () => {
 			let swBlockName,
 				swBlockType,
+				swBlockVersion,
 				swBlockObj;
 
 			beforeEach(() => {
 				swBlockName = "";
+				swBlockVersion = "0.0.1";
 				type = "";
-				swBlockObj = {name: swBlockName, swBlockType};
+				swBlockObj = {name: swBlockName, swBlockType, version: swBlockVersion};
 				swComponent.addSwBlock(swBlockObj);
 			});
 
 			it("should add the source file to the array", () => {
-				swComponent.swBlocks.should.eql([new SwBlockClass(swBlockName, swBlockType, options)]);
+				swComponent.swBlocks.should.eql([new SwBlockClass(swBlockName, swBlockType, swBlockVersion, options)]);
 			});
 
 			it("should pass the option properties to the source code options along with the specific ones", () => {
 				swComponent = new SwComponent(name, type, { aproperty: 1, onemore: 2 });
-				swComponent.addSwBlock({name: "aname", swBlockType, options: { onemore: 3 }});
+				swComponent.addSwBlock({name: "aname", swBlockType, swBlockVersion, options: { onemore: 3 }});
 				swComponent.swBlocks[0].options.should.eql({ aproperty: 1, onemore: 3 });
 			});
 		});
@@ -100,15 +104,15 @@ describe("SwComponent", () => {
 				expectedArray;
 
 			beforeEach(() => {
-				const firstElement = { name: "firstElement", type: "sourceCodeFileExample", options: {} };
-				const secondElement = { name: "secondElement", type: "oneMoreSwBlockExample", options: {} };
+				const firstElement = { name: "firstElement", type: "sourceCodeFileExample", version: "0.0.1", options: {} };
+				const secondElement = { name: "secondElement", type: "oneMoreSwBlockExample", version: "0.0.1", options: {} };
 				inputArray = [];
 				inputArray.push(firstElement);
 				inputArray.push(secondElement);
 
 				expectedArray = [];
-				expectedArray.push(new SwBlockClass(firstElement.name, firstElement.type, options));
-				expectedArray.push(new SwBlockClass(secondElement.name, secondElement.type, options));
+				expectedArray.push(new SwBlockClass(firstElement.name, firstElement.type, firstElement.version, options));
+				expectedArray.push(new SwBlockClass(secondElement.name, secondElement.type, secondElement.version, options));
 				swComponent.addSwBlocks(inputArray);
 			});
 
@@ -123,8 +127,8 @@ describe("SwComponent", () => {
 			sourceSwComponent;
 
 		beforeEach(() => {
-			const firstElement = { name: "firstElement", type: "sourceCodeFileExample", options: {} };
-			const secondElement = { name: "secondElement", type: "oneMoreSourceCodeFileExample", options: {} };
+			const firstElement = { name: "firstElement", type: "sourceCodeFileExample", version: "0.0.1", options: {} };
+			const secondElement = { name: "secondElement", type: "oneMoreSourceCodeFileExample", version: "0.0.1", options: {} };
 			inputArray = [];
 			inputArray.push(firstElement);
 			inputArray.push(secondElement);
@@ -148,10 +152,10 @@ describe("SwComponent", () => {
 			});
 
 			it("should add the new blocks using the supplied base type and the base name", () => {
-				sourceSwComponent.addSwBlock({ name: "thirdElement", type: "thirdType"});
+				sourceSwComponent.addSwBlock({ name: "thirdElement", type: "thirdType", version: "0.0.1"});
 				return swComponent.synchronizeWith(sourceSwComponent)
 					.then(() => {
-						constructorSpy.getCall(4).args.should.eql(["thirdElement", "thirdType", options]);
+						constructorSpy.getCall(4).args.should.eql(["thirdElement", "thirdType", "0.0.1", options]);
 						return Promise.resolve();
 					});
 			});
@@ -174,7 +178,7 @@ describe("SwComponent", () => {
 		describe(".getMeta", () => {
 			beforeEach(() => {
 				swComponent = new SwComponent(name, type, options);
-				swComponent.addSwBlocks([{name: "backboneui", type: "uimvc"}, {name: "reactui", type: "uiv"}]);
+				swComponent.addSwBlocks([{name: "backboneui", type: "uimvc", version: "0.0.1"}, {name: "reactui", type: "uiv", version: "0.0.1"}]);
 			});
 
 			it("should allow to retrieve the meta information for all his block genes", () => {
@@ -185,11 +189,13 @@ describe("SwComponent", () => {
 						swBlocks: [{
 							name: "backboneui",
 							type: "uimvc",
+							version: "0.0.1",
 							sourceCodeFiles: []
 						},
 						{
 							name: "backboneui",
 							type: "uimvc",
+							version: "0.0.1",
 							sourceCodeFiles: []
 						}]
 					});

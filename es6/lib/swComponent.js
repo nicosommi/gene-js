@@ -11,7 +11,7 @@ export default class SwComponent {
 
 	addSwBlock(swBlock) {
 		const newOptions = Object.assign({}, this.options, swBlock.options); // passing options through
-		const newSwBlock = new SwBlock(swBlock.name, swBlock.type, newOptions);
+		const newSwBlock = new SwBlock(swBlock.name, swBlock.type, swBlock.version, newOptions);
 		newSwBlock.addSourceCodeFiles(swBlock.sourceCodeFiles);
 		this.swBlocks.push(newSwBlock);
 		return newSwBlock;
@@ -23,11 +23,9 @@ export default class SwComponent {
 
 	getMeta() {
 		return Promise.all(this.swBlocks.map(swBlock => {
-			console.log("results swBlock", { getMeta: swBlock.getMeta });
 			return swBlock.getMeta();
 		}))
 			.then(results => {
-				console.log("results ", { results });
 				return Promise.resolve({
 					name: this.name,
 					type: this.type,

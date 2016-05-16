@@ -35,7 +35,7 @@ var SwComponent = function () {
 		key: "addSwBlock",
 		value: function addSwBlock(swBlock) {
 			var newOptions = Object.assign({}, this.options, swBlock.options); // passing options through
-			var newSwBlock = new (_get__("SwBlock"))(swBlock.name, swBlock.type, newOptions);
+			var newSwBlock = new (_get__("SwBlock"))(swBlock.name, swBlock.type, swBlock.version, newOptions);
 			newSwBlock.addSourceCodeFiles(swBlock.sourceCodeFiles);
 			this.swBlocks.push(newSwBlock);
 			return newSwBlock;
@@ -55,10 +55,8 @@ var SwComponent = function () {
 			var _this2 = this;
 
 			return _get__("Promise").all(this.swBlocks.map(function (swBlock) {
-				console.log("results swBlock", { getMeta: swBlock.getMeta });
 				return swBlock.getMeta();
 			})).then(function (results) {
-				console.log("results ", { results: results });
 				return _get__("Promise").resolve({
 					name: _this2.name,
 					type: _this2.type,

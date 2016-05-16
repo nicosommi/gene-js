@@ -7,13 +7,15 @@ describe("SwBlock", () => {
 	let swBlock,
 		name,
 		type,
-		options;
+		options,
+		version;
 
 	beforeEach(() => {
 		name = "fruitBasketBlock";
 		type = "basket";
+		version = "0.0.1";
 		options = {};
-		swBlock = new SwBlock(name, type, options);
+		swBlock = new SwBlock(name, type, version, options);
 	});
 
 	describe("constructor(name, type, options)", () => {
@@ -23,6 +25,10 @@ describe("SwBlock", () => {
 
 		it("should set the block type", () => {
 			swBlock.type.should.equal(type);
+		});
+
+		it("should set the block version", () => {
+			swBlock.version.should.equal(version);
 		});
 
 		it("should set the options if provided", () => {
@@ -48,7 +54,7 @@ describe("SwBlock", () => {
 			});
 
 			it("should pass the option properties to the source code options along with the specific ones", () => {
-				swBlock = new SwBlock(name, type, { aproperty: 1, onemore: 2 });
+				swBlock = new SwBlock(name, type, version, { aproperty: 1, onemore: 2 });
 				swBlock.addSourceCodeFile({name: "aname", path, clean, options: { onemore: 3 }});
 				swBlock.sourceCodeFiles[0].options.should.eql({ aproperty: 1, onemore: 3 });
 			});
@@ -171,7 +177,7 @@ describe("SwBlock", () => {
 					}
 				));
 				SourceCodeFile.__Rewire__("getMeta", getMetaSpy);
-				swBlock = new SwBlock(name, type);
+				swBlock = new SwBlock(name, type, version);
 				swBlock.addSourceCodeFiles([{ name: "banana", path: "banana.js" }, { name: "banana2", path: "banana2.js" }]);
 			});
 
@@ -180,6 +186,7 @@ describe("SwBlock", () => {
 					.should.be.fulfilledWith({
 						name,
 						type,
+						version,
 						sourceCodeFiles: [
 							{
 								name: "banana",

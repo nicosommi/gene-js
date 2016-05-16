@@ -26,11 +26,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var SwBlock = function () {
-	function SwBlock(name, type, options) {
+	function SwBlock(name, type, version, options) {
 		_classCallCheck(this, SwBlock);
 
 		this.name = name;
 		this.type = type;
+		this.version = version;
 		this.options = options;
 		this.sourceCodeFiles = [];
 	}
@@ -63,6 +64,7 @@ var SwBlock = function () {
 				return _get__("Promise").resolve({
 					name: _this2.name,
 					type: _this2.type,
+					version: _this2.version,
 					sourceCodeFiles: results
 				});
 			});

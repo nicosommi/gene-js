@@ -3,9 +3,10 @@ import Promise from "./promise.js";
 import path from "path";
 
 export default class SwBlock {
-	constructor(name, type, options) {
+	constructor(name, type, version, options) {
 		this.name = name;
 		this.type = type;
+		this.version = version;
 		this.options = options;
 		this.sourceCodeFiles = [];
 	}
@@ -27,6 +28,7 @@ export default class SwBlock {
 				return Promise.resolve({
 					name: this.name,
 					type: this.type,
+					version: this.version,
 					sourceCodeFiles: results
 				});
 			});
