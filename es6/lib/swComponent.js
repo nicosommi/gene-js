@@ -23,8 +23,8 @@ export default class SwComponent {
 
 	getMeta() {
 		return Promise.all(this.swBlocks.map(swBlock => {
-			return swBlock.getMeta();
-		}))
+				return swBlock.getMeta();
+			}))
 			.then(results => {
 				return Promise.resolve({
 					name: this.name,

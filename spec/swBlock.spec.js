@@ -94,7 +94,7 @@ describe("SwBlock", () => {
 			inputArray.push(firstElement);
 			inputArray.push(secondElement);
 
-			sourceSwBlock = new SwBlock("rootFruitBasketBlock", "basket", {});
+			sourceSwBlock = new SwBlock("rootFruitBasketBlock", "basket", "0.0.2", {});
 			sourceSwBlock.addSourceCodeFiles(inputArray);
 			swBlock.addSourceCodeFiles(inputArray);
 		});
@@ -111,6 +111,15 @@ describe("SwBlock", () => {
 				return swBlock.synchronizeWith(sourceSwBlock)
 					.then(() => {
 						synchronizeSpy.callCount.should.equal(2);
+						return Promise.resolve();
+					});
+			});
+
+			it("should refresh the block version after synchronization", () => {
+				swBlock.version.should.not.equal(sourceSwBlock.version);
+				return swBlock.synchronizeWith(sourceSwBlock)
+					.then(() => {
+						swBlock.version.should.equal(sourceSwBlock.version);
 						return Promise.resolve();
 					});
 			});
@@ -142,6 +151,12 @@ describe("SwBlock", () => {
 				return swBlock.synchronizeWith(sourceSwBlock)
 					.catch((errors) => Promise.reject(errors[0]))
 					.should.be.rejectedWith(/ERROR: there is no base path provided for the block fruitBasketBlock, so the new source code file thirdElement cannot be added./);
+			});
+
+			it("should throw if the root block is older than the destination", () => {
+				sourceSwBlock.version = "0.0.0";
+				return swBlock.synchronizeWith(sourceSwBlock)
+					.should.be.rejectedWith(/The root block [a-zA-Z0-9\- .]* of type [a-zA-Z0-9\- .]* is older than the destination \([a-zA-Z0-9\- .]*\). Block synchronization aborted./);
 			});
 		});
 

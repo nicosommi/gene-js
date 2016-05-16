@@ -21,6 +21,10 @@ var _path = require("path");
 
 var _path2 = _interopRequireDefault(_path);
 
+var _semver = require("semver");
+
+var _semver2 = _interopRequireDefault(_semver);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -75,54 +79,61 @@ var SwBlock = function () {
 			var _this3 = this;
 
 			return new (_get__("Promise"))(function (resolve, reject) {
-				var errors = [];
-				var promises = rootBlock.sourceCodeFiles.map(function (rootSourceCodeFile) {
-					// find this.sourceCodeFile
-					var matchingSourceCodeFile = _this3.sourceCodeFiles.find(function (sourceCodeFile) {
-						return sourceCodeFile.name === rootSourceCodeFile.name;
-					});
-					if (matchingSourceCodeFile) {
-						// create a potential promess to synchronizeWith
-						// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
-						// add promess to process list
-						return matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
-					} else {
-						// create a potential promess to create it
-						// matchingSourceCodeFile = new SourceCodeFile();
-						// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
-						// add promess to process list
-						// promises.push(promiseSynchronize);
-						var newSourceCodeFile = void 0;
-						if (_this3.options && _this3.options.basePath) {
-							if (rootSourceCodeFile.options.basePath) {
-								var targetBasePath = _get__("path").normalize(_this3.options.basePath);
-								var targetCleanBasePath = _get__("path").normalize(_this3.options.basePath + "/..");
-								var originalPath = _get__("path").normalize(rootSourceCodeFile.path);
-								var originalBasePath = _get__("path").normalize(rootSourceCodeFile.options.basePath);
-								var targetPath = originalPath.replace(originalBasePath, targetBasePath);
-								var targetCleanPath = originalPath.replace(originalBasePath, targetCleanBasePath);
-								newSourceCodeFile = _this3.addSourceCodeFile({
-									name: rootSourceCodeFile.name,
-									path: "" + _get__("path").normalize(targetPath),
-									clean: "" + _get__("path").normalize(targetCleanPath)
-								});
-								return newSourceCodeFile.synchronizeWith(rootSourceCodeFile);
+				if (_get__("semver").gt(rootBlock.version, _this3.version)) {
+					(function () {
+						var errors = [];
+						var promises = rootBlock.sourceCodeFiles.map(function (rootSourceCodeFile) {
+							// find this.sourceCodeFile
+							var matchingSourceCodeFile = _this3.sourceCodeFiles.find(function (sourceCodeFile) {
+								return sourceCodeFile.name === rootSourceCodeFile.name;
+							});
+							if (matchingSourceCodeFile) {
+								// create a potential promess to synchronizeWith
+								// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
+								// add promess to process list
+								return matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
 							} else {
-								errors.push(new Error("ERROR: there is no base path provided for the source file " + rootSourceCodeFile.name + " on the block of name " + rootBlock.name + " and type " + rootBlock.type + ". Please ammend that and try again."));
+								// create a potential promess to create it
+								// matchingSourceCodeFile = new SourceCodeFile();
+								// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
+								// add promess to process list
+								// promises.push(promiseSynchronize);
+								var newSourceCodeFile = void 0;
+								if (_this3.options && _this3.options.basePath) {
+									if (rootSourceCodeFile.options.basePath) {
+										var targetBasePath = _get__("path").normalize(_this3.options.basePath);
+										var targetCleanBasePath = _get__("path").normalize(_this3.options.basePath + "/..");
+										var originalPath = _get__("path").normalize(rootSourceCodeFile.path);
+										var originalBasePath = _get__("path").normalize(rootSourceCodeFile.options.basePath);
+										var targetPath = originalPath.replace(originalBasePath, targetBasePath);
+										var targetCleanPath = originalPath.replace(originalBasePath, targetCleanBasePath);
+										newSourceCodeFile = _this3.addSourceCodeFile({
+											name: rootSourceCodeFile.name,
+											path: "" + _get__("path").normalize(targetPath),
+											clean: "" + _get__("path").normalize(targetCleanPath)
+										});
+										return newSourceCodeFile.synchronizeWith(rootSourceCodeFile);
+									} else {
+										errors.push(new Error("ERROR: there is no base path provided for the source file " + rootSourceCodeFile.name + " on the block of name " + rootBlock.name + " and type " + rootBlock.type + ". Please ammend that and try again."));
+									}
+								} else {
+									errors.push(new Error("ERROR: there is no base path provided for the block " + _this3.name + ", so the new source code file " + rootSourceCodeFile.name + " cannot be added."));
+								}
 							}
-						} else {
-							errors.push(new Error("ERROR: there is no base path provided for the block " + _this3.name + ", so the new source code file " + rootSourceCodeFile.name + " cannot be added."));
-						}
-					}
-				});
+						});
 
-				// check processed list against sourceCodeFiles
-				if (errors.length === 0) {
-					_get__("Promise").all(promises).then(function () {
-						return resolve();
-					});
+						// check processed list against sourceCodeFiles
+						if (errors.length === 0) {
+							_get__("Promise").all(promises).then(function () {
+								_this3.version = rootBlock.version;
+								resolve();
+							});
+						} else {
+							reject(errors);
+						}
+					})();
 				} else {
-					reject(errors);
+					reject(new Error("The root block " + rootBlock.name + " - v" + rootBlock.version + " of type " + rootBlock.type + " is older than the destination (" + _this3.name + " - v" + _this3.version + "). Block synchronization aborted."));
 				}
 			});
 		}
@@ -172,6 +183,9 @@ function _get_original__(variableName) {
 
 		case "Promise":
 			return _promise2.default;
+
+		case "semver":
+			return _semver2.default;
 
 		case "path":
 			return _path2.default;

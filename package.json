@@ -1,52 +1,53 @@
 {
-	"name": "gene-js",
-	"version": "0.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"god": "npm run generate; npm run compile",
-		"generate": "gulp godify-generate",
-		"compile": "gulp godify-compile",
-		"test": "gulp test",
-		"build": "gulp build",
-		"coverage": "gulp test-coverage",
-		"watch": "gulp test-watch",
-		"gulp": "gulp"
-	},
-	"author": "nicosommi",
-	"license": "UNLICENSED",
-	"dependencies": {
-		"block-js": "file:../block-js",
-		"fs-extra": "^0.26.7",
-		"regex-parser": "^2.2.1",
-		"babybird": "0.0.1",
-		"prfun": "^2.1.3"
-	},
-	"devDependencies": {
-		"sinon": "^1.17.3",
-		"should": "^8.2.2",
-		"babel": "^6.5.2",
-		"babel-core": "^6.6.4",
-		"babel-eslint": "^3.1.30",
-		"babel-plugin-rewire": "^1.0.0-rc-1",
-		"babel-preset-es2015": "^6.6.0",
-		"coveralls": "^2.11.2",
-		"del": "^2.2.0",
-		"eslint": "^0.24.0",
-		"gulp": "^3.9.1",
-		"gulp-babel": "^6.1.2",
-		"gulp-babel-istanbul": "^1.0.0",
-		"gulp-istanbul": "^0.10.3",
-		"gulp-mocha": "^2.1.3",
-		"gulp-util": "^3.0.6",
-		"run-sequence": "^1.1.5",
-		"mocha": "^2.2.5"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/nicosommi/gene-js.git"
-	},
-	"readmeFilename": "README.md",
-	"contributors": [],
-	"homepage": "https://github.com/nicosommi/gene-js"
+  "name": "gene-js",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "god": "npm run generate; npm run compile",
+    "generate": "gulp godify-generate",
+    "compile": "gulp godify-compile",
+    "test": "gulp test",
+    "build": "gulp build",
+    "coverage": "gulp test-coverage",
+    "watch": "gulp test-watch",
+    "gulp": "gulp"
+  },
+  "author": "nicosommi",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "babybird": "0.0.1",
+    "block-js": "file:../block-js",
+    "fs-extra": "^0.26.7",
+    "prfun": "^2.1.3",
+    "regex-parser": "^2.2.1",
+    "semver": "^5.1.0"
+  },
+  "devDependencies": {
+    "sinon": "^1.17.3",
+    "should": "^8.2.2",
+    "babel": "^6.5.2",
+    "babel-core": "^6.6.4",
+    "babel-eslint": "^3.1.30",
+    "babel-plugin-rewire": "^1.0.0-rc-1",
+    "babel-preset-es2015": "^6.6.0",
+    "coveralls": "^2.11.2",
+    "del": "^2.2.0",
+    "eslint": "^0.24.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-babel-istanbul": "^1.0.0",
+    "gulp-istanbul": "^0.10.3",
+    "gulp-mocha": "^2.1.3",
+    "gulp-util": "^3.0.6",
+    "run-sequence": "^1.1.5",
+    "mocha": "^2.2.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicosommi/gene-js.git"
+  },
+  "readmeFilename": "README.md",
+  "contributors": [],
+  "homepage": "https://github.com/nicosommi/gene-js"
 }
