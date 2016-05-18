@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
 import synchronize from "./synchronize.js";
 import getMeta from "./getMeta.js";
 import cleanTo from "./cleanTo.js";
 import Promise from "./promise.js";
 import path from "path";
+import chalk from "chalk";
 
 export default class SourceCodeFile {
 	constructor(name, filePath, options) {
@@ -38,7 +40,10 @@ export default class SourceCodeFile {
 		if(!rootSourceCodeFile.path) {
 			return Promise.reject(new Error(`No path defined for root file ${rootSourceCodeFile.name}`));
 		} else {
-			return synchronize(rootSourceCodeFile.getFullPath(), this.getFullPath(), this.options);
+			const rootFullPath = rootSourceCodeFile.getFullPath();
+			const targetFullPath = this.getFullPath();
+			console.log(chalk.magenta(`Syncing ${rootFullPath} with ${targetFullPath}...`));
+			return synchronize(rootFullPath, targetFullPath, this.options);
 		}
 	}
 
@@ -49,7 +54,10 @@ export default class SourceCodeFile {
 			return Promise.reject(new Error(`No path defined for file ${this.name}`));
 		} else {
 			this.options.dirtyPhs = dirtyPhs || [];
-			return cleanTo(this.getFullPath(), this.getFullCleanPath(), this.options);
+			const rootFullPath = this.getFullPath();
+			const targetFullPath = this.getFullCleanPath();
+			console.log(chalk.magenta(`Cleaning ${rootFullPath} to ${targetFullPath}...`));
+			return cleanTo(rootFullPath, targetFullPath, this.options);
 		}
 	}
 }

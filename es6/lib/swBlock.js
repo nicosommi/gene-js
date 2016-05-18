@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 import SourceCodeFile from "./sourceCodeFile.js";
 import Promise from "./promise.js";
 import path from "path";
 import semver from "semver";
+import chalk from "chalk";
 
 export default class SwBlock {
 	constructor(name, type, version, options) {
@@ -38,26 +40,26 @@ export default class SwBlock {
 	synchronizeWith(rootBlock) {
 		return new Promise(
 			(resolve, reject) => {
+				console.log(chalk.magenta(`checking block versions`));
 				if(semver.gt(rootBlock.version, this.version)) {
+					console.log(chalk.magenta(`syncing block to version ${rootBlock.version}`));
 					const errors = [];
+
 					const promises = rootBlock.sourceCodeFiles.map(
 						rootSourceCodeFile => {
+							console.log(chalk.magenta(`syncing file ${rootSourceCodeFile.path}`));
 							// find this.sourceCodeFile
 							const matchingSourceCodeFile = this.sourceCodeFiles.find(sourceCodeFile => (sourceCodeFile.name === rootSourceCodeFile.name));
 							if(matchingSourceCodeFile) {
-								// create a potential promess to synchronizeWith
-								// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
+								console.log(chalk.magenta(`file match for ${this.path}`));
 								// add promess to process list
 								return matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
 							} else {
 								// create a potential promess to create it
-								// matchingSourceCodeFile = new SourceCodeFile();
-								// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
-								// add promess to process list
-								// promises.push(promiseSynchronize);
 								let newSourceCodeFile;
 								if(this.options && this.options.basePath) {
 									if(rootSourceCodeFile.path) {
+										console.log(chalk.magenta(`new file for ${rootSourceCodeFile.path}`));
 										newSourceCodeFile = this.addSourceCodeFile({
 											name: rootSourceCodeFile.name,
 											path: path.normalize(`${rootSourceCodeFile.path}`),
@@ -76,15 +78,28 @@ export default class SwBlock {
 
 					// check processed list against sourceCodeFiles
 					if(errors.length === 0) {
+						console.log(chalk.magenta(`executing sync tasks...`));
 						Promise.all(promises).then(() => {
 							this.version = rootBlock.version;
+							console.log(chalk.green(`finished with no errors, now version ${this.version}.`));
 							resolve();
-						});
+						})
+						.catch(reject);
 					} else {
-						reject(errors);
+						console.log(chalk.red(`errors on files ${errors}`));
+						const errorMessage = errors.reduce((message, currentError) => {
+							if(message) {
+								return `${message}\n${currentError.message}`;
+							} else {
+								return currentError.message;
+							}
+						});
+						reject(new Error(errorMessage));
 					}
+				} else if(semver.eq(rootBlock.version, this.version)) {
+					reject(new Error(`WARNING: The root block ${rootBlock.name} - v${rootBlock.version} is at the same version as the destination (${this.name} - v${this.version}). So the block synchronization is omitted.`));
 				} else {
-					reject(new Error(`The root block ${rootBlock.name} - v${rootBlock.version} of type ${rootBlock.type} is older than the destination (${this.name} - v${this.version}). Block synchronization aborted.`));
+					reject(new Error(`WARNING: The root block ${rootBlock.name} - v${rootBlock.version} of type ${rootBlock.type} is older than the destination (${this.name} - v${this.version}). Block synchronization aborted.`));
 				}
 			}
 		);

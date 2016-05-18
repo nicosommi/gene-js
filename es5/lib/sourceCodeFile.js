@@ -7,7 +7,8 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-console */
+
 
 var _synchronize = require("./synchronize.js");
 
@@ -28,6 +29,10 @@ var _promise2 = _interopRequireDefault(_promise);
 var _path = require("path");
 
 var _path2 = _interopRequireDefault(_path);
+
+var _chalk = require("chalk");
+
+var _chalk2 = _interopRequireDefault(_chalk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -76,7 +81,10 @@ var SourceCodeFile = function () {
 			if (!rootSourceCodeFile.path) {
 				return _get__("Promise").reject(new Error("No path defined for root file " + rootSourceCodeFile.name));
 			} else {
-				return _get__("synchronize")(rootSourceCodeFile.getFullPath(), this.getFullPath(), this.options);
+				var rootFullPath = rootSourceCodeFile.getFullPath();
+				var targetFullPath = this.getFullPath();
+				console.log(_get__("chalk").magenta("Syncing " + rootFullPath + " with " + targetFullPath + "..."));
+				return _get__("synchronize")(rootFullPath, targetFullPath, this.options);
 			}
 		}
 	}, {
@@ -88,7 +96,10 @@ var SourceCodeFile = function () {
 				return _get__("Promise").reject(new Error("No path defined for file " + this.name));
 			} else {
 				this.options.dirtyPhs = dirtyPhs || [];
-				return _get__("cleanTo")(this.getFullPath(), this.getFullCleanPath(), this.options);
+				var rootFullPath = this.getFullPath();
+				var targetFullPath = this.getFullCleanPath();
+				console.log(_get__("chalk").magenta("Cleaning " + rootFullPath + " to " + targetFullPath + "..."));
+				return _get__("cleanTo")(rootFullPath, targetFullPath, this.options);
 			}
 		}
 	}]);
@@ -132,6 +143,9 @@ function _get_original__(variableName) {
 
 		case "path":
 			return _path2.default;
+
+		case "chalk":
+			return _chalk2.default;
 
 		case "synchronize":
 			return _synchronize2.default;

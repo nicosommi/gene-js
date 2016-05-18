@@ -130,7 +130,6 @@ describe("SwBlock", () => {
 				swBlock.options.basePath = undefined;
 				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "apath/that/isLong/afile.js"});
 				return swBlock.synchronizeWith(sourceSwBlock)
-					.catch((errors) => Promise.reject(errors[0]))
 					.should.be.rejectedWith(/ERROR: there is no base path provided for the block fruitBasketBlock, so the new source code file thirdElement cannot be added\./);
 			});
 
@@ -138,7 +137,6 @@ describe("SwBlock", () => {
 				swBlock.options.basePath = "/some/path";
 				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: undefined});
 				return swBlock.synchronizeWith(sourceSwBlock)
-					.catch((errors) => Promise.reject(errors[0]))
 					.should.be.rejectedWith(/ERROR: there is no path provided for the source file thirdElement on the block of name rootFruitBasketBlock and type basket. Please ammend that and try again\./);
 			});
 
@@ -157,7 +155,6 @@ describe("SwBlock", () => {
 			it("should throw if there are new files and there is no base path provided", () => {
 				sourceSwBlock.addSourceCodeFile({ name: "thirdElement", path: "apath/that/isLong/afile.js"});
 				return swBlock.synchronizeWith(sourceSwBlock)
-					.catch((errors) => Promise.reject(errors[0]))
 					.should.be.rejectedWith(/ERROR: there is no base path provided for the block fruitBasketBlock, so the new source code file thirdElement cannot be added./);
 			});
 

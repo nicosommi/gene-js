@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+import chalk from "chalk";
 import SwBlock from "./swBlock.js";
 import Promise from "./promise.js";
 
@@ -35,30 +37,29 @@ export default class SwComponent {
 	}
 
 	synchronizeWith(rootBlock) {
-		return new Promise(
-			(resolve, reject) => {
-				let promise;
+		console.log(chalk.magenta(`synchronize component started`));
+		let promise;
 
-				// find this.swBlock
-				const matchingSwBlocks = this.swBlocks.filter(swBlock => (swBlock.type === rootBlock.type));
-				if(matchingSwBlocks && matchingSwBlocks.length > 0) {
-					promise = Promise.all(
-						matchingSwBlocks.map(matchingSwBlock => matchingSwBlock.synchronizeWith(rootBlock))
-					);
-				} else {
-					const newSwBlock = this.addSwBlock({
-						name: rootBlock.name,
-						type: rootBlock.type,
-						options: this.options,
-						sourceCodeFiles: []
-					});
-					promise = newSwBlock.synchronizeWith(rootBlock);
-				}
+		// find this.swBlock
+		const matchingSwBlocks = this.swBlocks.filter(swBlock => (swBlock.type === rootBlock.type));
+		if(matchingSwBlocks && matchingSwBlocks.length > 0) {
+			console.log(chalk.magenta(`going through existing blocks`));
+			promise = Promise.all(
+				matchingSwBlocks.map(matchingSwBlock => matchingSwBlock.synchronizeWith(rootBlock))
+			);
+		} else {
+			console.log(chalk.magenta(`creating a new block named ${rootBlock.name} of type ${rootBlock.type}`));
+			const newSwBlock = this.addSwBlock({
+				name: rootBlock.name,
+				type: rootBlock.type,
+				version: "0.0.0",
+				options: this.options,
+				sourceCodeFiles: []
+			});
+			promise = newSwBlock.synchronizeWith(rootBlock);
+		}
 
-				promise.then(() => resolve())
-					.catch(reject);
-			}
-		);
+		return promise;
 	}
 
 	clean(dirtyPhs) {

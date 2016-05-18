@@ -7,7 +7,12 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-console */
+
+
+var _chalk = require("chalk");
+
+var _chalk2 = _interopRequireDefault(_chalk);
 
 var _swBlock = require("./swBlock.js");
 
@@ -67,33 +72,31 @@ var SwComponent = function () {
 	}, {
 		key: "synchronizeWith",
 		value: function synchronizeWith(rootBlock) {
-			var _this3 = this;
+			console.log(_get__("chalk").magenta("synchronize component started"));
+			var promise = void 0;
 
-			return new (_get__("Promise"))(function (resolve, reject) {
-				var promise = void 0;
-
-				// find this.swBlock
-				var matchingSwBlocks = _this3.swBlocks.filter(function (swBlock) {
-					return swBlock.type === rootBlock.type;
-				});
-				if (matchingSwBlocks && matchingSwBlocks.length > 0) {
-					promise = _get__("Promise").all(matchingSwBlocks.map(function (matchingSwBlock) {
-						return matchingSwBlock.synchronizeWith(rootBlock);
-					}));
-				} else {
-					var newSwBlock = _this3.addSwBlock({
-						name: rootBlock.name,
-						type: rootBlock.type,
-						options: _this3.options,
-						sourceCodeFiles: []
-					});
-					promise = newSwBlock.synchronizeWith(rootBlock);
-				}
-
-				promise.then(function () {
-					return resolve();
-				}).catch(reject);
+			// find this.swBlock
+			var matchingSwBlocks = this.swBlocks.filter(function (swBlock) {
+				return swBlock.type === rootBlock.type;
 			});
+			if (matchingSwBlocks && matchingSwBlocks.length > 0) {
+				console.log(_get__("chalk").magenta("going through existing blocks"));
+				promise = _get__("Promise").all(matchingSwBlocks.map(function (matchingSwBlock) {
+					return matchingSwBlock.synchronizeWith(rootBlock);
+				}));
+			} else {
+				console.log(_get__("chalk").magenta("creating a new block named " + rootBlock.name + " of type " + rootBlock.type));
+				var newSwBlock = this.addSwBlock({
+					name: rootBlock.name,
+					type: rootBlock.type,
+					version: "0.0.0",
+					options: this.options,
+					sourceCodeFiles: []
+				});
+				promise = newSwBlock.synchronizeWith(rootBlock);
+			}
+
+			return promise;
 		}
 	}, {
 		key: "clean",
@@ -141,6 +144,9 @@ function _get_original__(variableName) {
 
 		case "Promise":
 			return _promise2.default;
+
+		case "chalk":
+			return _chalk2.default;
 	}
 
 	return undefined;

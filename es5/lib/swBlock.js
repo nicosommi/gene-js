@@ -7,7 +7,8 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable no-console */
+
 
 var _sourceCodeFile = require("./sourceCodeFile.js");
 
@@ -24,6 +25,10 @@ var _path2 = _interopRequireDefault(_path);
 var _semver = require("semver");
 
 var _semver2 = _interopRequireDefault(_semver);
+
+var _chalk = require("chalk");
+
+var _chalk2 = _interopRequireDefault(_chalk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -79,28 +84,28 @@ var SwBlock = function () {
 			var _this3 = this;
 
 			return new (_get__("Promise"))(function (resolve, reject) {
+				console.log(_get__("chalk").magenta("checking block versions"));
 				if (_get__("semver").gt(rootBlock.version, _this3.version)) {
 					(function () {
+						console.log(_get__("chalk").magenta("syncing block to version " + rootBlock.version));
 						var errors = [];
+
 						var promises = rootBlock.sourceCodeFiles.map(function (rootSourceCodeFile) {
+							console.log(_get__("chalk").magenta("syncing file " + rootSourceCodeFile.path));
 							// find this.sourceCodeFile
 							var matchingSourceCodeFile = _this3.sourceCodeFiles.find(function (sourceCodeFile) {
 								return sourceCodeFile.name === rootSourceCodeFile.name;
 							});
 							if (matchingSourceCodeFile) {
-								// create a potential promess to synchronizeWith
-								// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
+								console.log(_get__("chalk").magenta("file match for " + _this3.path));
 								// add promess to process list
 								return matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
 							} else {
 								// create a potential promess to create it
-								// matchingSourceCodeFile = new SourceCodeFile();
-								// const promiseSynchronize = matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
-								// add promess to process list
-								// promises.push(promiseSynchronize);
 								var newSourceCodeFile = void 0;
 								if (_this3.options && _this3.options.basePath) {
 									if (rootSourceCodeFile.path) {
+										console.log(_get__("chalk").magenta("new file for " + rootSourceCodeFile.path));
 										newSourceCodeFile = _this3.addSourceCodeFile({
 											name: rootSourceCodeFile.name,
 											path: _get__("path").normalize("" + rootSourceCodeFile.path),
@@ -118,16 +123,28 @@ var SwBlock = function () {
 
 						// check processed list against sourceCodeFiles
 						if (errors.length === 0) {
+							console.log(_get__("chalk").magenta("executing sync tasks..."));
 							_get__("Promise").all(promises).then(function () {
 								_this3.version = rootBlock.version;
+								console.log(_get__("chalk").green("finished with no errors, now version " + _this3.version + "."));
 								resolve();
-							});
+							}).catch(reject);
 						} else {
-							reject(errors);
+							console.log(_get__("chalk").red("errors on files " + errors));
+							var errorMessage = errors.reduce(function (message, currentError) {
+								if (message) {
+									return message + "\n" + currentError.message;
+								} else {
+									return currentError.message;
+								}
+							});
+							reject(new Error(errorMessage));
 						}
 					})();
+				} else if (_get__("semver").eq(rootBlock.version, _this3.version)) {
+					reject(new Error("WARNING: The root block " + rootBlock.name + " - v" + rootBlock.version + " is at the same version as the destination (" + _this3.name + " - v" + _this3.version + "). So the block synchronization is omitted."));
 				} else {
-					reject(new Error("The root block " + rootBlock.name + " - v" + rootBlock.version + " of type " + rootBlock.type + " is older than the destination (" + _this3.name + " - v" + _this3.version + "). Block synchronization aborted."));
+					reject(new Error("WARNING: The root block " + rootBlock.name + " - v" + rootBlock.version + " of type " + rootBlock.type + " is older than the destination (" + _this3.name + " - v" + _this3.version + "). Block synchronization aborted."));
 				}
 			});
 		}
@@ -177,6 +194,9 @@ function _get_original__(variableName) {
 
 		case "Promise":
 			return _promise2.default;
+
+		case "chalk":
+			return _chalk2.default;
 
 		case "semver":
 			return _semver2.default;
