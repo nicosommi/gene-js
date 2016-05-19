@@ -39,7 +39,7 @@ var SwComponent = function () {
 	_createClass(SwComponent, [{
 		key: "addSwBlock",
 		value: function addSwBlock(swBlock) {
-			var newOptions = Object.assign({}, this.options, swBlock.options); // passing options through
+			var newOptions = Object.assign({}, swBlock.options, this.options); // passing options down through
 			var newSwBlock = new (_get__("SwBlock"))(swBlock.name, swBlock.type, swBlock.version, newOptions);
 			newSwBlock.addSourceCodeFiles(swBlock.sourceCodeFiles);
 			this.swBlocks.push(newSwBlock);

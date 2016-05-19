@@ -1,5 +1,5 @@
-import synchronize from "../es6/lib/synchronize.js";
-import Promise from "../es6/lib/promise.js";
+import synchronize from "../source/lib/synchronize.js";
+import Promise from "../source/lib/promise.js";
 import fs from "fs-extra";
 
 const readFile = Promise.promisify(fs.readFile);

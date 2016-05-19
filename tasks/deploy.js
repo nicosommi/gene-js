@@ -1,6 +1,6 @@
 import gulp from "gulp";
 import runSequence from "run-sequence";
-import Api from "../es6/lib/api/v1.js";
+import Api from "../source/lib/api/v1.js";
 
 gulp.task("deploy-functions", (callback) => {
 	const api = new Api();

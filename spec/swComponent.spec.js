@@ -1,5 +1,5 @@
-import SwComponent from "../es6/lib/swComponent.js";
-import Promise from "../es6/lib/promise.js";
+import SwComponent from "../source/lib/swComponent.js";
+import Promise from "../source/lib/promise.js";
 import sinon from "sinon";
 
 describe("SwComponent", () => {
@@ -94,8 +94,8 @@ describe("SwComponent", () => {
 
 			it("should pass the option properties to the source code options along with the specific ones", () => {
 				swComponent = new SwComponent(name, type, { aproperty: 1, onemore: 2 });
-				swComponent.addSwBlock({name: "aname", swBlockType, swBlockVersion, options: { onemore: 3 }});
-				swComponent.swBlocks[0].options.should.eql({ aproperty: 1, onemore: 3 });
+				swComponent.addSwBlock({name: "aname", swBlockType, swBlockVersion, options: { onemore: 3, another: 4 }});
+				swComponent.swBlocks[0].options.should.eql({ aproperty: 1, onemore: 2, another: 4 });
 			});
 		});
 

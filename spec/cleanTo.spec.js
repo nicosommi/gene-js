@@ -1,5 +1,5 @@
-import cleanTo from "../es6/lib/cleanTo.js";
-import Promise from "../es6/lib/promise.js";
+import cleanTo from "../source/lib/cleanTo.js";
+import Promise from "../source/lib/promise.js";
 import fs from "fs-extra";
 
 const readFile = Promise.promisify(fs.readFile);

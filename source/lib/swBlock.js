@@ -15,7 +15,7 @@ export default class SwBlock {
 	}
 
 	addSourceCodeFile(sourceCodeFile) {
-		const newOptions = Object.assign({}, this.options, sourceCodeFile.options); // passing options through
+		const newOptions = Object.assign({}, sourceCodeFile.options, this.options); // passing options down through
 		const newSourceCodeFile = new SourceCodeFile(sourceCodeFile.name, sourceCodeFile.path, newOptions);
 		this.sourceCodeFiles.push(newSourceCodeFile);
 		return newSourceCodeFile;
@@ -41,7 +41,7 @@ export default class SwBlock {
 		return new Promise(
 			(resolve, reject) => {
 				console.log(chalk.magenta(`checking block versions`));
-				if(semver.gt(rootBlock.version, this.version)) {
+				if(semver.gte(rootBlock.version, this.version)) {
 					console.log(chalk.magenta(`syncing block to version ${rootBlock.version}`));
 					const errors = [];
 

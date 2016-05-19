@@ -48,7 +48,7 @@ var SwBlock = function () {
 	_createClass(SwBlock, [{
 		key: "addSourceCodeFile",
 		value: function addSourceCodeFile(sourceCodeFile) {
-			var newOptions = Object.assign({}, this.options, sourceCodeFile.options); // passing options through
+			var newOptions = Object.assign({}, sourceCodeFile.options, this.options); // passing options down through
 			var newSourceCodeFile = new (_get__("SourceCodeFile"))(sourceCodeFile.name, sourceCodeFile.path, newOptions);
 			this.sourceCodeFiles.push(newSourceCodeFile);
 			return newSourceCodeFile;
@@ -85,7 +85,7 @@ var SwBlock = function () {
 
 			return new (_get__("Promise"))(function (resolve, reject) {
 				console.log(_get__("chalk").magenta("checking block versions"));
-				if (_get__("semver").gt(rootBlock.version, _this3.version)) {
+				if (_get__("semver").gte(rootBlock.version, _this3.version)) {
 					(function () {
 						console.log(_get__("chalk").magenta("syncing block to version " + rootBlock.version));
 						var errors = [];

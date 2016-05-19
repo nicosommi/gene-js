@@ -1,4 +1,4 @@
-import Ph from "../es6/lib/ph.js";
+import Ph from "../source/lib/ph.js";
 import fs from "fs";
 import del from "del";
 

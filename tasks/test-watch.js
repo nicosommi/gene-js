@@ -2,7 +2,7 @@ import gulp from "gulp";
 
 gulp.task("test-watch", ["suppress-errors"], () => {
   gulp.watch([
-    "./es6/**/*",
+    "./source/**/*",
 	"./spec/**/*"
 ], ["test-coverage"]);
 });

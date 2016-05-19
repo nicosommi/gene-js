@@ -1,5 +1,5 @@
-import SourceCodeFile from "../es6/lib/sourceCodeFile.js";
-import Promise from "../es6/lib/promise.js";
+import SourceCodeFile from "../source/lib/sourceCodeFile.js";
+import Promise from "../source/lib/promise.js";
 import fs from "fs-extra";
 import del from "del";
 import sinon from "sinon";

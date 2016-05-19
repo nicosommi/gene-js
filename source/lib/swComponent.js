@@ -12,7 +12,7 @@ export default class SwComponent {
 	}
 
 	addSwBlock(swBlock) {
-		const newOptions = Object.assign({}, this.options, swBlock.options); // passing options through
+		const newOptions = Object.assign({}, swBlock.options, this.options); // passing options down through
 		const newSwBlock = new SwBlock(swBlock.name, swBlock.type, swBlock.version, newOptions);
 		newSwBlock.addSourceCodeFiles(swBlock.sourceCodeFiles);
 		this.swBlocks.push(newSwBlock);

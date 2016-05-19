@@ -9,6 +9,6 @@ function defineBuildLibrariesTask(taskName, libPath, distPath) {
 	});
 }
 
-defineBuildLibrariesTask("build-lib", "./es6/**/*.js", "./es5");
+defineBuildLibrariesTask("build-lib", "./source/**/*.js", "./dist");
 
 gulp.task("build", ["clean", "build-lib"]);

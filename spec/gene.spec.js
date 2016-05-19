@@ -1,5 +1,5 @@
-import Gene from "../es6/lib/gene.js";
-import Promise from "../es6/lib/promise.js";
+import Gene from "../source/lib/gene.js";
+import Promise from "../source/lib/promise.js";
 import fs from "fs-extra";
 import del from "del";
 

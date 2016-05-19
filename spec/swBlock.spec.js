@@ -1,6 +1,6 @@
-import SwBlock from "../es6/lib/swBlock.js";
-import SourceCodeFile from "../es6/lib/sourceCodeFile.js";
-import Promise from "../es6/lib/promise.js";
+import SwBlock from "../source/lib/swBlock.js";
+import SourceCodeFile from "../source/lib/sourceCodeFile.js";
+import Promise from "../source/lib/promise.js";
 import sinon from "sinon";
 
 describe("SwBlock", () => {
@@ -57,8 +57,8 @@ describe("SwBlock", () => {
 
 			it("should pass the option properties to the source code options along with the specific ones", () => {
 				swBlock = new SwBlock(name, type, version, { aproperty: 1, onemore: 2 });
-				swBlock.addSourceCodeFile({name: "aname", path, clean, options: { onemore: 3 }});
-				swBlock.sourceCodeFiles[0].options.should.eql({ aproperty: 1, onemore: 3 });
+				swBlock.addSourceCodeFile({name: "aname", path, clean, options: { onemore: 3, another: 4 }});
+				swBlock.sourceCodeFiles[0].options.should.eql({ aproperty: 1, onemore: 2, another: 4 });
 			});
 		});
 

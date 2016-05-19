@@ -1,4 +1,4 @@
-import getMeta from "../es6/lib/getMeta.js";
+import getMeta from "../source/lib/getMeta.js";
 
 describe("getMeta", () => {
 	let metaExpected,

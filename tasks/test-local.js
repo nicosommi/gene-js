@@ -4,12 +4,12 @@ import istanbul from "gulp-babel-istanbul";
 import "should";
 
 const paths = {
-	sourceCode: "./es6/**/*.js",
+	sourceCode: "./source/**/*.js",
 	spec: "./spec/**/*.spec.js"
 };
 
 function defineTestTask(taskName, reporters) {
-	gulp.task(taskName, ["build"], (cb) => {
+	gulp.task(taskName, (cb) => {
 		gulp.src(paths.sourceCode)
 			.pipe(istanbul({
 				includeUntested: true
