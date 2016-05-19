@@ -51,7 +51,6 @@ export default class SwBlock {
               // find this.sourceCodeFile
               const matchingSourceCodeFile = this.sourceCodeFiles.find(sourceCodeFile => (sourceCodeFile.name === rootSourceCodeFile.name))
               if (matchingSourceCodeFile) {
-                console.log(chalk.magenta(`file match for ${this.path}`))
                 // add promess to process list
                 return matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile)
               } else {
@@ -59,7 +58,6 @@ export default class SwBlock {
                 let newSourceCodeFile
                 if (this.options && this.options.basePath) {
                   if (rootSourceCodeFile.path) {
-                    console.log(chalk.magenta(`new file for ${rootSourceCodeFile.path}`))
                     newSourceCodeFile = this.addSourceCodeFile({
                       name: rootSourceCodeFile.name,
                       path: path.normalize(`${rootSourceCodeFile.path}`),
