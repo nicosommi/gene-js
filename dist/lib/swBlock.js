@@ -97,7 +97,6 @@ var SwBlock = function () {
                 return sourceCodeFile.name === rootSourceCodeFile.name;
               });
               if (matchingSourceCodeFile) {
-                console.log(_get__('chalk').magenta('file match for ' + _this3.path));
                 // add promess to process list
                 return matchingSourceCodeFile.synchronizeWith(rootSourceCodeFile);
               } else {
@@ -105,7 +104,6 @@ var SwBlock = function () {
                 var newSourceCodeFile = void 0;
                 if (_this3.options && _this3.options.basePath) {
                   if (rootSourceCodeFile.path) {
-                    console.log(_get__('chalk').magenta('new file for ' + rootSourceCodeFile.path));
                     newSourceCodeFile = _this3.addSourceCodeFile({
                       name: rootSourceCodeFile.name,
                       path: _get__('path').normalize('' + rootSourceCodeFile.path),

@@ -49,11 +49,12 @@ export default class SwComponent {
       )
     } else {
       console.log(chalk.magenta(`creating a new block named ${rootBlock.name} of type ${rootBlock.type}`))
+      const newOptions = Object.assign({}, this.options, rootBlock.options)
       const newSwBlock = this.addSwBlock({
         name: rootBlock.name,
         type: rootBlock.type,
         version: '0.0.0',
-        options: this.options,
+        options: newOptions,
         sourceCodeFiles: []
       })
       promise = newSwBlock.synchronizeWith(rootBlock)

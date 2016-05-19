@@ -86,11 +86,12 @@ var SwComponent = function () {
         }));
       } else {
         console.log(_get__('chalk').magenta('creating a new block named ' + rootBlock.name + ' of type ' + rootBlock.type));
+        var newOptions = Object.assign({}, this.options, rootBlock.options);
         var newSwBlock = this.addSwBlock({
           name: rootBlock.name,
           type: rootBlock.type,
           version: '0.0.0',
-          options: this.options,
+          options: newOptions,
           sourceCodeFiles: []
         });
         promise = newSwBlock.synchronizeWith(rootBlock);
