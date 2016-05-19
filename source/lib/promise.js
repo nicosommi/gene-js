@@ -1,7 +1,7 @@
-import Promise from "bluebird";
+import Promise from 'bluebird'
 
 Promise.config({
-	longStackTraces: true
-});
+  longStackTraces: true
+})
 
-export default Promise;
+export default Promise

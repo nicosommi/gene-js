@@ -3,6 +3,18 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
+  "standard": {
+    "globals": [
+      "describe",
+      "context",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it",
+      "expect"
+    ]
+  },
   "scripts": {
     "god": "npm run generate; npm run compile",
     "generate": "gulp godify-generate",
