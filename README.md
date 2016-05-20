@@ -16,7 +16,6 @@ Read more about GDD on [my blog](http://nicosommi.com)
 <!-- endph -->
 
 <!-- ph usagesAndExamples -->
-
 <!-- endph -->
 <!-- ph howItWorks -->
 <!-- endph -->
