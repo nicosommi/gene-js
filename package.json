@@ -12,6 +12,7 @@
       "after",
       "afterEach",
       "it",
+      "xit",
       "expect"
     ]
   },
@@ -56,6 +57,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nicosommi/gddify.git"
+  },
+  "mail": {
+    "apiKey": "2bbc10b3ae60fc833d8fe318b6026929",
+    "secret": "1ed59a0ba47517f1aa36ccc6646dfc5d"
   },
   "readmeFilename": "README.md",
   "contributors": [],

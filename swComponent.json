@@ -13,14 +13,14 @@
         "path": "../block-js/"
       }
     ],
-    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js/./",
+    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
     "cleanPath": ".gdd-clean"
   },
   "swBlocks": [
     {
       "name": "nodejs",
       "type": "runtime",
-      "version": "0.0.1",
+      "version": "0.0.3",
       "options": {
         "sources": [
           {

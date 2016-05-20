@@ -28,6 +28,7 @@ module.exports =
       'after',
       'afterEach',
       'it',
+      'xit',
       'expect'
     ]
   },
@@ -97,7 +98,10 @@ module.exports =
     'type': 'git',
     'url': 'git+https://github.com/nicosommi/gddify.git'
   },
+  /* ph extra */
+  /* endph */
   'readmeFilename': 'README.md',
   'contributors': [],
   'homepage': 'https://github.com/nicosommi/gddify'
 }
+
