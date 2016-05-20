@@ -1,8 +1,8 @@
-import gulp from "gulp";
+import gulp from 'gulp'
 
-gulp.task("test-watch", ["suppress-errors"], () => {
+gulp.task('test-watch', ['suppress-errors'], () => {
   gulp.watch([
-    "./source/**/*",
-	"./spec/**/*"
-], ["test-coverage"]);
-});
+    './source/**/*',
+    './spec/**/*'
+  ], ['test-coverage'])
+})

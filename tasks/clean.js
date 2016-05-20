@@ -1,6 +1,6 @@
-import gulp from "gulp";
-import del from "del";
+import gulp from 'gulp'
+import del from 'del'
 
-gulp.task("clean", function () {
-	return del(["./dist"]);
-});
+gulp.task('clean', function () {
+  return del(['./dist'])
+})

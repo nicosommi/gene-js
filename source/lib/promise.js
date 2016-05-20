@@ -1,5 +1,4 @@
 import Promise from 'bluebird'
-
 Promise.config({
   longStackTraces: true
 })
