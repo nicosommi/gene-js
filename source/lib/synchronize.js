@@ -53,10 +53,12 @@ function mergeReplacements (sourceReplacements, targetReplacements) {
 
 function takeOptions (sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
   const options = {}
-  const sourceReplacements = takeMeta(sourceBlocks, commentStringStart, commentStringEnd).replacements
+  const sourceOptions = takeMeta(sourceBlocks, commentStringStart, commentStringEnd)
+  const { sourceReplacements, sourceIgnoringStamps } = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps }
   const { replacements, ignoringStamps } = takeMeta(targetBlocks, commentStringStart, commentStringEnd)
   options.replacements = mergeReplacements(sourceReplacements, replacements)
   options.ignoringStamps = ignoringStamps
+  options.sourceIgnoringStamps = sourceIgnoringStamps
   return options
 }
 
@@ -76,7 +78,8 @@ export default function synchronize (source, target, options) {
       let sourcePhBlocks = []
       let sourceStampBlocks = []
       let targetPhBlocks = []
-      // let targetStampBlocks = []; //not needed yet(
+      let targetStampBlocks = []
+
       stat(target)
         .then(() => Promise.resolve())
         .catch(() => {
@@ -94,7 +97,7 @@ export default function synchronize (source, target, options) {
                   sourcePhBlocks = results.source.phBlocks
                   sourceStampBlocks = results.source.stampBlocks
                   targetPhBlocks = results.target.phBlocks
-                  // targetStampBlocks = results.targe.stampBlocks //not needed yet
+                  targetStampBlocks = results.target.stampBlocks
                   commentStringStart = results.source.commentStringStart
                   commentStringEnd = results.source.commentStringEnd
 
@@ -150,12 +153,10 @@ export default function synchronize (source, target, options) {
                     }
                     let finalContent = ''
                     if (deprecatedPh.content) {
-                      finalContent = deprecatedPh.content.replace(/\n/g, ` ${commentStringEnd}
-${commentStringStart}`)
+                      finalContent = deprecatedPh.content.replace(/\n/g, ` ${commentStringEnd}\n${commentStringStart}`)
                     }
                     const replacedContent = finalContent
-                    deprecated.content += `${commentStringStart} name: ${deprecatedPh.name} ${commentStringEnd}
-${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
+                    deprecated.content += `${commentStringStart} name: ${deprecatedPh.name} ${commentStringEnd}\n${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
                   })
 
                   if (deprecated.content.length > 0) {
@@ -209,8 +210,7 @@ ${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
                         if (!isSpecialLine) { // do not replace ph/stamp lines!
                           finalLine = executeReplacements(line, options.replacements)
                         }
-                        concreteFileContent += `${finalLine}
-`
+                        concreteFileContent += `${finalLine}\n`
                       }
 
                       if (placeholder) {
@@ -225,8 +225,7 @@ ${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
                           if (!targetPlaceholder.content) {
                             concreteFileContent += ''
                           } else {
-                            concreteFileContent += `${targetPlaceholder.content}
-`
+                            concreteFileContent += `${targetPlaceholder.content}\n`
                           }
                         }
                       } else {
@@ -237,11 +236,33 @@ ${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
                               return stampsToIgnore === stampBegin.name
                             }
                           )
+                          let ignoredOnSource = null
+                          if (options.sourceIgnoringStamps) {
+                            ignoredOnSource = options.sourceIgnoringStamps.find(
+                              stampsToIgnore => {
+                                return stampsToIgnore === stampBegin.name
+                              }
+                            )
+                          }
+
                           if (!ignored) {
-                            const finalLine = executeReplacements(stampBegin.content, options.replacements)
-                            if (finalLine) {
-                              concreteFileContent += `${finalLine}
-`
+                            if (!ignoredOnSource) {
+                              const finalLine = executeReplacements(stampBegin.content, options.replacements)
+                              if (finalLine) {
+                                concreteFileContent += `${finalLine}\n`
+                              }
+                            } else {
+                              // keep his content for stamps that the other is ignoring
+                              if (targetStampBlocks) {
+                                const currentStamp = targetStampBlocks.find(
+                                  targetStamp => {
+                                    return targetStamp.name === stampBegin.name
+                                  }
+                                )
+                                if (currentStamp) {
+                                  concreteFileContent += `${currentStamp.content}\n`
+                                }
+                              }
                             }
                           } else {
                             concreteFileContent += `` // nothing
@@ -249,8 +270,7 @@ ${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
                         } else {
                           if (stampEnd) {
                             ignoreLines = false
-                            concreteFileContent += `${line}
-`
+                            concreteFileContent += `${line}\n`
                           }
                         }
                       }
@@ -259,10 +279,7 @@ ${commentStringStart} content: ${replacedContent} ${commentStringEnd}`
                     () => {
                       // put the deprecated ph if there is one
                       if (deprecated && deprecated.content && deprecated.content.length > 0) {
-                        concreteFileContent += `${commentStringStart} ph deprecated ${commentStringEnd}
-${deprecated.content}
-${commentStringStart} endph ${commentStringEnd}
-`
+                        concreteFileContent += `${commentStringStart} ph deprecated ${commentStringEnd}\n${deprecated.content}\n${commentStringStart} endph ${commentStringEnd}\n`
                       }
                       fs.writeFileSync(target, concreteFileContent, {encoding: 'utf8'})
                       resolve()

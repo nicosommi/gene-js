@@ -1,7 +1,7 @@
 /* ph replacements */
 /* name, /'name': 'gene-js'/g, 'name': 'gene-js' */
 /* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.0.1' */
-/* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index\.js' */
+/* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index.js' */
 /* description, /'description': 'a\ gdd\ utility'/g, 'description': 'a gdd utility' */
 /* license, /MIT/g, MIT */
 /* homepage, /'homepage': '[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)'/g, 'homepage': 'https://github.com/nicosommi/gene-js' */

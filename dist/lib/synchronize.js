@@ -83,7 +83,10 @@ function mergeReplacements(sourceReplacements, targetReplacements) {
 
 function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
   var options = {};
-  var sourceReplacements = _get__('takeMeta')(sourceBlocks, commentStringStart, commentStringEnd).replacements;
+  var sourceOptions = _get__('takeMeta')(sourceBlocks, commentStringStart, commentStringEnd);
+  var _sourceReplacements$s = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps };
+  var sourceReplacements = _sourceReplacements$s.sourceReplacements;
+  var sourceIgnoringStamps = _sourceReplacements$s.sourceIgnoringStamps;
 
   var _get__2 = _get__('takeMeta')(targetBlocks, commentStringStart, commentStringEnd);
 
@@ -92,6 +95,7 @@ function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStri
 
   options.replacements = _get__('mergeReplacements')(sourceReplacements, replacements);
   options.ignoringStamps = ignoringStamps;
+  options.sourceIgnoringStamps = sourceIgnoringStamps;
   return options;
 }
 
@@ -110,7 +114,8 @@ function synchronize(source, target, options) {
     var sourcePhBlocks = [];
     var sourceStampBlocks = [];
     var targetPhBlocks = [];
-    // let targetStampBlocks = []; //not needed yet(
+    var targetStampBlocks = [];
+
     _get__('stat')(target).then(function () {
       return _get__('Promise').resolve();
     }).catch(function () {
@@ -125,7 +130,7 @@ function synchronize(source, target, options) {
         sourcePhBlocks = results.source.phBlocks;
         sourceStampBlocks = results.source.stampBlocks;
         targetPhBlocks = results.target.phBlocks;
-        // targetStampBlocks = results.targe.stampBlocks //not needed yet
+        targetStampBlocks = results.target.stampBlocks;
         commentStringStart = results.source.commentStringStart;
         commentStringEnd = results.source.commentStringEnd;
 
@@ -243,10 +248,29 @@ function synchronize(source, target, options) {
               var ignored = options.ignoringStamps.find(function (stampsToIgnore) {
                 return stampsToIgnore === stampBegin.name;
               });
+              var ignoredOnSource = null;
+              if (options.sourceIgnoringStamps) {
+                ignoredOnSource = options.sourceIgnoringStamps.find(function (stampsToIgnore) {
+                  return stampsToIgnore === stampBegin.name;
+                });
+              }
+
               if (!ignored) {
-                var _finalLine = _get__('executeReplacements')(stampBegin.content, options.replacements);
-                if (_finalLine) {
-                  concreteFileContent += _finalLine + '\n';
+                if (!ignoredOnSource) {
+                  var _finalLine = _get__('executeReplacements')(stampBegin.content, options.replacements);
+                  if (_finalLine) {
+                    concreteFileContent += _finalLine + '\n';
+                  }
+                } else {
+                  // keep his content for stamps that the other is ignoring
+                  if (targetStampBlocks) {
+                    var currentStamp = targetStampBlocks.find(function (targetStamp) {
+                      return targetStamp.name === stampBegin.name;
+                    });
+                    if (currentStamp) {
+                      concreteFileContent += currentStamp.content + '\n';
+                    }
+                  }
                 }
               } else {
                 concreteFileContent += ''; // nothing

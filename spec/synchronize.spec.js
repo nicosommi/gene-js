@@ -77,6 +77,10 @@ describe('synchronize', () => {
       it('shuold allow files with no ignoring stamps ph', () => {
         return synchronizeMechanism('apple.js', 'orange.js', 'orange.js')
       })
+
+      it('shuold allow ignore the stamp content if the source is already ignoring that stamp', () => {
+        return synchronizeMechanism('alreadySedlessBanana.js', 'apple.js', 'apple.js')
+      })
     })
 
     describe('(replacements)', () => {
