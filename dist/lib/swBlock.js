@@ -126,7 +126,10 @@ var SwBlock = function () {
                 _this3.version = rootBlock.version;
                 console.log(_get__('chalk').green('finished with no errors, now version ' + _this3.version + '.'));
                 resolve();
-              }).catch(reject);
+              }).catch(function (error) {
+                console.log(_get__('chalk').red('error ' + error.message + '.'));
+                reject(error);
+              });
             } else {
               console.log(_get__('chalk').red('errors on files ' + errors));
               var errorMessage = errors.reduce(function (message, currentError) {

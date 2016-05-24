@@ -102,7 +102,7 @@ describe('synchronize', () => {
 
       it('should throw if the target has a replacement that was not found on the source', () => {
         return synchronizeMechanism('staticKiwi.js', 'banana.js', 'banana.js', null, true)
-          .should.be.rejectedWith(/Missing replacement placeholer on the source/)
+          .should.be.rejectedWith(/Missing replacement key on the source/)
       })
     })
   })

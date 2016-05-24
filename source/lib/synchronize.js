@@ -44,7 +44,7 @@ function mergeReplacements (sourceReplacements, targetReplacements) {
         const value = targetReplacements[targetReplacementKey].value
         replacements[regex] = value
       } else {
-        throw new Error(`Missing replacement placeholer on the source (${targetReplacementKey})`)
+        throw new Error(`Missing replacement key on the source (${targetReplacementKey})`)
       }
     }
   )

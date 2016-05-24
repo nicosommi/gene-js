@@ -82,13 +82,17 @@ export default class SwBlock {
               console.log(chalk.green(`finished with no errors, now version ${this.version}.`))
               resolve()
             })
-              .catch(reject)
+            .catch(
+              error => {
+                console.log(chalk.red(`error ${error.message}.`))
+                reject(error)
+              }
+            )
           } else {
             console.log(chalk.red(`errors on files ${errors}`))
             const errorMessage = errors.reduce((message, currentError) => {
               if (message) {
-                return `${message}
-${currentError.message}`
+                return `${message}\n${currentError.message}`
               } else {
                 return currentError.message
               }

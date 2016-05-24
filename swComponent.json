@@ -20,7 +20,7 @@
     {
       "name": "nodejs",
       "type": "runtime",
-      "version": "0.0.3",
+      "version": "0.0.5",
       "options": {
         "sources": [
           {
@@ -98,7 +98,7 @@
     {
       "name": "gulp",
       "type": "buildingTool",
-      "version": "0.0.0",
+      "version": "0.0.6",
       "options": {
         "sources": [
           {
@@ -173,65 +173,8 @@
           }
         },
         {
-          "name": "tasks/deploy.js",
-          "path": "tasks/deploy.js",
-          "options": {
-            "sources": [
-              {
-                "path": "../gddify/"
-              },
-              {
-                "path": "./"
-              },
-              {
-                "path": "../block-js/"
-              }
-            ],
-            "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
-            "cleanPath": ".gdd-clean"
-          }
-        },
-        {
           "name": "tasks/suppress-errors.js",
           "path": "tasks/suppress-errors.js",
-          "options": {
-            "sources": [
-              {
-                "path": "../gddify/"
-              },
-              {
-                "path": "./"
-              },
-              {
-                "path": "../block-js/"
-              }
-            ],
-            "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
-            "cleanPath": ".gdd-clean"
-          }
-        },
-        {
-          "name": "tasks/test-local.js",
-          "path": "tasks/test-local.js",
-          "options": {
-            "sources": [
-              {
-                "path": "../gddify/"
-              },
-              {
-                "path": "./"
-              },
-              {
-                "path": "../block-js/"
-              }
-            ],
-            "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
-            "cleanPath": ".gdd-clean"
-          }
-        },
-        {
-          "name": "tasks/test-watch.js",
-          "path": "tasks/test-watch.js",
           "options": {
             "sources": [
               {
