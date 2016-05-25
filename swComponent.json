@@ -13,14 +13,14 @@
         "path": "../block-js/"
       }
     ],
-    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js/./",
+    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
     "cleanPath": ".gdd-clean"
   },
   "swBlocks": [
     {
       "name": "nodejs",
       "type": "runtime",
-      "version": "0.0.5",
+      "version": "0.0.7",
       "options": {
         "sources": [
           {
@@ -98,7 +98,7 @@
     {
       "name": "gulp",
       "type": "buildingTool",
-      "version": "0.0.7",
+      "version": "0.0.9",
       "options": {
         "sources": [
           {
@@ -335,7 +335,7 @@
     {
       "name": "docs",
       "type": "docs",
-      "version": "0.0.4",
+      "version": "0.0.5",
       "options": {
         "sources": [
           {

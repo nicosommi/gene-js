@@ -58,11 +58,9 @@ module.exports =
     'fs-extra': '^0.26.7',
     /* endph */
     /* stamp webapp_dependencies */
+undefined
     /* endstamp */
     /* stamp lib_dependencies */
-    'sinon': '^1.17.3',
-    'should': '^8.2.2',
-    'mocha': '^2.2.5',
     'incognito': '^0.1.4',
     /* endstamp */
     /* stamp service_dependencies */

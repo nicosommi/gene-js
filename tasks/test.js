@@ -6,23 +6,18 @@ import mocha from 'gulp-mocha'
 import istanbul from 'gulp-babel-istanbul'
 import 'should'
 
-const paths = {
-  sourceCode: './source/**/*.js',
-  spec: './spec/**/*.spec.js'
-}
-
-function defineTestTask (taskName, reporters) {
+function defineTestTask (taskName, reporters, sourceCode, spec) {
   gulp.task(taskName, (cb) => {
-    gulp.src(paths.sourceCode)
+    gulp.src(sourceCode)
       .pipe(istanbul({
         includeUntested: true
       })) // Covering files
       .pipe(istanbul.hookRequire()) // Force `require` to return covered files
       .on('finish', () => {
-        gulp.src(paths.spec)
+        gulp.src(spec)
           .pipe(mocha())
           .pipe(istanbul.writeReports({dir: `${__dirname}/../.coverage`, reporters})) // Creating the reports after tests ran
-          .pipe(istanbul.enforceThresholds({ thresholds: { global: 100 } })) // Enforce a coverage of at least 90%
+          .pipe(istanbul.enforceThresholds({ thresholds: { global: 70 } })) // Enforce a coverage of at least 90%
           .on('end', cb)
       })
   })
@@ -37,8 +32,8 @@ function defineWatchTask (taskName, testTasks, dependencies, directories) {
 /* stamp webapp */
 /* endstamp */
 /* stamp lib */
-defineTestTask('test-lib', ['text-summary', 'lcovonly'])
-defineTestTask('test-coverage', ['text', 'html'])
+defineTestTask('test-lib', ['text-summary', 'lcovonly'], './source/**/*.js', './spec/**/*.spec.js')
+defineTestTask('test-coverage', ['text', 'html'], './source/**/*.js', './spec/**/*.spec.js')
 defineWatchTask('test-watch', ['test-coverage'], ['suppress-errors'], ['./source/**/*', './spec/**/*'])
 gulp.task('test', ['test-lib'])
 /* endstamp */
