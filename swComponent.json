@@ -13,7 +13,7 @@
         "path": "../block-js/"
       }
     ],
-    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
+    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js/./",
     "cleanPath": ".gdd-clean"
   },
   "swBlocks": [
@@ -98,7 +98,7 @@
     {
       "name": "gulp",
       "type": "buildingTool",
-      "version": "0.0.6",
+      "version": "0.0.7",
       "options": {
         "sources": [
           {

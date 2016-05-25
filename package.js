@@ -52,7 +52,7 @@ module.exports =
   'license': 'MIT',
   'dependencies': {
     /* ph componentDependencies */
-    'block-js': 'file:../block-js',
+    'block-js': '0.0.2',
     'regex-parser': '^2.2.1',
     'semver': '^5.1.0',
     'fs-extra': '^0.26.7',
