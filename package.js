@@ -7,7 +7,7 @@
 /* endph */
 /* ph ignoringStamps */
 /* webapp_scripts, service_scripts */
-/* webapp_depende, service_dependencies */
+/* webapp_dependencies, service_dependencies */
 /* webapp_devDependencies, service_devDependencies */
 /* endph */
 
