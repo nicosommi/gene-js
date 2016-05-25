@@ -13,14 +13,14 @@
         "path": "../block-js/"
       }
     ],
-    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js",
+    "basePath": "/home/nicosommi/workspace/nicosommi/gene-js/./",
     "cleanPath": ".gdd-clean"
   },
   "swBlocks": [
     {
       "name": "nodejs",
       "type": "runtime",
-      "version": "0.0.7",
+      "version": "0.0.8",
       "options": {
         "sources": [
           {
@@ -39,6 +39,12 @@
           {
             "target": "package.json",
             "to": "package.json"
+          }
+        ],
+        "copy": [
+          {
+            "target": ".gitignore",
+            "to": ".gitignore"
           }
         ]
       },
@@ -65,12 +71,18 @@
                 "target": "package.json",
                 "to": "package.json"
               }
+            ],
+            "copy": [
+              {
+                "target": ".gitignore",
+                "to": ".gitignore"
+              }
             ]
           }
         },
         {
           "name": ".gitignore",
-          "path": ".gitignore",
+          "path": ".npmignore",
           "options": {
             "sources": [
               {
@@ -89,6 +101,12 @@
               {
                 "target": "package.json",
                 "to": "package.json"
+              }
+            ],
+            "copy": [
+              {
+                "target": ".gitignore",
+                "to": ".gitignore"
               }
             ]
           }

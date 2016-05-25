@@ -31,9 +31,6 @@
     "regex-parser": "^2.2.1",
     "semver": "^5.1.0",
     "fs-extra": "^0.26.7",
-    "sinon": "^1.17.3",
-    "should": "^8.2.2",
-    "mocha": "^2.2.5",
     "incognito": "^0.1.4",
     "bluebird": "^3.3.5",
     "debug": "^2.2.0"
