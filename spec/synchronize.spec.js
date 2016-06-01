@@ -81,6 +81,10 @@ describe('synchronize', () => {
       it('shuold allow ignore the stamp content if the source is already ignoring that stamp', () => {
         return synchronizeMechanism('alreadySedlessBanana.js', 'apple.js', 'apple.js')
       })
+
+      it('should keep the original content if the source is ignoring the stamp', () => {
+        return synchronizeMechanism('alreadySedlessBanana.js', 'throwableSeedlessBanana.js', 'throwableSeedlessBanana.js')
+      })
     })
 
     describe('(replacements)', () => {
