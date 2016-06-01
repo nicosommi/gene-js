@@ -267,8 +267,10 @@ function synchronize(source, target, options) {
                     var currentStamp = targetStampBlocks.find(function (targetStamp) {
                       return targetStamp.name === stampBegin.name;
                     });
-                    if (currentStamp) {
+                    if (currentStamp && currentStamp.content) {
                       concreteFileContent += currentStamp.content + '\n';
+                    } else {
+                      concreteFileContent += '';
                     }
                   }
                 }
