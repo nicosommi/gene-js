@@ -108,6 +108,10 @@ describe('synchronize', () => {
         return synchronizeMechanism('staticKiwi.js', 'banana.js', 'banana.js', null, true)
           .should.be.rejectedWith(/Missing replacement key on the source/)
       })
+
+      it('should avoid replacement substring error', () => {
+        return synchronizeMechanism('accounts.js', 'linkedAccounts.js', 'linkedAccounts.js')
+      })
     })
   })
 

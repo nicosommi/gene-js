@@ -4,12 +4,29 @@ import path from 'path'
 import readline from 'readline'
 import regexParser from 'regex-parser'
 import { takeMeta, getBlocks } from './getMeta.js'
+import cuid from 'cuid'
 
 const ensureFile = Promise.promisify(fs.ensureFile)
 const stat = Promise.promisify(fs.stat)
 
+
+function flushReplacementQueue (line, queue) {
+  let newLine = line
+  queue.forEach(
+    queueItem => {
+      const regex = new RegExp(queueItem.id, 'g')
+      newLine = newLine.replace(
+        regex,
+        queueItem.realValue
+      )
+    }
+  )
+  return newLine
+}
+
 export function executeReplacements (line, replacements) {
   let thereAreReplacements = (replacements != null)
+  const queue = []
   if (thereAreReplacements && line && line.length > 0) {
     let finalLine = line
     Object.keys(replacements).forEach(
@@ -20,12 +37,19 @@ export function executeReplacements (line, replacements) {
         } else {
           key = new RegExp(replacementKey, 'g')
         }
+        const queueElement = {
+          id: cuid(),
+          realValue: replacements[replacementKey]
+        }
         finalLine = finalLine.replace(
           key,
-          replacements[replacementKey]
+          queueElement.id
         )
+
+        queue.push(queueElement)
       }
     )
+    finalLine = flushReplacementQueue(finalLine, queue)
     return finalLine
   } else {
     return line
