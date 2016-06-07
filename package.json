@@ -1,6 +1,6 @@
 {
   "name": "gene-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a gdd utility",
   "main": "index.js",
   "standard": {
@@ -28,13 +28,12 @@
   "license": "MIT",
   "dependencies": {
     "block-js": "0.0.2",
-    "bluebird": "^3.3.5",
-    "cuid": "^1.3.8",
-    "debug": "^2.2.0",
+    "regex-parser": "^2.2.1",
+    "semver": "^5.1.0",
     "fs-extra": "^0.26.7",
     "incognito": "^0.1.4",
-    "regex-parser": "^2.2.1",
-    "semver": "^5.1.0"
+    "bluebird": "^3.3.5",
+    "debug": "^2.2.0"
   },
   "devDependencies": {
     "sinon": "^1.17.3",
