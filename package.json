@@ -1,6 +1,6 @@
 {
   "name": "gene-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "a gdd utility",
   "main": "index.js",
   "standard": {
@@ -32,6 +32,7 @@
     "semver": "^5.1.0",
     "fs-extra": "^0.26.7",
     "incognito": "^0.1.4",
+    "cuid": "^1.3.8",
     "bluebird": "^3.3.5",
     "debug": "^2.2.0"
   },
