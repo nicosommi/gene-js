@@ -32,13 +32,27 @@ var _regexParser2 = _interopRequireDefault(_regexParser);
 
 var _getMeta = require('./getMeta.js');
 
+var _cuid = require('cuid');
+
+var _cuid2 = _interopRequireDefault(_cuid);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ensureFile = _get__('Promise').promisify(_get__('fs').ensureFile);
 var stat = _get__('Promise').promisify(_get__('fs').stat);
 
+function flushReplacementQueue(line, queue) {
+  var newLine = line;
+  queue.forEach(function (queueItem) {
+    var regex = new RegExp(queueItem.id, 'g');
+    newLine = newLine.replace(regex, queueItem.realValue);
+  });
+  return newLine;
+}
+
 function executeReplacements(line, replacements) {
   var thereAreReplacements = replacements != null;
+  var queue = [];
   if (thereAreReplacements && line && line.length > 0) {
     var _ret = function () {
       var finalLine = line;
@@ -49,8 +63,15 @@ function executeReplacements(line, replacements) {
         } else {
           key = new RegExp(replacementKey, 'g');
         }
-        finalLine = finalLine.replace(key, replacements[replacementKey]);
+        var queueElement = {
+          id: _get__('cuid')(),
+          realValue: replacements[replacementKey]
+        };
+        finalLine = finalLine.replace(key, queueElement.id);
+
+        queue.push(queueElement);
       });
+      finalLine = _get__('flushReplacementQueue')(finalLine, queue);
       return {
         v: finalLine
       };
@@ -332,6 +353,12 @@ function _get_original__(variableName) {
 
     case 'regexParser':
       return _regexParser2.default;
+
+    case 'cuid':
+      return _cuid2.default;
+
+    case 'flushReplacementQueue':
+      return flushReplacementQueue;
 
     case 'takeMeta':
       return _getMeta.takeMeta;
