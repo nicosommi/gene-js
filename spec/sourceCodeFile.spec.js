@@ -20,11 +20,11 @@ describe('SourceCodeFile', () => {
   beforeEach(() => {
     source = `apple.js`
     sourceTemplate = `${__dirname}/../fixtures/sourceCodeFiles/sources/apple.js`
-    target = `${__dirname}/../fixtures/sourceCodeFiles/results/banana.js`
+    target = `banana.js`
     targetTemplate = `${__dirname}/../fixtures/sourceCodeFiles/sources/banana.js`
 
     options = {
-      force: true, basePath: '${__dirname}/../fixtures/sourceCodeFiles/results/', cleanPath: 'clean'
+      force: true, basePath: `${__dirname}/../fixtures/sourceCodeFiles/results/`, cleanPath: 'clean'
     }
 
     sourceCodeFileName = 'sourceCodeFileName'
