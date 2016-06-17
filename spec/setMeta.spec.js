@@ -17,7 +17,7 @@ describe('setMeta', () => {
       },
       ignoringStamps: ['throwAway']
     }
-    expectedContent = '/* ph replacements */\nclassName, /Banana/g, Banana\n/* endph */\n/* ph ignoringStamps */\nthrowAway\n/* endph */\n'
+    expectedContent = '/* ph replacements */\n/* className, /Banana/g, Banana */\n/* endph */\n/* ph ignoringStamps */\n/* throwAway */\n/* endph */\n'
     filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/anewfile.js`
   })
 
