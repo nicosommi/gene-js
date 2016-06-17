@@ -7,7 +7,7 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _templateObject = _taggedTemplateLiteral(['\n    /* ph replacements */\n    ', '\n    /* endph */\n    /* ph ignoringStamps */\n    ', '\n    /* endph */'], ['\n    /* ph replacements */\n    ', '\n    /* endph */\n    /* ph ignoringStamps */\n    ', '\n    /* endph */']);
+var _templateObject = _taggedTemplateLiteral(['\n    /* ph replacements */\n    /* ', ' */\n    /* endph */\n    /* ph ignoringStamps */\n    /* ', ' */\n    /* endph */'], ['\n    /* ph replacements */\n    /* ', ' */\n    /* endph */\n    /* ph ignoringStamps */\n    /* ', ' */\n    /* endph */']);
 
 exports.default = setMeta;
 
@@ -29,10 +29,17 @@ var stat = _get__('Promise').promisify(_get__('fs').stat);
 var outputFile = _get__('Promise').promisify(_get__('fs').outputFile);
 
 function metaToString(meta) {
-  var replacements = Object.keys(meta.replacements).map(function (replacementKey) {
-    return replacementKey + ', ' + meta.replacements[replacementKey].regex + ', ' + meta.replacements[replacementKey].value;
-  }).join('\n');
-  var ignoringStamps = meta.ignoringStamps.join(', ');
+  var replacements = {};
+  if (meta.replacements) {
+    replacements = Object.keys(meta.replacements).map(function (replacementKey) {
+      return replacementKey + ', ' + meta.replacements[replacementKey].regex + ', ' + meta.replacements[replacementKey].value;
+    }).join('\n');
+  }
+
+  var ignoringStamps = [];
+  if (meta.ignoringStamps) {
+    ignoringStamps = meta.ignoringStamps.join(', ');
+  }
   return _get__('stripIndents')(_templateObject, replacements, ignoringStamps) + '\n';
 }
 
