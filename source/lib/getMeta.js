@@ -95,10 +95,16 @@ export default function getMeta (filePath, options) {
         ignoringStamps: []
       }
 
-      return stat(filePath)
+      let finalPath = filePath
+
+      if (options && options.basePath) {
+        finalPath = `${options.basePath}${filePath}`
+      }
+
+      return stat(finalPath)
         .then(
           () => {
-            return getBlocks(filePath, options)
+            return getBlocks(finalPath, options)
               .then((results) => {
                 let metaInfo = emptyMetaInfo
 
