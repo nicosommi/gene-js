@@ -18,6 +18,10 @@ var _getMeta = require('./getMeta.js');
 
 var _getMeta2 = _interopRequireDefault(_getMeta);
 
+var _setMeta = require('./setMeta.js');
+
+var _setMeta2 = _interopRequireDefault(_setMeta);
+
 var _cleanTo = require('./cleanTo.js');
 
 var _cleanTo2 = _interopRequireDefault(_cleanTo);
@@ -64,6 +68,11 @@ var SourceCodeFile = function () {
           ignoringStamps: ignoringStamps
         });
       });
+    }
+  }, {
+    key: 'setMeta',
+    value: function setMeta(metaObject) {
+      return _get__('setMeta')(this.path, metaObject);
     }
   }, {
     key: 'getFullPath',
@@ -140,6 +149,9 @@ function _get_original__(variableName) {
 
     case 'Promise':
       return _promise2.default;
+
+    case 'setMeta':
+      return _setMeta2.default;
 
     case 'path':
       return _path2.default;

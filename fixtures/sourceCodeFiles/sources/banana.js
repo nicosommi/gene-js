@@ -7,8 +7,6 @@
 
 /* stamp withSeedsSymbol */
 const generateSeeds = Symbol("generateSeeds");
-/* endstamp */
-
 
 export default class Banana {
 	constructor() {
@@ -21,6 +19,7 @@ export default class Banana {
 	[generateSeeds](min, max) {
 		this.seeds = Math.floor((Math.random() * ((max + 1) - min + 1)) + min);
 	}
+
 	/* endstamp */
 
 	eat() {
