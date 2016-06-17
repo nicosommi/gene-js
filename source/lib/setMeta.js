@@ -6,18 +6,25 @@ const stat = Promise.promisify(fs.stat)
 const outputFile = Promise.promisify(fs.outputFile)
 
 function metaToString (meta) {
-  const replacements = Object.keys(meta.replacements).map(
-    replacementKey => {
-      return `${replacementKey}, ${meta.replacements[replacementKey].regex}, ${meta.replacements[replacementKey].value}`
-    }
-  ).join('\n')
-  const ignoringStamps = meta.ignoringStamps.join(', ')
+  let replacements = {}
+  if (meta.replacements) {
+    replacements = Object.keys(meta.replacements).map(
+      replacementKey => {
+        return `${replacementKey}, ${meta.replacements[replacementKey].regex}, ${meta.replacements[replacementKey].value}`
+      }
+    ).join('\n')
+  }
+
+  let ignoringStamps = []
+  if (meta.ignoringStamps) {
+    ignoringStamps = meta.ignoringStamps.join(', ')
+  }
   return stripIndents `
     /* ph replacements */
-    ${replacements}
+    /* ${replacements} */
     /* endph */
     /* ph ignoringStamps */
-    ${ignoringStamps}
+    /* ${ignoringStamps} */
     /* endph */` + '\n'
 }
 

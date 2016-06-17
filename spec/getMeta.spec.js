@@ -2,7 +2,8 @@ import getMeta from '../source/lib/getMeta.js'
 
 describe('getMeta', () => {
   let metaExpected,
-    filePath
+    filePath,
+    options
 
   beforeEach(() => {
     metaExpected = {
@@ -11,29 +12,39 @@ describe('getMeta', () => {
       },
       ignoringStamps: ['throwAway']
     }
-    filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/banana.js`
+
+    options = {
+      basePath: `${__dirname}/../`
+    }
+    filePath = 'fixtures/sourceCodeFiles/sources/banana.js'
   })
 
   it('should return a proper meta object from a file', () => {
-    return getMeta(filePath)
+    return getMeta(filePath, options)
       .should.be.fulfilledWith(metaExpected)
   })
 
   it('should return a proper meta object from the options', () => {
     const opinnionated = { replacements: [1], ignoringStamps: [2, 3] }
-    return getMeta(filePath, opinnionated)
+    options.replacements = opinnionated.replacements
+    options.ignoringStamps = opinnionated.ignoringStamps
+    return getMeta(filePath, options)
       .should.be.fulfilledWith(opinnionated)
   })
 
   it('should return a proper meta object from the options even if just ignoringStamps are provided', () => {
     const opinnionated = { replacements: undefined, ignoringStamps: [2] }
-    return getMeta(filePath, opinnionated)
+    options.replacements = opinnionated.replacements
+    options.ignoringStamps = opinnionated.ignoringStamps
+    return getMeta(filePath, options)
       .should.be.fulfilledWith(opinnionated)
   })
 
   it('should return a proper meta object from the options even if just replacements are provided', () => {
     const opinnionated = { replacements: [1], ignoringStamps: undefined }
-    return getMeta(filePath, opinnionated)
+    options.replacements = opinnionated.replacements
+    options.ignoringStamps = opinnionated.ignoringStamps
+    return getMeta(filePath, options)
       .should.be.fulfilledWith(opinnionated)
   })
 
