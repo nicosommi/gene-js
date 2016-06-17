@@ -36,6 +36,13 @@ export default class SwComponent {
       })
   }
 
+  setMeta (metaObject) {
+    return Promise.all(metaObject.swBlocks.map(swBlock => {
+      const block = new SwBlock(swBlock.name, swBlock.type)
+      return block.setMeta(swBlock)
+    }))
+  }
+
   synchronizeWith (rootBlock) {
     console.log(chalk.magenta(`synchronize component started`))
     let promise

@@ -242,5 +242,55 @@ describe('SwBlock', () => {
           })
       })
     })
+
+    describe('.setMeta', () => {
+      let setMetaSpy,
+        firstSourceCodeFileJson,
+        secondSourceCodeFileJson
+
+      beforeEach(() => {
+        setMetaSpy = sinon.spy(() => Promise.resolve())
+        SourceCodeFile.__Rewire__('setMeta', setMetaSpy)
+        firstSourceCodeFileJson = {
+          name: 'banana',
+          path: 'banana.js',
+          replacements: {
+            className: {
+              regex: '/Banana/g',
+              value: 'Banana'
+            }
+          },
+          ignoringStamps: ['throwAway']
+        }
+
+        secondSourceCodeFileJson = {
+          name: 'banana',
+          path: 'banana.js',
+          replacements: {
+            className: {
+              regex: '/Orange/g',
+              value: 'Orange'
+            }
+          },
+          ignoringStamps: []
+        }
+
+        swBlock = new SwBlock(name, type, version)
+        return swBlock.setMeta({
+          sourceCodeFiles: [
+            firstSourceCodeFileJson,
+            secondSourceCodeFileJson
+          ]
+        })
+      })
+
+      it('should allow to set the meta for the first file', () => {
+        sinon.assert.calledWith(setMetaSpy, firstSourceCodeFileJson.path, firstSourceCodeFileJson)
+      })
+
+      it('should allow to set the meta information for the second file', () => {
+        sinon.assert.calledWith(setMetaSpy, secondSourceCodeFileJson.path, secondSourceCodeFileJson)
+      })
+    })
   })
 })

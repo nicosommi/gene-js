@@ -11,7 +11,8 @@ describe('SwComponent', () => {
     constructorSpy,
     addSourceCodeFilesSpy,
     cleanToSpy,
-    getMetaSpy
+    getMetaSpy,
+    setMetaSpy
 
   class SwBlockClass {
     constructor () {
@@ -28,6 +29,10 @@ describe('SwComponent', () => {
 
     getMeta () {
       return getMetaSpy()
+    }
+
+    setMeta (...args) {
+      return setMetaSpy(...args)
     }
 
     clean () {
@@ -51,6 +56,8 @@ describe('SwComponent', () => {
         sourceCodeFiles: []
       }
     ))
+
+    setMetaSpy = sinon.spy(() => Promise.resolve())
     synchronizeSpy = sinon.spy(() => Promise.resolve())
     constructorSpy = sinon.spy(() => Promise.resolve())
     addSourceCodeFilesSpy = sinon.spy(() => Promise.resolve())
@@ -200,6 +207,27 @@ describe('SwComponent', () => {
               sourceCodeFiles: []
             }]
           })
+      })
+    })
+
+    describe('.setMeta', () => {
+      let componentJson,
+        firstBlock,
+        secondBlock
+
+      beforeEach(() => {
+        firstBlock = {name: 'backboneui', type: 'uimvc', version: '0.0.1'}
+        secondBlock = {name: 'reactui', type: 'uiv', version: '0.0.1'}
+        componentJson = { swBlocks: [firstBlock, secondBlock] }
+        return swComponent.setMeta(componentJson)
+      })
+
+      it('should call set meta for the first block with the right parameters', () => {
+        sinon.assert.calledWith(setMetaSpy, firstBlock)
+      })
+
+      it('should call set meta for the second block with the right parameters', () => {
+        sinon.assert.calledWith(setMetaSpy, secondBlock)
       })
     })
   })

@@ -138,5 +138,24 @@ describe('SourceCodeFile', () => {
           })
       })
     })
+
+    describe('.setMeta', () => {
+      let setMetaSpy,
+        filePath,
+        metaObject
+
+      beforeEach(() => {
+        setMetaSpy = sinon.spy(() => Promise.resolve())
+        SourceCodeFile.__Rewire__('setMeta', setMetaSpy)
+        filePath = 'apath'
+        metaObject = { replacements: {}, ignoringStamps: [] }
+        sourceCodeFile = new SourceCodeFile(sourceCodeFileName, filePath)
+        return sourceCodeFile.setMeta(metaObject)
+      })
+
+      it('should call setMeta with the proper parameters', () => {
+        sinon.assert.calledWith(setMetaSpy, filePath, metaObject)
+      })
+    })
   })
 })

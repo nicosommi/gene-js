@@ -79,6 +79,14 @@ var SwBlock = function () {
       });
     }
   }, {
+    key: 'setMeta',
+    value: function setMeta(metaObject) {
+      return _get__('Promise').all(metaObject.sourceCodeFiles.map(function (sourceCodeFile) {
+        var scf = new (_get__('SourceCodeFile'))(sourceCodeFile.name, sourceCodeFile.path);
+        return scf.setMeta(sourceCodeFile);
+      }));
+    }
+  }, {
     key: 'synchronizeWith',
     value: function synchronizeWith(rootBlock) {
       var _this3 = this;

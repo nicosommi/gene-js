@@ -70,6 +70,14 @@ var SwComponent = function () {
       });
     }
   }, {
+    key: 'setMeta',
+    value: function setMeta(metaObject) {
+      return _get__('Promise').all(metaObject.swBlocks.map(function (swBlock) {
+        var block = new (_get__('SwBlock'))(swBlock.name, swBlock.type);
+        return block.setMeta(swBlock);
+      }));
+    }
+  }, {
     key: 'synchronizeWith',
     value: function synchronizeWith(rootBlock) {
       console.log(_get__('chalk').magenta('synchronize component started'));

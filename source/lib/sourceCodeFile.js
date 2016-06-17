@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import synchronize from './synchronize.js'
 import getMeta from './getMeta.js'
+import setMeta from './setMeta.js'
 import cleanTo from './cleanTo.js'
 import Promise from './promise.js'
 import path from 'path'
@@ -25,6 +26,10 @@ export default class SourceCodeFile {
           ignoringStamps
         })
       })
+  }
+
+  setMeta (metaObject) {
+    return setMeta(this.path, metaObject)
   }
 
   getFullPath () {

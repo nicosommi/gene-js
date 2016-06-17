@@ -37,6 +37,13 @@ export default class SwBlock {
       })
   }
 
+  setMeta (metaObject) {
+    return Promise.all(metaObject.sourceCodeFiles.map(sourceCodeFile => {
+      const scf = new SourceCodeFile(sourceCodeFile.name, sourceCodeFile.path)
+      return scf.setMeta(sourceCodeFile)
+    }))
+  }
+
   synchronizeWith (rootBlock) {
     return new Promise(
       (resolve, reject) => {
