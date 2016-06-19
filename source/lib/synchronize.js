@@ -58,8 +58,8 @@ export function executeReplacements (line, replacements) {
 
 function mergeReplacements (sourceReplacements, targetReplacements) {
   const replacements = {}
-  const sourceReplacementKeys = Object.keys(sourceReplacements)
-  const targetReplacementKeys = Object.keys(targetReplacements)
+  const sourceReplacementKeys = sourceReplacements ? Object.keys(sourceReplacements) : []
+  const targetReplacementKeys = targetReplacements ? Object.keys(targetReplacements) : []
   targetReplacementKeys.forEach(
     targetReplacementKey => {
       const matchingSourceReplacementKey = sourceReplacementKeys.find(sourceReplacementKey => (sourceReplacementKey === targetReplacementKey))
@@ -81,8 +81,8 @@ function takeOptions (sourceBlocks, targetBlocks, commentStringStart, commentStr
   const { sourceReplacements, sourceIgnoringStamps } = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps }
   const { replacements, ignoringStamps } = takeMeta(targetBlocks, commentStringStart, commentStringEnd)
   options.replacements = mergeReplacements(sourceReplacements, replacements)
-  options.ignoringStamps = ignoringStamps
-  options.sourceIgnoringStamps = sourceIgnoringStamps
+  options.ignoringStamps = ignoringStamps || []
+  options.sourceIgnoringStamps = sourceIgnoringStamps || []
   return options
 }
 

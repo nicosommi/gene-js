@@ -35,7 +35,7 @@ function takeReplacements (blocks, commentStringStart, commentStringEnd) {
       return {}
     }
   } else {
-    return {}
+    return undefined
   }
 }
 
@@ -58,7 +58,7 @@ function takeIgnoringStamps (blocks, commentStringStart, commentStringEnd) {
       return []
     }
   } else {
-    return []
+    return undefined
   }
 }
 
