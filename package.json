@@ -1,6 +1,6 @@
 {
   "name": "gene-js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "a gdd utility",
   "main": "index.js",
   "standard": {
@@ -58,9 +58,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nicosommi/gddify.git"
+    "url": "git+https://github.com/nicosommi/gene-js.git"
   },
   "readmeFilename": "README.md",
   "contributors": [],
-  "homepage": "https://github.com/nicosommi/gddify"
+  "homepage": "https://github.com/nicosommi/gene-js"
 }
