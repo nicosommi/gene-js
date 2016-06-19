@@ -118,8 +118,8 @@ describe('SourceCodeFile', () => {
           .should.be.fulfilledWith({
             name: sourceCodeFileName,
             path,
-            replacements: {},
-            ignoringStamps: []
+            replacements: undefined,
+            ignoringStamps: undefined
           })
       })
 

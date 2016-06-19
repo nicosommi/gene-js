@@ -57,8 +57,8 @@ describe('getMeta', () => {
       it('should return ok when no meta in file', () => {
         return getMeta(filePath)
           .should.be.fulfilledWith({
-            replacements: { },
-            ignoringStamps: []
+            replacements: undefined,
+            ignoringStamps: undefined
           })
       })
     })
@@ -72,7 +72,7 @@ describe('getMeta', () => {
         it('should return ok when no meta in file', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
-              replacements: {},
+              replacements: undefined,
               ignoringStamps: ['throwAway']
             })
         })
@@ -102,26 +102,21 @@ describe('getMeta', () => {
         it('should return ok when no meta in file', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
-              replacements: {},
-              ignoringStamps: []
+              replacements: undefined,
+              ignoringStamps: undefined
             })
         })
       })
 
       describe('(empty)', () => {
         beforeEach(() => {
-          filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/orange.js`
+          filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/incompleteApple.js`
         })
 
         it('should return ok when no meta in file', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
-              replacements: {
-                className: {
-                  regex: '/Orange/g',
-                  value: 'Orange'
-                }
-              },
+              replacements: {},
               ignoringStamps: []
             })
         })

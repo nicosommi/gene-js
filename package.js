@@ -1,6 +1,6 @@
 /* ph replacements */
 /* name, /'name': 'gene-js'/g, 'name': 'gene-js' */
-/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.0.7' */
+/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.0.8' */
 /* description, /'description': 'a\ gdd\ utility'/g, 'description': 'a gdd utility' */
 /* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index.js' */
 /* license, /MIT/g, MIT */
@@ -14,7 +14,7 @@
 module.exports =
 {
   'name': 'gene-js',
-  'version': '0.0.7',
+  'version': '0.0.8',
   'description': 'a gdd utility',
   'main': 'index.js',
   'standard': {

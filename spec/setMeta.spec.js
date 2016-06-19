@@ -51,4 +51,24 @@ describe('setMeta', () => {
         .should.be.fulfilledWith(expectedContent)
     })
   })
+
+  describe('(when meta data is undefined)', () => {
+    beforeEach(() => {
+      newMeta = {
+        replacements: undefined,
+        ignoringStamps: undefined
+      }
+      expectedContent = ''
+      return setMeta(filePath, newMeta)
+    })
+
+    afterEach(() => {
+      return remove(filePath)
+    })
+
+    it('should not create place holders for them', () => {
+      return readFile(filePath, 'utf8')
+        .should.be.fulfilledWith(expectedContent)
+    })
+  })
 })

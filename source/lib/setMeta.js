@@ -7,25 +7,29 @@ const outputFile = Promise.promisify(fs.outputFile)
 
 function metaToString (meta) {
   let replacements = {}
+  let result = ''
   if (meta.replacements) {
     replacements = Object.keys(meta.replacements).map(
       replacementKey => {
         return `${replacementKey}, ${meta.replacements[replacementKey].regex}, ${meta.replacements[replacementKey].value}`
       }
     ).join('\n')
+
+    result += stripIndents `
+      /* ph replacements */
+      /* ${replacements} */
+      /* endph */` + '\n'
   }
 
   let ignoringStamps = []
   if (meta.ignoringStamps) {
     ignoringStamps = meta.ignoringStamps.join(', ')
+    result += stripIndents `
+      /* ph ignoringStamps */
+      /* ${ignoringStamps} */
+      /* endph */` + '\n'
   }
-  return stripIndents `
-    /* ph replacements */
-    /* ${replacements} */
-    /* endph */
-    /* ph ignoringStamps */
-    /* ${ignoringStamps} */
-    /* endph */` + '\n'
+  return result
 }
 
 export default function setMeta (filePath, meta) {
