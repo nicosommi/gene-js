@@ -66,19 +66,19 @@ describe('synchronize', () => {
         return synchronizeMechanism('apple.js', 'banana.js', 'banana.js')
       })
 
-      it('shuold allow one line array ignored stamps separated by comma', () => {
+      it('should allow one line array ignored stamps separated by comma', () => {
         return synchronizeMechanism('apple.js', 'sedlessBanana.js', 'sedlessBanana.js')
       })
 
-      it('shuold allow multiline ignoring stamps', () => {
+      it('should allow multiline ignoring stamps', () => {
         return synchronizeMechanism('apple.js', 'sedlessBanana.js', 'sedlessBanana.js')
       })
 
-      it('shuold allow files with no ignoring stamps ph', () => {
+      it('should allow files with no ignoring stamps ph', () => {
         return synchronizeMechanism('apple.js', 'orange.js', 'orange.js')
       })
 
-      it('shuold allow ignore the stamp content if the source is already ignoring that stamp', () => {
+      it('should allow ignore the stamp content if the source is already ignoring that stamp', () => {
         return synchronizeMechanism('alreadySedlessBanana.js', 'apple.js', 'apple.js')
       })
 
@@ -105,7 +105,7 @@ describe('synchronize', () => {
       })
 
       it('should throw if the target has a replacement that was not found on the source', () => {
-        return synchronizeMechanism('staticKiwi.js', 'banana.js', 'banana.js', null, true)
+        return synchronizeMechanism('incompleteApple.js', 'banana.js', 'banana.js', null, true)
           .should.be.rejectedWith(/Missing replacement key on the source/)
       })
 

@@ -57,22 +57,47 @@ export function executeReplacements (line, replacements) {
 }
 
 function mergeReplacements (sourceReplacements, targetReplacements) {
-  const replacements = {}
-  const sourceReplacementKeys = sourceReplacements ? Object.keys(sourceReplacements) : []
-  const targetReplacementKeys = targetReplacements ? Object.keys(targetReplacements) : []
-  targetReplacementKeys.forEach(
-    targetReplacementKey => {
-      const matchingSourceReplacementKey = sourceReplacementKeys.find(sourceReplacementKey => (sourceReplacementKey === targetReplacementKey))
-      if (matchingSourceReplacementKey) {
-        const regex = sourceReplacements[matchingSourceReplacementKey].regex
-        const value = targetReplacements[targetReplacementKey].value
-        replacements[regex] = value
-      } else {
-        throw new Error(`Missing replacement key on the source (${targetReplacementKey})`)
-      }
+  console.log('mergeReplacements', { sourceReplacements, targetReplacements})
+  if (!sourceReplacements) {
+    if (targetReplacements) {
+      const replacements = {}
+      Object.keys(targetReplacements).forEach(
+        targetReplacementKey => {
+          console.log('mergeReplacementKey', { targetReplacementKey })
+          replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value
+        }
+      )
+      return replacements
+    } else {
+      return undefined
     }
-  )
-  return replacements
+  } else if (!targetReplacements) {
+    const replacements = {}
+    Object.keys(sourceReplacements).forEach(
+      sourceReplacementKey => {
+        console.log('mergeReplacementKey', { sourceReplacementKey })
+        replacements[sourceReplacements[sourceReplacementKey].regex] = sourceReplacements[sourceReplacementKey].value
+      }
+    )
+    return replacements
+  } else {
+    const replacements = {}
+    const sourceReplacementKeys = Object.keys(sourceReplacements)
+    const targetReplacementKeys = Object.keys(targetReplacements)
+    targetReplacementKeys.forEach(
+      targetReplacementKey => {
+        const matchingSourceReplacementKey = sourceReplacementKeys.find(sourceReplacementKey => (sourceReplacementKey === targetReplacementKey))
+        if (matchingSourceReplacementKey) {
+          const regex = sourceReplacements[matchingSourceReplacementKey].regex
+          const value = targetReplacements[targetReplacementKey].value
+          replacements[regex] = value
+        } else {
+          throw new Error(`Missing replacement key on the source (${targetReplacementKey})`)
+        }
+      }
+    )
+    return replacements
+  }
 }
 
 function takeOptions (sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
@@ -81,8 +106,8 @@ function takeOptions (sourceBlocks, targetBlocks, commentStringStart, commentStr
   const { sourceReplacements, sourceIgnoringStamps } = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps }
   const { replacements, ignoringStamps } = takeMeta(targetBlocks, commentStringStart, commentStringEnd)
   options.replacements = mergeReplacements(sourceReplacements, replacements)
-  options.ignoringStamps = ignoringStamps || []
-  options.sourceIgnoringStamps = sourceIgnoringStamps || []
+  options.ignoringStamps = ignoringStamps
+  options.sourceIgnoringStamps = sourceIgnoringStamps
   return options
 }
 
@@ -214,24 +239,29 @@ export default function synchronize (source, target, options) {
                           }
                       )
 
-                      const stampBegin = sourceStampBlocks.find(
-                        templateStamp => {
-                          return (templateStamp.from === lineNumber)
-                        }
-                      )
-
-                      const stampEnd = sourceStampBlocks.find(
-                        templateStamp => {
-                          return (templateStamp.to === lineNumber)
-                        }
-                      )
-
                       const addLine = !ignoreLines
-                      const isSpecialLine = (placeholder || endPlaceholder || stampBegin || stampEnd)
+                      let isSpecialLine = (placeholder || endPlaceholder)
+                      let stampBegin
+                      let stampEnd
+                      if (sourceStampBlocks) {
+                        stampBegin = sourceStampBlocks.find(
+                          templateStamp => {
+                            return (templateStamp.from === lineNumber)
+                          }
+                        )
+
+                        stampEnd = sourceStampBlocks.find(
+                          templateStamp => {
+                            return (templateStamp.to === lineNumber)
+                          }
+                        )
+
+                        isSpecialLine = (placeholder || endPlaceholder || stampBegin || stampEnd)
+                      }
 
                       if (addLine) {
                         let finalLine = line
-                        if (!isSpecialLine) { // do not replace ph/stamp lines!
+                        if (!isSpecialLine && options.replacements) { // do not replace ph/stamp lines!
                           finalLine = executeReplacements(line, options.replacements)
                         }
                         concreteFileContent += `${finalLine}\n`
@@ -253,7 +283,7 @@ export default function synchronize (source, target, options) {
                           }
                         }
                       } else {
-                        if (stampBegin) {
+                        if (stampBegin && options.ignoringStamps) {
                           ignoreLines = true
                           const ignored = options.ignoringStamps.find(
                             stampsToIgnore => {
@@ -294,7 +324,7 @@ export default function synchronize (source, target, options) {
                             concreteFileContent += `` // nothing
                           }
                         } else {
-                          if (stampEnd) {
+                          if (stampEnd && options.ignoringStamps) {
                             ignoreLines = false
                             concreteFileContent += `${line}\n`
                           }
