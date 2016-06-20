@@ -57,13 +57,13 @@ export function executeReplacements (line, replacements) {
 }
 
 function mergeReplacements (sourceReplacements, targetReplacements) {
-  console.log('mergeReplacements', { sourceReplacements, targetReplacements})
+  // console.log('mergeReplacements', { sourceReplacements, targetReplacements})
   if (!sourceReplacements) {
     if (targetReplacements) {
       const replacements = {}
       Object.keys(targetReplacements).forEach(
         targetReplacementKey => {
-          console.log('mergeReplacementKey', { targetReplacementKey })
+          // console.log('mergeReplacementKey', { targetReplacementKey })
           replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value
         }
       )

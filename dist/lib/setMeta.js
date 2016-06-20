@@ -7,7 +7,8 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _templateObject = _taggedTemplateLiteral(['\n    /* ph replacements */\n    /* ', ' */\n    /* endph */\n    /* ph ignoringStamps */\n    /* ', ' */\n    /* endph */'], ['\n    /* ph replacements */\n    /* ', ' */\n    /* endph */\n    /* ph ignoringStamps */\n    /* ', ' */\n    /* endph */']);
+var _templateObject = _taggedTemplateLiteral(['\n      /* ph replacements */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph replacements */\n      /* ', ' */\n      /* endph */']),
+    _templateObject2 = _taggedTemplateLiteral(['\n      /* ph ignoringStamps */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph ignoringStamps */\n      /* ', ' */\n      /* endph */']);
 
 exports.default = setMeta;
 
@@ -30,20 +31,26 @@ var outputFile = _get__('Promise').promisify(_get__('fs').outputFile);
 
 function metaToString(meta) {
   var replacements = {};
+  var result = '';
   if (meta.replacements) {
     replacements = Object.keys(meta.replacements).map(function (replacementKey) {
       return replacementKey + ', ' + meta.replacements[replacementKey].regex + ', ' + meta.replacements[replacementKey].value;
     }).join('\n');
+
+    result += _get__('stripIndents')(_templateObject, replacements) + '\n';
   }
 
   var ignoringStamps = [];
   if (meta.ignoringStamps) {
     ignoringStamps = meta.ignoringStamps.join(', ');
+    result += _get__('stripIndents')(_templateObject2, ignoringStamps) + '\n';
   }
-  return _get__('stripIndents')(_templateObject, replacements, ignoringStamps) + '\n';
+  return result;
 }
 
-function setMeta(filePath, meta) {
+function setMeta(filePath, meta, options) {
+  console.log('set Meta', { filePath: filePath });
+
   return _get__('stat')(filePath).catch(function () {
     return _get__('outputFile')(filePath, _get__('metaToString')(meta));
   });
