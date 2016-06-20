@@ -84,22 +84,61 @@ function executeReplacements(line, replacements) {
 }
 
 function mergeReplacements(sourceReplacements, targetReplacements) {
-  var replacements = {};
-  var sourceReplacementKeys = Object.keys(sourceReplacements);
-  var targetReplacementKeys = Object.keys(targetReplacements);
-  targetReplacementKeys.forEach(function (targetReplacementKey) {
-    var matchingSourceReplacementKey = sourceReplacementKeys.find(function (sourceReplacementKey) {
-      return sourceReplacementKey === targetReplacementKey;
-    });
-    if (matchingSourceReplacementKey) {
-      var regex = sourceReplacements[matchingSourceReplacementKey].regex;
-      var value = targetReplacements[targetReplacementKey].value;
-      replacements[regex] = value;
+  // console.log('mergeReplacements', { sourceReplacements, targetReplacements})
+  if (!sourceReplacements) {
+    if (targetReplacements) {
+      var _ret2 = function () {
+        var replacements = {};
+        Object.keys(targetReplacements).forEach(function (targetReplacementKey) {
+          // console.log('mergeReplacementKey', { targetReplacementKey })
+          replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value;
+        });
+        return {
+          v: replacements
+        };
+      }();
+
+      if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
     } else {
-      throw new Error('Missing replacement key on the source (' + targetReplacementKey + ')');
+      return undefined;
     }
-  });
-  return replacements;
+  } else if (!targetReplacements) {
+    var _ret3 = function () {
+      var replacements = {};
+      Object.keys(sourceReplacements).forEach(function (sourceReplacementKey) {
+        console.log('mergeReplacementKey', { sourceReplacementKey: sourceReplacementKey });
+        replacements[sourceReplacements[sourceReplacementKey].regex] = sourceReplacements[sourceReplacementKey].value;
+      });
+      return {
+        v: replacements
+      };
+    }();
+
+    if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
+  } else {
+    var _ret4 = function () {
+      var replacements = {};
+      var sourceReplacementKeys = Object.keys(sourceReplacements);
+      var targetReplacementKeys = Object.keys(targetReplacements);
+      targetReplacementKeys.forEach(function (targetReplacementKey) {
+        var matchingSourceReplacementKey = sourceReplacementKeys.find(function (sourceReplacementKey) {
+          return sourceReplacementKey === targetReplacementKey;
+        });
+        if (matchingSourceReplacementKey) {
+          var regex = sourceReplacements[matchingSourceReplacementKey].regex;
+          var value = targetReplacements[targetReplacementKey].value;
+          replacements[regex] = value;
+        } else {
+          throw new Error('Missing replacement key on the source (' + targetReplacementKey + ')');
+        }
+      });
+      return {
+        v: replacements
+      };
+    }();
+
+    if ((typeof _ret4 === 'undefined' ? 'undefined' : _typeof(_ret4)) === "object") return _ret4.v;
+  }
 }
 
 function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
@@ -231,20 +270,25 @@ function synchronize(source, target, options) {
             return templatePlaceholder.from === lineNumber;
           });
 
-          var stampBegin = sourceStampBlocks.find(function (templateStamp) {
-            return templateStamp.from === lineNumber;
-          });
-
-          var stampEnd = sourceStampBlocks.find(function (templateStamp) {
-            return templateStamp.to === lineNumber;
-          });
-
           var addLine = !ignoreLines;
-          var isSpecialLine = placeholder || endPlaceholder || stampBegin || stampEnd;
+          var isSpecialLine = placeholder || endPlaceholder;
+          var stampBegin = void 0;
+          var stampEnd = void 0;
+          if (sourceStampBlocks) {
+            stampBegin = sourceStampBlocks.find(function (templateStamp) {
+              return templateStamp.from === lineNumber;
+            });
+
+            stampEnd = sourceStampBlocks.find(function (templateStamp) {
+              return templateStamp.to === lineNumber;
+            });
+
+            isSpecialLine = placeholder || endPlaceholder || stampBegin || stampEnd;
+          }
 
           if (addLine) {
             var finalLine = line;
-            if (!isSpecialLine) {
+            if (!isSpecialLine && options.replacements) {
               // do not replace ph/stamp lines!
               finalLine = _get__('executeReplacements')(line, options.replacements);
             }
@@ -264,7 +308,7 @@ function synchronize(source, target, options) {
               }
             }
           } else {
-            if (stampBegin) {
+            if (stampBegin && options.ignoringStamps) {
               ignoreLines = true;
               var ignored = options.ignoringStamps.find(function (stampsToIgnore) {
                 return stampsToIgnore === stampBegin.name;
@@ -299,7 +343,7 @@ function synchronize(source, target, options) {
                 concreteFileContent += ''; // nothing
               }
             } else {
-                if (stampEnd) {
+                if (stampEnd && options.ignoringStamps) {
                   ignoreLines = false;
                   concreteFileContent += line + '\n';
                 }

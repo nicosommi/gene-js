@@ -5,6 +5,8 @@ import del from 'del'
 import sinon from 'sinon'
 
 const copyFile = Promise.promisify(fs.copy)
+const remove = Promise.promisify(fs.remove)
+const readFile = Promise.promisify(fs.readFile)
 
 describe('SourceCodeFile', () => {
   let sourceCodeFile,
@@ -156,6 +158,43 @@ describe('SourceCodeFile', () => {
       it('should call setMeta with the proper parameters', () => {
         sinon.assert.calledWith(setMetaSpy, filePath, metaObject)
       })
+    })
+  })
+
+  describe('(when get meta, set meta and synchronize happens)', () => {
+    let source, target, sourceFilePath, targetFilePath
+
+    beforeEach(() => {
+      SourceCodeFile.__ResetDependency__('synchronize')
+      SourceCodeFile.__ResetDependency__('cleanTo')
+      SourceCodeFile.__ResetDependency__('setMeta')
+      SourceCodeFile.__ResetDependency__('getMeta')
+      // get meta from source
+      sourceFilePath = `emptyVegetable.js`
+      source = new SourceCodeFile('source', sourceFilePath, {basePath: `${__dirname}/../fixtures/sourceCodeFiles/sources/`})
+      targetFilePath = `anewemptyvegetable.js`
+      target = new SourceCodeFile('target', targetFilePath, {basePath: `${__dirname}/../fixtures/sourceCodeFiles/results/`})
+      return source.getMeta(sourceFilePath)
+        .then(meta => target.setMeta(meta))
+        .then(() => target.synchronizeWith(source))
+    })
+
+    afterEach(() => {
+      return remove(`${target.options.basePath}${target.path}`)
+    })
+
+    it('should work with a clean file', () => {
+      const expectedFilePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/emptyVegetable.js`
+      let left = ''
+      return readFile(expectedFilePath, 'utf8')
+        .then(content => {
+          left = content
+          return Promise.resolve()
+        })
+        .then(() => readFile(`${target.options.basePath}${target.path}`, 'utf8'))
+        .then(right => {
+          right.should.equal(left)
+        })
     })
   })
 })

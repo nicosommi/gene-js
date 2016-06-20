@@ -66,7 +66,7 @@ function takeReplacements(blocks, commentStringStart, commentStringEnd) {
 
     if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
   } else {
-    return {};
+    return undefined;
   }
 }
 
@@ -97,7 +97,7 @@ function takeIgnoringStamps(blocks, commentStringStart, commentStringEnd) {
 
     if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
   } else {
-    return [];
+    return undefined;
   }
 }
 
