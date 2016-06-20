@@ -56,7 +56,7 @@ var SourceCodeFile = function () {
     value: function getMeta() {
       var _this = this;
 
-      return _get__('getMeta')(this.path, this.options).then(function (fileMetaInfo) {
+      return _get__('getMeta')(this.getFullPath(), this.options).then(function (fileMetaInfo) {
         var replacements = fileMetaInfo.replacements;
         var ignoringStamps = fileMetaInfo.ignoringStamps;
 
@@ -72,12 +72,16 @@ var SourceCodeFile = function () {
   }, {
     key: 'setMeta',
     value: function setMeta(metaObject) {
-      return _get__('setMeta')(this.path, metaObject);
+      return _get__('setMeta')(this.getFullPath(), metaObject, this.options);
     }
   }, {
     key: 'getFullPath',
     value: function getFullPath() {
-      return _get__('path').normalize(this.options.basePath + '/' + this.path);
+      var basePath = '';
+      if (this.options && this.options.basePath) {
+        basePath = this.options.basePath;
+      }
+      return _get__('path').normalize('' + basePath + this.path);
     }
   }, {
     key: 'getFullCleanPath',

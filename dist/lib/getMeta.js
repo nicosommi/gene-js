@@ -133,14 +133,8 @@ function getMeta(filePath, options) {
       ignoringStamps: []
     };
 
-    var finalPath = filePath;
-
-    if (options && options.basePath) {
-      finalPath = '' + options.basePath + filePath;
-    }
-
-    return _get__('stat')(finalPath).then(function () {
-      return _get__('getBlocks')(finalPath, options).then(function (results) {
+    return _get__('stat')(filePath).then(function () {
+      return _get__('getBlocks')(filePath, options).then(function (results) {
         var metaInfo = emptyMetaInfo;
 
         if (!options || !options.replacements && !options.ignoringStamps) {

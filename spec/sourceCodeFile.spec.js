@@ -114,8 +114,8 @@ describe('SourceCodeFile', () => {
 
     describe('.getMeta', () => {
       it('should return undefined if there is no meta info', () => {
-        const path = `${__dirname}/../fixtures/sourceCodeFiles/sources/emptyVegetable.js`
-        sourceCodeFile = new SourceCodeFile(sourceCodeFileName, path)
+        const path = `emptyVegetable.js`
+        sourceCodeFile = new SourceCodeFile(sourceCodeFileName, path, { basePath: `${__dirname}/../fixtures/sourceCodeFiles/sources/` })
         return sourceCodeFile.getMeta()
           .should.be.fulfilledWith({
             name: sourceCodeFileName,
@@ -151,7 +151,7 @@ describe('SourceCodeFile', () => {
         SourceCodeFile.__Rewire__('setMeta', setMetaSpy)
         filePath = 'apath'
         metaObject = { replacements: {}, ignoringStamps: [] }
-        sourceCodeFile = new SourceCodeFile(sourceCodeFileName, filePath)
+        sourceCodeFile = new SourceCodeFile(sourceCodeFileName, filePath, { basePath: `` })
         return sourceCodeFile.setMeta(metaObject)
       })
 

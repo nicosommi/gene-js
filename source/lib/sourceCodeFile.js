@@ -15,7 +15,7 @@ export default class SourceCodeFile {
   }
 
   getMeta () {
-    return getMeta(this.path, this.options)
+    return getMeta(this.getFullPath(), this.options)
       .then((fileMetaInfo) => {
         let { replacements, ignoringStamps } = fileMetaInfo
 
@@ -29,11 +29,15 @@ export default class SourceCodeFile {
   }
 
   setMeta (metaObject) {
-    return setMeta(this.path, metaObject)
+    return setMeta(this.getFullPath(), metaObject, this.options)
   }
 
   getFullPath () {
-    return path.normalize(`${this.options.basePath}/${this.path}`)
+    let basePath = ''
+    if (this.options && this.options.basePath) {
+      basePath = this.options.basePath
+    }
+    return path.normalize(`${basePath}${this.path}`)
   }
 
   getFullCleanPath () {
