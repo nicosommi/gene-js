@@ -37,11 +37,11 @@ export default class SourceCodeFile {
     if (this.options && this.options.basePath) {
       basePath = this.options.basePath
     }
-    return path.normalize(`${basePath}${this.path}`)
+    return path.normalize(path.join(basePath, this.path))
   }
 
   getFullCleanPath () {
-    return path.normalize(`${this.options.basePath}/${this.options.cleanPath}/${this.path}`)
+    return path.normalize(path.join(this.options.basePath, this.options.cleanPath, this.path))
   }
 
   synchronizeWith (rootSourceCodeFile) {

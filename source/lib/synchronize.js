@@ -57,13 +57,11 @@ export function executeReplacements (line, replacements) {
 }
 
 function mergeReplacements (sourceReplacements, targetReplacements) {
-  // console.log('mergeReplacements', { sourceReplacements, targetReplacements})
   if (!sourceReplacements) {
     if (targetReplacements) {
       const replacements = {}
       Object.keys(targetReplacements).forEach(
         targetReplacementKey => {
-          // console.log('mergeReplacementKey', { targetReplacementKey })
           replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value
         }
       )
@@ -75,7 +73,6 @@ function mergeReplacements (sourceReplacements, targetReplacements) {
     const replacements = {}
     Object.keys(sourceReplacements).forEach(
       sourceReplacementKey => {
-        console.log('mergeReplacementKey', { sourceReplacementKey })
         replacements[sourceReplacements[sourceReplacementKey].regex] = sourceReplacements[sourceReplacementKey].value
       }
     )

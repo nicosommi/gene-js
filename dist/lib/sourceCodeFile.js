@@ -81,12 +81,12 @@ var SourceCodeFile = function () {
       if (this.options && this.options.basePath) {
         basePath = this.options.basePath;
       }
-      return _get__('path').normalize('' + basePath + this.path);
+      return _get__('path').normalize(_get__('path').join(basePath, this.path));
     }
   }, {
     key: 'getFullCleanPath',
     value: function getFullCleanPath() {
-      return _get__('path').normalize(this.options.basePath + '/' + this.options.cleanPath + '/' + this.path);
+      return _get__('path').normalize(_get__('path').join(this.options.basePath, this.options.cleanPath, this.path));
     }
   }, {
     key: 'synchronizeWith',

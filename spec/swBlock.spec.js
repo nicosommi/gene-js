@@ -15,7 +15,8 @@ describe('SwBlock', () => {
     type = 'basket'
     version = '0.0.1'
     options = {
-      cleanPath: 'clean'
+      cleanPath: 'clean',
+      basePath: ''
     }
     swBlock = new SwBlock(name, type, version, options)
   })
@@ -96,7 +97,7 @@ describe('SwBlock', () => {
       inputArray.push(firstElement)
       inputArray.push(secondElement)
 
-      sourceSwBlock = new SwBlock('rootFruitBasketBlock', 'basket', '0.0.2', {})
+      sourceSwBlock = new SwBlock('rootFruitBasketBlock', 'basket', '0.0.2', { basePath: '' })
       sourceSwBlock.addSourceCodeFiles(inputArray)
       swBlock.addSourceCodeFiles(inputArray)
     })
