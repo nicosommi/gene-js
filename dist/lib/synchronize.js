@@ -84,13 +84,11 @@ function executeReplacements(line, replacements) {
 }
 
 function mergeReplacements(sourceReplacements, targetReplacements) {
-  // console.log('mergeReplacements', { sourceReplacements, targetReplacements})
   if (!sourceReplacements) {
     if (targetReplacements) {
       var _ret2 = function () {
         var replacements = {};
         Object.keys(targetReplacements).forEach(function (targetReplacementKey) {
-          // console.log('mergeReplacementKey', { targetReplacementKey })
           replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value;
         });
         return {
@@ -106,7 +104,6 @@ function mergeReplacements(sourceReplacements, targetReplacements) {
     var _ret3 = function () {
       var replacements = {};
       Object.keys(sourceReplacements).forEach(function (sourceReplacementKey) {
-        console.log('mergeReplacementKey', { sourceReplacementKey: sourceReplacementKey });
         replacements[sourceReplacements[sourceReplacementKey].regex] = sourceReplacements[sourceReplacementKey].value;
       });
       return {

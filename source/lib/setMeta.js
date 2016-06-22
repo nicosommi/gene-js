@@ -33,8 +33,6 @@ function metaToString (meta) {
 }
 
 export default function setMeta (filePath, meta, options) {
-  console.log('set Meta', {filePath})
-
   return stat(filePath)
     .catch(() => outputFile(filePath, metaToString(meta)))
 }

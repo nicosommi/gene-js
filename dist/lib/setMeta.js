@@ -49,8 +49,6 @@ function metaToString(meta) {
 }
 
 function setMeta(filePath, meta, options) {
-  console.log('set Meta', { filePath: filePath });
-
   return _get__('stat')(filePath).catch(function () {
     return _get__('outputFile')(filePath, _get__('metaToString')(meta));
   });
