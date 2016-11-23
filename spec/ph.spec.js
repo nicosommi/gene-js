@@ -38,13 +38,13 @@ describe('Gene-js', () => {
 
   describe('.getPlaceHolders', () => {
     it('should call getBlocks with ph', () => {
-      Ph.getPlaceHolders().blockName.should.eql('ph')
+      Ph.getPlaceHolders(templateFileName).blockName.should.eql('ph')
     })
   })
 
   describe('.getStamps', () => {
     it('should call getBlocks with stamp', () => {
-      Ph.getStamps().blockName.should.eql('stamp')
+      Ph.getStamps(templateFileName).blockName.should.eql('stamp')
     })
   })
 

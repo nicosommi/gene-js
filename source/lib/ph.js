@@ -26,6 +26,7 @@ export default class Ph {
   }
 
   static getPlaceHolders (fileName, customDelimiters) {
+
     return new Blocks(fileName, 'ph', customDelimiters)
   }
 

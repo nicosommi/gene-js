@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.__Rewire__ = exports.__GetDependency__ = exports.__get__ = undefined;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 exports.default = cleanTo;
 
@@ -88,7 +88,10 @@ function cleanTo(source, target, options) {
     }).catch(reject);
   });
 }
-var _RewiredData__ = {};
+
+var _RewiredData__ = Object.create(null);
+
+var INTENTIONAL_UNDEFINED = '__INTENTIONAL_UNDEFINED__';
 var _RewireAPI__ = {};
 
 (function () {
@@ -110,7 +113,17 @@ var _RewireAPI__ = {};
 })();
 
 function _get__(variableName) {
-  return _RewiredData__ === undefined || _RewiredData__[variableName] === undefined ? _get_original__(variableName) : _RewiredData__[variableName];
+  if (_RewiredData__ === undefined || _RewiredData__[variableName] === undefined) {
+    return _get_original__(variableName);
+  } else {
+    var value = _RewiredData__[variableName];
+
+    if (value === INTENTIONAL_UNDEFINED) {
+      return undefined;
+    } else {
+      return value;
+    }
+  }
 }
 
 function _get_original__(variableName) {
@@ -167,7 +180,15 @@ function _set__(variableName, value) {
       _RewiredData__[name] = variableName[name];
     });
   } else {
-    return _RewiredData__[variableName] = value;
+    if (value === undefined) {
+      _RewiredData__[variableName] = INTENTIONAL_UNDEFINED;
+    } else {
+      _RewiredData__[variableName] = value;
+    }
+
+    return function () {
+      _reset__(variableName);
+    };
   }
 }
 

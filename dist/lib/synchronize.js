@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.__Rewire__ = exports.__GetDependency__ = exports.__get__ = undefined;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 exports.executeReplacements = executeReplacements;
 exports.default = synchronize;
@@ -141,14 +141,13 @@ function mergeReplacements(sourceReplacements, targetReplacements) {
 function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
   var options = {};
   var sourceOptions = _get__('takeMeta')(sourceBlocks, commentStringStart, commentStringEnd);
-  var _sourceReplacements$s = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps };
-  var sourceReplacements = _sourceReplacements$s.sourceReplacements;
-  var sourceIgnoringStamps = _sourceReplacements$s.sourceIgnoringStamps;
+  var _sourceReplacements$s = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps },
+      sourceReplacements = _sourceReplacements$s.sourceReplacements,
+      sourceIgnoringStamps = _sourceReplacements$s.sourceIgnoringStamps;
 
-  var _get__2 = _get__('takeMeta')(targetBlocks, commentStringStart, commentStringEnd);
-
-  var replacements = _get__2.replacements;
-  var ignoringStamps = _get__2.ignoringStamps;
+  var _get__2 = _get__('takeMeta')(targetBlocks, commentStringStart, commentStringEnd),
+      replacements = _get__2.replacements,
+      ignoringStamps = _get__2.ignoringStamps;
 
   options.replacements = _get__('mergeReplacements')(sourceReplacements, replacements);
   options.ignoringStamps = ignoringStamps;
@@ -340,11 +339,11 @@ function synchronize(source, target, options) {
                 concreteFileContent += ''; // nothing
               }
             } else {
-                if (stampEnd && options.ignoringStamps) {
-                  ignoreLines = false;
-                  concreteFileContent += line + '\n';
-                }
+              if (stampEnd && options.ignoringStamps) {
+                ignoreLines = false;
+                concreteFileContent += line + '\n';
               }
+            }
           }
         });
         lineReader.on('close', function () {
@@ -359,7 +358,10 @@ function synchronize(source, target, options) {
     }).catch(reject);
   });
 }
-var _RewiredData__ = {};
+
+var _RewiredData__ = Object.create(null);
+
+var INTENTIONAL_UNDEFINED = '__INTENTIONAL_UNDEFINED__';
 var _RewireAPI__ = {};
 
 (function () {
@@ -381,7 +383,17 @@ var _RewireAPI__ = {};
 })();
 
 function _get__(variableName) {
-  return _RewiredData__ === undefined || _RewiredData__[variableName] === undefined ? _get_original__(variableName) : _RewiredData__[variableName];
+  if (_RewiredData__ === undefined || _RewiredData__[variableName] === undefined) {
+    return _get_original__(variableName);
+  } else {
+    var value = _RewiredData__[variableName];
+
+    if (value === INTENTIONAL_UNDEFINED) {
+      return undefined;
+    } else {
+      return value;
+    }
+  }
 }
 
 function _get_original__(variableName) {
@@ -462,7 +474,15 @@ function _set__(variableName, value) {
       _RewiredData__[name] = variableName[name];
     });
   } else {
-    return _RewiredData__[variableName] = value;
+    if (value === undefined) {
+      _RewiredData__[variableName] = INTENTIONAL_UNDEFINED;
+    } else {
+      _RewiredData__[variableName] = value;
+    }
+
+    return function () {
+      _reset__(variableName);
+    };
   }
 }
 
