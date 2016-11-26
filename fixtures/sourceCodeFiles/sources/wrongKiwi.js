@@ -1,7 +1,8 @@
 /* ph replacements */
 /* wrongName, /Banana/g, Banana */
 /* endph */
-/* ph ignoringStamps */
+/* ph stamps */
+/* /^.*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */

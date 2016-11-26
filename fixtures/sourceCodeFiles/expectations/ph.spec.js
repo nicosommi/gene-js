@@ -123,7 +123,7 @@ describe("Gene-js", () => {
 
 					Ph.refresh(resultCustomFilePath)
 						.withThisDelimiters("##-", "-##")
-						.ignoringStamps(["customStamp"])
+						.stamps(["customStamp"])
 						.with(templateCustomFilePath,
 						()=> {
 							//pick the result the process left in the hard drive just to assert
@@ -152,7 +152,7 @@ describe("Gene-js", () => {
 				resultCustomFilePath = `${__dirname}/../fixtures/ph/newFolder/ToIt/.gitignoreResult`;
 				Ph.refresh(resultCustomFilePath)
 					.withThisDelimiters("##-", "-##")
-					.ignoringStamps(["customStamp"])
+					.stamps(["customStamp"])
 					.with(templateCustomFilePath,
 					()=> {
 						//pick the result the process left in the hard drive just to assert
@@ -300,14 +300,14 @@ describe("Gene-js", () => {
 				});
 			});
 
-			describe(".ignoringStamps", () => {
+			describe(".stamps", () => {
 				let expectedContents,
 					resultingContents;
 
 				beforeEach(done => {
 					expectedContents = fs.readFileSync(`${__dirname}/../fixtures/ph/expectations/ignoringStampExpectation.spec.js`, {encoding: "utf8"});
 					fs.writeFileSync(resultFilePath, concreteFilePath, {encoding: "utf8"});
-					Ph.refresh(resultFilePath).ignoringStamps(["isFruit"]).with(templateFileName,
+					Ph.refresh(resultFilePath).stamps(["isFruit"]).with(templateFileName,
 						() => {
 							//pick the result the process left in the hard drive just to assert
 							resultingContents = fs.readFileSync(resultFilePath, {encoding: "utf8"});

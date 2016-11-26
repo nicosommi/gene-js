@@ -13,7 +13,7 @@ export default class Ph {
 
   constructor (targetFilePath) {
     _(this).targetFilePath = targetFilePath
-    _(this).ignoringStamps = []
+    _(this).stamps = []
     _(this).replacements = null
   }
 
@@ -26,6 +26,7 @@ export default class Ph {
   }
 
   static getPlaceHolders (fileName, customDelimiters) {
+
     return new Blocks(fileName, 'ph', customDelimiters)
   }
 
@@ -45,8 +46,8 @@ export default class Ph {
     return this
   }
 
-  ignoringStamps (stampsToIgnore) {
-    _(this).ignoringStamps = stampsToIgnore
+  stamps (stampsToIgnore) {
+    _(this).stamps = stampsToIgnore
     return this
   }
 
@@ -54,7 +55,7 @@ export default class Ph {
     const options = {
       delimiters: _(this).customDelimiters,
       replacements: _(this).replacements,
-      ignoringStamps: _(this).ignoringStamps
+      stamps: _(this).stamps
     }
     cleanTo(_(this).targetFilePath, cleanFilePath, options)
       .then(() => callback())
@@ -65,7 +66,7 @@ export default class Ph {
     const options = {
       delimiters: _(this).customDelimiters,
       replacements: _(this).replacements,
-      ignoringStamps: _(this).ignoringStamps
+      stamps: _(this).stamps
     }
     synchronize(templateFilePath, _(this).targetFilePath, options)
       .then(() => callback())

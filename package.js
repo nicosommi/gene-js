@@ -1,20 +1,18 @@
 /* ph replacements */
 /* name, /'name': 'gene-js'/g, 'name': 'gene-js' */
-/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.0.12' */
+/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.0.13' */
 /* description, /'description': 'a\ gdd\ utility'/g, 'description': 'a gdd utility' */
 /* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index.js' */
 /* license, /MIT/g, MIT */
 /* endph */
-/* ph ignoringStamps */
-/* webapp_scripts, service_scripts */
-/* webapp_dependencies, service_dependencies */
-/* webapp_devDependencies, service_devDependencies */
+/* ph stamps */
+/* /^(?!webapp_scripts{1})(?!service_scripts{1})(?!webapp_dependencies{1})(?!service_dependencies{1})(?!webapp_devDependencies{1})(?!service_devDependencies{1}).*$/ */
 /* endph */
 
 module.exports =
 {
   'name': 'gene-js',
-  'version': '0.0.12',
+  'version': '0.0.13',
   'description': 'a gdd utility',
   'main': 'index.js',
   'standard': {

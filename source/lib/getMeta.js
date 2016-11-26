@@ -1,6 +1,7 @@
 import Blocks from 'block-js'
 import fs from 'fs-extra'
 import Promise from './promise.js'
+import regexParser from 'regex-parser'
 
 const stat = Promise.promisify(fs.stat)
 
@@ -39,33 +40,19 @@ function takeReplacements (blocks, commentStringStart, commentStringEnd) {
   }
 }
 
-function takeIgnoringStamps (blocks, commentStringStart, commentStringEnd) {
-  const ignoringStampsPh = blocks.find(targetBlock => (targetBlock.name === 'ignoringStamps'))
-  if (ignoringStampsPh) {
-    let ignoringStamps = []
-    if (ignoringStampsPh.content) {
-      const ignoringStampLines = ignoringStampsPh.content.split('\n')
-      ignoringStampLines.forEach(
-        ignoringStampLine => {
-          const tokens = cleanContent(ignoringStampLine, [commentStringStart, commentStringEnd])
-            .split(',')
-            .map(token => token.trim())
-          ignoringStamps = ignoringStamps.concat(tokens)
-        }
-      )
-      return ignoringStamps
-    } else {
-      return []
-    }
-  } else {
-    return undefined
+function takeStamps (blocks, commentStringStart, commentStringEnd) {
+  let stamps = undefined
+  const stampsPh = blocks.find(targetBlock => (targetBlock.name === 'stamps'))
+  if (stampsPh && stampsPh.content) {
+    stamps = regexParser(cleanContent(stampsPh.content, [commentStringStart, commentStringEnd]).trim())
   }
+  return stamps
 }
 
 export function takeMeta (blocks, commentStringStart, commentStringEnd) {
   const options = {}
   options.replacements = takeReplacements(blocks, commentStringStart, commentStringEnd)
-  options.ignoringStamps = takeIgnoringStamps(blocks, commentStringStart, commentStringEnd)
+  options.stamps = takeStamps(blocks, commentStringStart, commentStringEnd)
   return options
 }
 
@@ -92,7 +79,7 @@ export default function getMeta (filePath, options) {
     (resolve) => {
       const emptyMetaInfo = {
         replacements: {},
-        ignoringStamps: []
+        stamps: undefined
       }
 
       return stat(filePath)
@@ -102,11 +89,11 @@ export default function getMeta (filePath, options) {
               .then((results) => {
                 let metaInfo = emptyMetaInfo
 
-                if (!options || (!options.replacements && !options.ignoringStamps)) {
+                if (!options || (!options.replacements && !options.stamps)) {
                   metaInfo = takeMeta(results.phBlocks, results.commentStringStart, results.commentStringEnd)
                 } else {
-                  const { replacements, ignoringStamps } = options
-                  Object.assign(metaInfo, {replacements, ignoringStamps})
+                  const { replacements, stamps } = options
+                  Object.assign(metaInfo, {replacements, stamps})
                 }
 
                 resolve(metaInfo)

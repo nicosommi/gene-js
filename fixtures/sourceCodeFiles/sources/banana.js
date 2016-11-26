@@ -1,12 +1,13 @@
 /* ph replacements */
 /* className, /Banana/g, Banana */
 /* endph */
-/* ph ignoringStamps */
-/* throwAway */
+/* ph stamps */
+/* /^(?!throwAway{1}).*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */
 const generateSeeds = Symbol("generateSeeds");
+/* endstamp */
 
 export default class Banana {
 	constructor() {
@@ -19,7 +20,6 @@ export default class Banana {
 	[generateSeeds](min, max) {
 		this.seeds = Math.floor((Math.random() * ((max + 1) - min + 1)) + min);
 	}
-
 	/* endstamp */
 
 	eat() {

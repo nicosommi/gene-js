@@ -21,12 +21,12 @@ function metaToString (meta) {
       /* endph */` + '\n'
   }
 
-  let ignoringStamps = []
-  if (meta.ignoringStamps) {
-    ignoringStamps = meta.ignoringStamps.join(', ')
+  let stamps = []
+  if (meta.stamps) {
+    stamps = meta.stamps.toString()
     result += stripIndents `
-      /* ph ignoringStamps */
-      /* ${ignoringStamps} */
+      /* ph stamps */
+      /* ${stamps} */
       /* endph */` + '\n'
   }
   return result
