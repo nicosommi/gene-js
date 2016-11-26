@@ -1,5 +1,5 @@
-/* ph ignoringStamps */
-/* webapp, service */
+/* ph stamps */
+/* /^(?!webapp{1})(?!service{1}).*$/ */
 /* endph */
 import gulp from 'gulp'
 import mocha from 'gulp-mocha'

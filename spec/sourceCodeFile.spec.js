@@ -3,6 +3,7 @@ import Promise from '../source/lib/promise.js'
 import fs from 'fs-extra'
 import del from 'del'
 import sinon from 'sinon'
+import regexParser from 'regex-parser'
 
 const copyFile = Promise.promisify(fs.copy)
 const remove = Promise.promisify(fs.remove)
@@ -121,7 +122,7 @@ describe('SourceCodeFile', () => {
             name: sourceCodeFileName,
             path,
             replacements: undefined,
-            ignoringStamps: undefined
+            stamps: undefined
           })
       })
 
@@ -136,7 +137,7 @@ describe('SourceCodeFile', () => {
                 value: 'Banana'
               }
             },
-            ignoringStamps: ['throwAway']
+            stamps: regexParser('/^(?!throwAway{1}).*$/')
           })
       })
     })
@@ -150,7 +151,7 @@ describe('SourceCodeFile', () => {
         setMetaSpy = sinon.spy(() => Promise.resolve())
         SourceCodeFile.__Rewire__('setMeta', setMetaSpy)
         filePath = 'apath'
-        metaObject = { replacements: {}, ignoringStamps: [] }
+        metaObject = { replacements: {}, stamps: [] }
         sourceCodeFile = new SourceCodeFile(sourceCodeFileName, filePath, { basePath: `` })
         return sourceCodeFile.setMeta(metaObject)
       })

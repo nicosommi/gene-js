@@ -100,11 +100,11 @@ function mergeReplacements (sourceReplacements, targetReplacements) {
 function takeOptions (sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
   const options = {}
   const sourceOptions = takeMeta(sourceBlocks, commentStringStart, commentStringEnd)
-  const { sourceReplacements, sourceIgnoringStamps } = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps }
-  const { replacements, ignoringStamps } = takeMeta(targetBlocks, commentStringStart, commentStringEnd)
+  const { sourceReplacements, sourceStamps } = { sourceReplacements: sourceOptions.replacements, sourceStamps: sourceOptions.stamps }
+  const { replacements, stamps } = takeMeta(targetBlocks, commentStringStart, commentStringEnd)
   options.replacements = mergeReplacements(sourceReplacements, replacements)
-  options.ignoringStamps = ignoringStamps
-  options.sourceIgnoringStamps = sourceIgnoringStamps
+  options.stamps = stamps
+  options.sourceStamps = sourceStamps
   return options
 }
 
@@ -147,7 +147,7 @@ export default function synchronize (source, target, options) {
                   commentStringStart = results.source.commentStringStart
                   commentStringEnd = results.source.commentStringEnd
 
-                  if (!options || (!options.replacements && !options.ignoringStamps)) {
+                  if (!options || (!options.replacements && !options.stamps)) {
                     options = takeOptions(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd)
                   }
 
@@ -280,24 +280,20 @@ export default function synchronize (source, target, options) {
                           }
                         }
                       } else {
-                        if (stampBegin && options.ignoringStamps) {
+                        if (stampBegin && options.stamps) {
                           ignoreLines = true
-                          const ignored = options.ignoringStamps.find(
-                            stampsToIgnore => {
-                              return stampsToIgnore === stampBegin.name
-                            }
-                          )
-                          let ignoredOnSource = null
-                          if (options.sourceIgnoringStamps) {
-                            ignoredOnSource = options.sourceIgnoringStamps.find(
-                              stampsToIgnore => {
-                                return stampsToIgnore === stampBegin.name
-                              }
-                            )
+                          // if matchs stamps it is a candidate to be included
+                          let candidate = options.stamps.test(stampBegin.name)
+                          // only if matchs in the source too it worth to take it here
+                          let itWorthToTakeIt = false
+                          if(options.sourceStamps) {
+                            itWorthToTakeIt = options.sourceStamps.test(stampBegin.name)
                           }
 
-                          if (!ignored) {
-                            if (!ignoredOnSource) {
+                          console.log('options are', {options, candidate, itWorthToTakeIt})
+
+                          if(candidate) {
+                            if(itWorthToTakeIt) {
                               const finalLine = executeReplacements(stampBegin.content, options.replacements)
                               if (finalLine) {
                                 concreteFileContent += `${finalLine}\n`
@@ -321,7 +317,7 @@ export default function synchronize (source, target, options) {
                             concreteFileContent += `` // nothing
                           }
                         } else {
-                          if (stampEnd && options.ignoringStamps) {
+                          if (stampEnd && options.stamps) {
                             ignoreLines = false
                             concreteFileContent += `${line}\n`
                           }

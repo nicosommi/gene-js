@@ -15,9 +15,9 @@ describe('setMeta', () => {
       replacements: {
         className: { regex: '/Banana/g', value: 'Banana' }
       },
-      ignoringStamps: ['throwAway']
+      stamps: '/^(?!throwAway{1}).*$/'
     }
-    expectedContent = '/* ph replacements */\n/* className, /Banana/g, Banana */\n/* endph */\n/* ph ignoringStamps */\n/* throwAway */\n/* endph */\n'
+    expectedContent = '/* ph replacements */\n/* className, /Banana/g, Banana */\n/* endph */\n/* ph stamps */\n/* /^(?!throwAway{1}).*$/ */\n/* endph */\n'
     filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/anewfile.js`
   })
 
@@ -56,7 +56,7 @@ describe('setMeta', () => {
     beforeEach(() => {
       newMeta = {
         replacements: undefined,
-        ignoringStamps: undefined
+        stamps: undefined
       }
       expectedContent = ''
       return setMeta(filePath, newMeta)

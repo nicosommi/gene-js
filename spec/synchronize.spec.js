@@ -1,6 +1,7 @@
 import synchronize from '../source/lib/synchronize.js'
 import Promise from '../source/lib/promise.js'
 import fs from 'fs-extra'
+import regexParser from 'regex-parser'
 
 const readFile = Promise.promisify(fs.readFile)
 const copy = Promise.promisify(fs.copy)
@@ -40,7 +41,7 @@ const bananaOptions = {
   replacements: {
     [/Apple/g]: 'Banana'
   },
-  ignoringStamps: ['throwAway']
+  stamps: regexParser('/^(?!throwAway{1}).*$/')
 }
 
 describe('synchronize', () => {
@@ -61,12 +62,12 @@ describe('synchronize', () => {
   })
 
   describe('(in file options)', () => {
-    describe('(ignoringStamps)', () => {
-      it('should ignore stamps from the source according to the target', () => {
+    describe('(stamps)', () => {
+      it('should include stamps from the source according to the target', () => {
         return synchronizeMechanism('apple.js', 'banana.js', 'banana.js')
       })
 
-      it('should allow one line array ignored stamps separated by comma', () => {
+      it('should allow one line array include stamps separated by comma', () => {
         return synchronizeMechanism('apple.js', 'sedlessBanana.js', 'sedlessBanana.js')
       })
 
@@ -78,7 +79,7 @@ describe('synchronize', () => {
         return synchronizeMechanism('apple.js', 'orange.js', 'orange.js')
       })
 
-      it('should allow ignore the stamp content if the source is already ignoring that stamp', () => {
+      it('should allow include the stamp content if the source is already ignoring that stamp', () => {
         return synchronizeMechanism('alreadySedlessBanana.js', 'apple.js', 'apple.js')
       })
 

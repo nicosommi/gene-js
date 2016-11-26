@@ -1,6 +1,6 @@
 /* ph replacements */
 /* className, /Banana/g, Banana */
 /* endph */
-/* ph ignoringStamps */
-/* throwAway */
+/* ph stamps */
+/* /^(?!throwAway{1}).*$/ */
 /* endph */

@@ -10,7 +10,7 @@ export default function cleanTo (source, target, options) {
   return new Promise(
     (resolve, reject) => {
       let delimiters
-      let dirtyPhs = [ 'replacements', 'ignoringStamps' ]
+      let dirtyPhs = [ 'replacements', 'stamps' ]
       if (options) {
         delimiters = options.delimiters
         if (options.dirtyPhs && Array.isArray(dirtyPhs)) {

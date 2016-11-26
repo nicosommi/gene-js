@@ -5,10 +5,8 @@
 /* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index.js' */
 /* license, /MIT/g, MIT */
 /* endph */
-/* ph ignoringStamps */
-/* webapp_scripts, service_scripts */
-/* webapp_dependencies, service_dependencies */
-/* webapp_devDependencies, service_devDependencies */
+/* ph stamps */
+/* /^(?!webapp_scripts{1})(?!service_scripts{1})(?!webapp_dependencies{1})(?!service_dependencies{1})(?!webapp_devDependencies{1})(?!service_devDependencies{1}).*$/ */
 /* endph */
 
 module.exports =

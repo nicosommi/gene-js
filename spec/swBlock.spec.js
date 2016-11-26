@@ -202,7 +202,7 @@ describe('SwBlock', () => {
                 value: 'Banana'
               }
             },
-            ignoringStamps: ['throwAway']
+            stamps: '/^(?!throwAway{1}).*$/'
           }
         ))
         SourceCodeFile.__Rewire__('getMeta', getMetaSpy)
@@ -226,7 +226,7 @@ describe('SwBlock', () => {
                     value: 'Banana'
                   }
                 },
-                ignoringStamps: ['throwAway']
+                stamps: '/^(?!throwAway{1}).*$/'
               },
               {
                 name: 'banana2',
@@ -237,7 +237,7 @@ describe('SwBlock', () => {
                     value: 'Banana'
                   }
                 },
-                ignoringStamps: ['throwAway']
+                stamps: '/^(?!throwAway{1}).*$/'
               }
             ]
           })
@@ -261,7 +261,7 @@ describe('SwBlock', () => {
               value: 'Banana'
             }
           },
-          ignoringStamps: ['throwAway']
+          stamps: '/^(?!throwAway{1}).*$/'
         }
 
         secondSourceCodeFileJson = {
@@ -273,7 +273,7 @@ describe('SwBlock', () => {
               value: 'Orange'
             }
           },
-          ignoringStamps: []
+          stamps: []
         }
 
         swBlock = new SwBlock(name, type, version)

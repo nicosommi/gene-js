@@ -1,6 +1,7 @@
 /* ph replacements */
 /* endph */
-/* ph ignoringStamps */
+/* ph stamps */
+/* /^.*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */

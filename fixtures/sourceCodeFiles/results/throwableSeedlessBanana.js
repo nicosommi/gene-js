@@ -1,9 +1,8 @@
 /* ph replacements */
 /* className, /SeedlessBanana/g, SeedlessBanana */
 /* endph */
-/* ph ignoringStamps */
-/* withSeeds */
-/* withSeedsSymbol */
+/* ph stamps */
+/* /^(?!withSeeds{1})(?!withSeedsSymbol{1}).*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */
