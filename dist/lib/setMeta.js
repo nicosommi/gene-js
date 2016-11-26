@@ -8,7 +8,7 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _templateObject = _taggedTemplateLiteral(['\n      /* ph replacements */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph replacements */\n      /* ', ' */\n      /* endph */']),
-    _templateObject2 = _taggedTemplateLiteral(['\n      /* ph ignoringStamps */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph ignoringStamps */\n      /* ', ' */\n      /* endph */']);
+    _templateObject2 = _taggedTemplateLiteral(['\n      /* ph stamps */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph stamps */\n      /* ', ' */\n      /* endph */']);
 
 exports.default = setMeta;
 
@@ -40,10 +40,10 @@ function metaToString(meta) {
     result += _get__('stripIndents')(_templateObject, replacements) + '\n';
   }
 
-  var ignoringStamps = [];
-  if (meta.ignoringStamps) {
-    ignoringStamps = meta.ignoringStamps.join(', ');
-    result += _get__('stripIndents')(_templateObject2, ignoringStamps) + '\n';
+  var stamps = [];
+  if (meta.stamps) {
+    stamps = meta.stamps.toString();
+    result += _get__('stripIndents')(_templateObject2, stamps) + '\n';
   }
   return result;
 }

@@ -40,7 +40,7 @@ var Ph = function () {
     _classCallCheck(this, Ph);
 
     _get__('_')(this).targetFilePath = targetFilePath;
-    _get__('_')(this).ignoringStamps = [];
+    _get__('_')(this).stamps = [];
     _get__('_')(this).replacements = null;
   }
 
@@ -59,9 +59,9 @@ var Ph = function () {
       return this;
     }
   }, {
-    key: 'ignoringStamps',
-    value: function ignoringStamps(stampsToIgnore) {
-      _get__('_')(this).ignoringStamps = stampsToIgnore;
+    key: 'stamps',
+    value: function stamps(stampsToIgnore) {
+      _get__('_')(this).stamps = stampsToIgnore;
       return this;
     }
   }, {
@@ -70,7 +70,7 @@ var Ph = function () {
       var options = {
         delimiters: _get__('_')(this).customDelimiters,
         replacements: _get__('_')(this).replacements,
-        ignoringStamps: _get__('_')(this).ignoringStamps
+        stamps: _get__('_')(this).stamps
       };
       _get__('cleanTo')(_get__('_')(this).targetFilePath, cleanFilePath, options).then(function () {
         return callback();
@@ -84,7 +84,7 @@ var Ph = function () {
       var options = {
         delimiters: _get__('_')(this).customDelimiters,
         replacements: _get__('_')(this).replacements,
-        ignoringStamps: _get__('_')(this).ignoringStamps
+        stamps: _get__('_')(this).stamps
       };
       _get__('synchronize')(templateFilePath, _get__('_')(this).targetFilePath, options).then(function () {
         return callback();

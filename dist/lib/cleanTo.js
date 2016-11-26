@@ -33,7 +33,7 @@ var ensureFile = _get__('Promise').promisify(_get__('fs').ensureFile);
 function cleanTo(source, target, options) {
   return new (_get__('Promise'))(function (resolve, reject) {
     var delimiters = void 0;
-    var dirtyPhs = ['replacements', 'ignoringStamps'];
+    var dirtyPhs = ['replacements', 'stamps'];
     if (options) {
       delimiters = options.delimiters;
       if (options.dirtyPhs && Array.isArray(dirtyPhs)) {

@@ -141,17 +141,17 @@ function mergeReplacements(sourceReplacements, targetReplacements) {
 function takeOptions(sourceBlocks, targetBlocks, commentStringStart, commentStringEnd) {
   var options = {};
   var sourceOptions = _get__('takeMeta')(sourceBlocks, commentStringStart, commentStringEnd);
-  var _sourceReplacements$s = { sourceReplacements: sourceOptions.replacements, sourceIgnoringStamps: sourceOptions.ignoringStamps },
+  var _sourceReplacements$s = { sourceReplacements: sourceOptions.replacements, sourceStamps: sourceOptions.stamps },
       sourceReplacements = _sourceReplacements$s.sourceReplacements,
-      sourceIgnoringStamps = _sourceReplacements$s.sourceIgnoringStamps;
+      sourceStamps = _sourceReplacements$s.sourceStamps;
 
   var _get__2 = _get__('takeMeta')(targetBlocks, commentStringStart, commentStringEnd),
       replacements = _get__2.replacements,
-      ignoringStamps = _get__2.ignoringStamps;
+      stamps = _get__2.stamps;
 
   options.replacements = _get__('mergeReplacements')(sourceReplacements, replacements);
-  options.ignoringStamps = ignoringStamps;
-  options.sourceIgnoringStamps = sourceIgnoringStamps;
+  options.stamps = stamps;
+  options.sourceStamps = sourceStamps;
   return options;
 }
 
@@ -190,7 +190,7 @@ function synchronize(source, target, options) {
         commentStringStart = results.source.commentStringStart;
         commentStringEnd = results.source.commentStringEnd;
 
-        if (!options || !options.replacements && !options.ignoringStamps) {
+        if (!options || !options.replacements && !options.stamps) {
           options = _get__('takeOptions')(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd);
         }
 
@@ -304,20 +304,20 @@ function synchronize(source, target, options) {
               }
             }
           } else {
-            if (stampBegin && options.ignoringStamps) {
+            if (stampBegin && options.stamps) {
               ignoreLines = true;
-              var ignored = options.ignoringStamps.find(function (stampsToIgnore) {
-                return stampsToIgnore === stampBegin.name;
-              });
-              var ignoredOnSource = null;
-              if (options.sourceIgnoringStamps) {
-                ignoredOnSource = options.sourceIgnoringStamps.find(function (stampsToIgnore) {
-                  return stampsToIgnore === stampBegin.name;
-                });
+              // if matchs stamps it is a candidate to be included
+              var candidate = options.stamps.test(stampBegin.name);
+              // only if matchs in the source too it worth to take it here
+              var itWorthToTakeIt = false;
+              if (options.sourceStamps) {
+                itWorthToTakeIt = options.sourceStamps.test(stampBegin.name);
               }
 
-              if (!ignored) {
-                if (!ignoredOnSource) {
+              console.log('options are', { options: options, candidate: candidate, itWorthToTakeIt: itWorthToTakeIt });
+
+              if (candidate) {
+                if (itWorthToTakeIt) {
                   var _finalLine = _get__('executeReplacements')(stampBegin.content, options.replacements);
                   if (_finalLine) {
                     concreteFileContent += _finalLine + '\n';
@@ -339,7 +339,7 @@ function synchronize(source, target, options) {
                 concreteFileContent += ''; // nothing
               }
             } else {
-              if (stampEnd && options.ignoringStamps) {
+              if (stampEnd && options.stamps) {
                 ignoreLines = false;
                 concreteFileContent += line + '\n';
               }

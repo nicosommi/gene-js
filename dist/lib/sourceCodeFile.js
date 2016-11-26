@@ -58,14 +58,14 @@ var SourceCodeFile = function () {
 
       return _get__('getMeta')(this.getFullPath(), this.options).then(function (fileMetaInfo) {
         var replacements = fileMetaInfo.replacements,
-            ignoringStamps = fileMetaInfo.ignoringStamps;
+            stamps = fileMetaInfo.stamps;
 
 
         return _get__('Promise').resolve({
           name: _this.name,
           path: _this.path,
           replacements: replacements,
-          ignoringStamps: ignoringStamps
+          stamps: stamps
         });
       });
     }
