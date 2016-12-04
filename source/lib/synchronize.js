@@ -1,4 +1,5 @@
 import Promise from './promise.js'
+import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
 import readline from 'readline'
@@ -148,6 +149,7 @@ export default function synchronize (source, target, options) {
                   commentStringEnd = results.source.commentStringEnd
 
                   if (!options || (!options.replacements && !options.stamps)) {
+                    console.log(chalk.magenta(`taking options for file ${target}`))
                     options = takeOptions(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd)
                   }
 
@@ -289,8 +291,6 @@ export default function synchronize (source, target, options) {
                           if(options.sourceStamps) {
                             itWorthToTakeIt = options.sourceStamps.test(stampBegin.name)
                           }
-
-                          console.log('options are', {options, candidate, itWorthToTakeIt})
 
                           if(candidate) {
                             if(itWorthToTakeIt) {
