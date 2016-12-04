@@ -14,6 +14,10 @@ var _promise = require('./promise.js');
 
 var _promise2 = _interopRequireDefault(_promise);
 
+var _chalk = require('chalk');
+
+var _chalk2 = _interopRequireDefault(_chalk);
+
 var _fsExtra = require('fs-extra');
 
 var _fsExtra2 = _interopRequireDefault(_fsExtra);
@@ -191,6 +195,7 @@ function synchronize(source, target, options) {
         commentStringEnd = results.source.commentStringEnd;
 
         if (!options || !options.replacements && !options.stamps) {
+          console.log(_get__('chalk').magenta('taking options for file ' + target));
           options = _get__('takeOptions')(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd);
         }
 
@@ -314,8 +319,6 @@ function synchronize(source, target, options) {
                 itWorthToTakeIt = options.sourceStamps.test(stampBegin.name);
               }
 
-              console.log('options are', { options: options, candidate: candidate, itWorthToTakeIt: itWorthToTakeIt });
-
               if (candidate) {
                 if (itWorthToTakeIt) {
                   var _finalLine = _get__('executeReplacements')(stampBegin.content, options.replacements);
@@ -427,6 +430,9 @@ function _get_original__(variableName) {
 
     case 'getBlocks':
       return _getMeta.getBlocks;
+
+    case 'chalk':
+      return _chalk2.default;
 
     case 'takeOptions':
       return takeOptions;
