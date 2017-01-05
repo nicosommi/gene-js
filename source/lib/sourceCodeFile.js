@@ -17,13 +17,13 @@ export default class SourceCodeFile {
   getMeta () {
     return getMeta(this.getFullPath(), this.options)
       .then((fileMetaInfo) => {
-        let { replacements, ignoringStamps } = fileMetaInfo
+        let { replacements, stamps } = fileMetaInfo
 
         return Promise.resolve({
           name: this.name,
           path: this.path,
           replacements,
-          ignoringStamps
+          stamps
         })
       })
   }

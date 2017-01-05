@@ -2,7 +2,8 @@
 <!-- name, /gene-js/g, gene-js -->
 <!-- namePascal, /Gene-js/g, Gene-js -->
 <!-- endph -->
-<!-- ph ignoringStamps -->
+<!-- ph stamps -->
+<!-- /^.*$/ -->
 <!-- endph -->
 <!-- ph title -->
 # Gene Js [![npm version](https://img.shields.io/npm/v/gene-js.svg)](https://www.npmjs.com/package/gene-js) [![license type](https://img.shields.io/npm/l/gene-js.svg)](https://github.com/nicosommi/gene-js.git/blob/master/LICENSE) [![npm downloads](https://img.shields.io/npm/dm/gene-js.svg)](https://www.npmjs.com/package/gene-js) ![ECMAScript 6 & 5](https://img.shields.io/badge/ECMAScript-6%20/%205-red.svg) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)

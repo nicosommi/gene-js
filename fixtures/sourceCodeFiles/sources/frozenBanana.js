@@ -1,5 +1,5 @@
-/* ph ignoringStamps */
-/* throwAway */
+/* ph stamps */
+/* /^(?!throwAway{1}).*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */

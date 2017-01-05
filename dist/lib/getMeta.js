@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.__Rewire__ = exports.__GetDependency__ = exports.__get__ = undefined;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 exports.takeMeta = takeMeta;
 exports.getBlocks = getBlocks;
@@ -22,6 +22,10 @@ var _fsExtra2 = _interopRequireDefault(_fsExtra);
 var _promise = require('./promise.js');
 
 var _promise2 = _interopRequireDefault(_promise);
+
+var _regexParser = require('regex-parser');
+
+var _regexParser2 = _interopRequireDefault(_regexParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -70,41 +74,21 @@ function takeReplacements(blocks, commentStringStart, commentStringEnd) {
   }
 }
 
-function takeIgnoringStamps(blocks, commentStringStart, commentStringEnd) {
-  var ignoringStampsPh = blocks.find(function (targetBlock) {
-    return targetBlock.name === 'ignoringStamps';
+function takeStamps(blocks, commentStringStart, commentStringEnd) {
+  var stamps = undefined;
+  var stampsPh = blocks.find(function (targetBlock) {
+    return targetBlock.name === 'stamps';
   });
-  if (ignoringStampsPh) {
-    var _ret2 = function () {
-      var ignoringStamps = [];
-      if (ignoringStampsPh.content) {
-        var ignoringStampLines = ignoringStampsPh.content.split('\n');
-        ignoringStampLines.forEach(function (ignoringStampLine) {
-          var tokens = _get__('cleanContent')(ignoringStampLine, [commentStringStart, commentStringEnd]).split(',').map(function (token) {
-            return token.trim();
-          });
-          ignoringStamps = ignoringStamps.concat(tokens);
-        });
-        return {
-          v: ignoringStamps
-        };
-      } else {
-        return {
-          v: []
-        };
-      }
-    }();
-
-    if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
-  } else {
-    return undefined;
+  if (stampsPh && stampsPh.content) {
+    stamps = _get__('regexParser')(_get__('cleanContent')(stampsPh.content, [commentStringStart, commentStringEnd]).trim());
   }
+  return stamps;
 }
 
 function takeMeta(blocks, commentStringStart, commentStringEnd) {
   var options = {};
   options.replacements = _get__('takeReplacements')(blocks, commentStringStart, commentStringEnd);
-  options.ignoringStamps = _get__('takeIgnoringStamps')(blocks, commentStringStart, commentStringEnd);
+  options.stamps = _get__('takeStamps')(blocks, commentStringStart, commentStringEnd);
   return options;
 }
 
@@ -130,20 +114,20 @@ function getMeta(filePath, options) {
   return new (_get__('Promise'))(function (resolve) {
     var emptyMetaInfo = {
       replacements: {},
-      ignoringStamps: []
+      stamps: undefined
     };
 
     return _get__('stat')(filePath).then(function () {
       return _get__('getBlocks')(filePath, options).then(function (results) {
         var metaInfo = emptyMetaInfo;
 
-        if (!options || !options.replacements && !options.ignoringStamps) {
+        if (!options || !options.replacements && !options.stamps) {
           metaInfo = _get__('takeMeta')(results.phBlocks, results.commentStringStart, results.commentStringEnd);
         } else {
-          var replacements = options.replacements;
-          var ignoringStamps = options.ignoringStamps;
+          var replacements = options.replacements,
+              stamps = options.stamps;
 
-          Object.assign(metaInfo, { replacements: replacements, ignoringStamps: ignoringStamps });
+          Object.assign(metaInfo, { replacements: replacements, stamps: stamps });
         }
 
         resolve(metaInfo);
@@ -153,7 +137,10 @@ function getMeta(filePath, options) {
     });
   });
 }
-var _RewiredData__ = {};
+
+var _RewiredData__ = Object.create(null);
+
+var INTENTIONAL_UNDEFINED = '__INTENTIONAL_UNDEFINED__';
 var _RewireAPI__ = {};
 
 (function () {
@@ -175,7 +162,17 @@ var _RewireAPI__ = {};
 })();
 
 function _get__(variableName) {
-  return _RewiredData__ === undefined || _RewiredData__[variableName] === undefined ? _get_original__(variableName) : _RewiredData__[variableName];
+  if (_RewiredData__ === undefined || _RewiredData__[variableName] === undefined) {
+    return _get_original__(variableName);
+  } else {
+    var value = _RewiredData__[variableName];
+
+    if (value === INTENTIONAL_UNDEFINED) {
+      return undefined;
+    } else {
+      return value;
+    }
+  }
 }
 
 function _get_original__(variableName) {
@@ -189,11 +186,14 @@ function _get_original__(variableName) {
     case 'cleanContent':
       return cleanContent;
 
+    case 'regexParser':
+      return _regexParser2.default;
+
     case 'takeReplacements':
       return takeReplacements;
 
-    case 'takeIgnoringStamps':
-      return takeIgnoringStamps;
+    case 'takeStamps':
+      return takeStamps;
 
     case 'Blocks':
       return _blockJs2.default;
@@ -241,7 +241,15 @@ function _set__(variableName, value) {
       _RewiredData__[name] = variableName[name];
     });
   } else {
-    return _RewiredData__[variableName] = value;
+    if (value === undefined) {
+      _RewiredData__[variableName] = INTENTIONAL_UNDEFINED;
+    } else {
+      _RewiredData__[variableName] = value;
+    }
+
+    return function () {
+      _reset__(variableName);
+    };
   }
 }
 

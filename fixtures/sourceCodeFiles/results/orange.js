@@ -1,7 +1,8 @@
 /* ph replacements */
 /* className, /Orange/g, Orange */
 /* endph */
-/* ph ignoringStamps */
+/* ph stamps */
+/* /^.*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */

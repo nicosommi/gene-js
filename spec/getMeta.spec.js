@@ -1,4 +1,5 @@
 import getMeta from '../source/lib/getMeta.js'
+import regexParser from 'regex-parser'
 
 describe('getMeta', () => {
   let metaExpected,
@@ -10,7 +11,7 @@ describe('getMeta', () => {
       replacements: {
         className: { regex: '/Banana/g', value: 'Banana' }
       },
-      ignoringStamps: ['throwAway']
+      stamps: regexParser('/^(?!throwAway{1}).*$/')
     }
 
     options = {
@@ -25,25 +26,25 @@ describe('getMeta', () => {
   })
 
   it('should return a proper meta object from the options', () => {
-    const opinnionated = { replacements: [1], ignoringStamps: [2, 3] }
+    const opinnionated = { replacements: [1], stamps: [2, 3] }
     options.replacements = opinnionated.replacements
-    options.ignoringStamps = opinnionated.ignoringStamps
+    options.stamps = opinnionated.stamps
     return getMeta(filePath, options)
       .should.be.fulfilledWith(opinnionated)
   })
 
-  it('should return a proper meta object from the options even if just ignoringStamps are provided', () => {
-    const opinnionated = { replacements: undefined, ignoringStamps: [2] }
+  it('should return a proper meta object from the options even if just stamps are provided', () => {
+    const opinnionated = { replacements: undefined, stamps: [2] }
     options.replacements = opinnionated.replacements
-    options.ignoringStamps = opinnionated.ignoringStamps
+    options.stamps = opinnionated.stamps
     return getMeta(filePath, options)
       .should.be.fulfilledWith(opinnionated)
   })
 
   it('should return a proper meta object from the options even if just replacements are provided', () => {
-    const opinnionated = { replacements: [1], ignoringStamps: undefined }
+    const opinnionated = { replacements: [1], stamps: undefined }
     options.replacements = opinnionated.replacements
-    options.ignoringStamps = opinnionated.ignoringStamps
+    options.stamps = opinnionated.stamps
     return getMeta(filePath, options)
       .should.be.fulfilledWith(opinnionated)
   })
@@ -58,7 +59,7 @@ describe('getMeta', () => {
         return getMeta(filePath)
           .should.be.fulfilledWith({
             replacements: undefined,
-            ignoringStamps: undefined
+            stamps: undefined
           })
       })
     })
@@ -73,7 +74,7 @@ describe('getMeta', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
               replacements: undefined,
-              ignoringStamps: ['throwAway']
+              stamps: regexParser('/^(?!throwAway{1}).*$/')
             })
         })
       })
@@ -87,13 +88,13 @@ describe('getMeta', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
               replacements: {},
-              ignoringStamps: []
+              stamps: regexParser('/^.*$/')
             })
         })
       })
     })
 
-    describe('(no ignoringStamps info)', () => {
+    describe('(no stamps info)', () => {
       describe('(abscent)', () => {
         beforeEach(() => {
           filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/emptyVegetable.js`
@@ -103,7 +104,7 @@ describe('getMeta', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
               replacements: undefined,
-              ignoringStamps: undefined
+              stamps: undefined
             })
         })
       })
@@ -117,7 +118,7 @@ describe('getMeta', () => {
           return getMeta(filePath)
             .should.be.fulfilledWith({
               replacements: {},
-              ignoringStamps: []
+              stamps: regexParser('/^.*$/')
             })
         })
       })
@@ -128,7 +129,7 @@ describe('getMeta', () => {
         return getMeta('someunexistingfile.jslaj')
           .should.be.fulfilledWith({
             replacements: {},
-            ignoringStamps: []
+            stamps: undefined
           })
       })
     })

@@ -37,7 +37,7 @@ const bananaOptions = {
 	replacements: {
 		[/Apple/g]: "Banana"
 	},
-	ignoringStamps: ["throwAway"]
+	stamps: ["throwAway"]
 };
 
 describe("synchronize", () => {
@@ -48,7 +48,7 @@ describe("synchronize", () => {
 	});
 
 	describe("(in file options)", () => {
-		describe("(ignoringStamps)", () => {
+		describe("(stamps)", () => {
 			it("should ignore stamps from the source according to the target", () => {
 				return synchronizeMechanism("apple.js", "banana.js", "banana.js");
 			});

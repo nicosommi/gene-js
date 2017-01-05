@@ -1,7 +1,8 @@
 /* ph replacements */
 /* className, /Apple/g, Apple */
 /* endph */
-/* ph ignoringStamps */
+/* ph stamps */
+/* /^.*$/ */
 /* endph */
 
 /* stamp withSeedsSymbol */
