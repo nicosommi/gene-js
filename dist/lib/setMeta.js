@@ -7,8 +7,8 @@ exports.__RewireAPI__ = exports.__ResetDependency__ = exports.__set__ = exports.
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _templateObject = _taggedTemplateLiteral(['\n      /* ph replacements */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph replacements */\n      /* ', ' */\n      /* endph */']),
-    _templateObject2 = _taggedTemplateLiteral(['\n      /* ph stamps */\n      /* ', ' */\n      /* endph */'], ['\n      /* ph stamps */\n      /* ', ' */\n      /* endph */']);
+var _templateObject = _taggedTemplateLiteral(['\n      ', ' ph replacements ', '\n      ', ' ', ' ', '\n      ', ' endph ', ''], ['\n      ', ' ph replacements ', '\n      ', ' ', ' ', '\n      ', ' endph ', '']),
+    _templateObject2 = _taggedTemplateLiteral(['\n      ', ' ph stamps ', '\n      ', ' ', ' ', '\n      ', ' endph ', ''], ['\n      ', ' ph stamps ', '\n      ', ' ', ' ', '\n      ', ' endph ', '']);
 
 exports.default = setMeta;
 
@@ -16,11 +16,13 @@ var _fsExtra = require('fs-extra');
 
 var _fsExtra2 = _interopRequireDefault(_fsExtra);
 
+var _blockJs = require('block-js');
+
+var _commonTags = require('common-tags');
+
 var _promise = require('./promise.js');
 
 var _promise2 = _interopRequireDefault(_promise);
-
-var _commonTags = require('common-tags');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29,7 +31,7 @@ function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defi
 var stat = _get__('Promise').promisify(_get__('fs').stat);
 var outputFile = _get__('Promise').promisify(_get__('fs').outputFile);
 
-function metaToString(meta) {
+function metaToString(meta, delimiters) {
   var replacements = {};
   var result = '';
   if (meta.replacements) {
@@ -37,20 +39,20 @@ function metaToString(meta) {
       return replacementKey + ', ' + meta.replacements[replacementKey].regex + ', ' + meta.replacements[replacementKey].value;
     }).join('\n');
 
-    result += _get__('stripIndents')(_templateObject, replacements) + '\n';
+    result += _get__('stripIndents')(_templateObject, delimiters.start, delimiters.end, delimiters.start, replacements, delimiters.end, delimiters.start, delimiters.end) + '\n';
   }
 
   var stamps = [];
   if (meta.stamps) {
     stamps = meta.stamps.toString();
-    result += _get__('stripIndents')(_templateObject2, stamps) + '\n';
+    result += _get__('stripIndents')(_templateObject2, delimiters.start, delimiters.end, delimiters.start, stamps, delimiters.end, delimiters.start, delimiters.end) + '\n';
   }
   return result;
 }
 
 function setMeta(filePath, meta, options) {
   return _get__('stat')(filePath).catch(function () {
-    return _get__('outputFile')(filePath, _get__('metaToString')(meta));
+    return _get__('outputFile')(filePath, _get__('metaToString')(meta, _get__('getDelimiters')(filePath)));
   });
 }
 
@@ -110,6 +112,9 @@ function _get_original__(variableName) {
 
     case 'metaToString':
       return metaToString;
+
+    case 'getDelimiters':
+      return _blockJs.getDelimiters;
   }
 
   return undefined;
