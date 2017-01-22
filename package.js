@@ -1,6 +1,6 @@
 /* ph replacements */
 /* name, /'name': 'gene-js'/g, 'name': 'gene-js' */
-/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.1.0' */
+/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.1.1' */
 /* description, /'description': 'a\ gdd\ utility'/g, 'description': 'a gdd utility' */
 /* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index.js' */
 /* license, /MIT/g, MIT */
@@ -12,7 +12,7 @@
 module.exports =
 {
   'name': 'gene-js',
-  'version': '0.1.0',
+  'version': '0.1.1',
   'description': 'a gdd utility',
   'main': 'index.js',
   'standard': {
@@ -50,7 +50,7 @@ module.exports =
   'license': 'MIT',
   'dependencies': {
     /* ph componentDependencies */
-    'block-js': '0.0.2',
+    'block-js': '0.0.3',
     'regex-parser': '^2.2.1',
     'semver': '^5.1.0',
     'fs-extra': '^0.26.7',
@@ -84,6 +84,7 @@ module.exports =
     'babel-eslint': '^3.1.30',
     'babel-plugin-rewire': '^1.0.0-rc-1',
     'babel-preset-es2015': '^6.6.0',
+    'babel-preset-stage-2': '^6.22.0',
     'gulp': '^3.9.1',
     'gulp-babel': '^6.1.2',
     'gulp-babel-istanbul': '^1.0.0',

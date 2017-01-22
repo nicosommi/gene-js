@@ -1,11 +1,13 @@
 import fs from 'fs-extra'
-import Promise from './promise.js'
+import { getDelimiters } from 'block-js'
 import { stripIndents } from 'common-tags'
+
+import Promise from './promise.js'
 
 const stat = Promise.promisify(fs.stat)
 const outputFile = Promise.promisify(fs.outputFile)
 
-function metaToString (meta) {
+function metaToString (meta, delimiters) {
   let replacements = {}
   let result = ''
   if (meta.replacements) {
@@ -16,23 +18,23 @@ function metaToString (meta) {
     ).join('\n')
 
     result += stripIndents `
-      /* ph replacements */
-      /* ${replacements} */
-      /* endph */` + '\n'
+      ${delimiters.start} ph replacements ${delimiters.end}
+      ${delimiters.start} ${replacements} ${delimiters.end}
+      ${delimiters.start} endph ${delimiters.end}` + '\n'
   }
 
   let stamps = []
   if (meta.stamps) {
     stamps = meta.stamps.toString()
     result += stripIndents `
-      /* ph stamps */
-      /* ${stamps} */
-      /* endph */` + '\n'
+      ${delimiters.start} ph stamps ${delimiters.end}
+      ${delimiters.start} ${stamps} ${delimiters.end}
+      ${delimiters.start} endph ${delimiters.end}` + '\n'
   }
   return result
 }
 
 export default function setMeta (filePath, meta, options) {
   return stat(filePath)
-    .catch(() => outputFile(filePath, metaToString(meta)))
+    .catch(() => outputFile(filePath, metaToString(meta, getDelimiters(filePath))))
 }
