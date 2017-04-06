@@ -14,10 +14,6 @@ var _promise = require('./promise.js');
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _chalk = require('chalk');
-
-var _chalk2 = _interopRequireDefault(_chalk);
-
 var _fsExtra = require('fs-extra');
 
 var _fsExtra2 = _interopRequireDefault(_fsExtra);
@@ -42,6 +38,7 @@ var _cuid2 = _interopRequireDefault(_cuid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var debug = require('debug')('nicosommi.gene-js.synchronize');
 var ensureFile = _get__('Promise').promisify(_get__('fs').ensureFile);
 var stat = _get__('Promise').promisify(_get__('fs').stat);
 
@@ -195,7 +192,7 @@ function synchronize(source, target, options) {
         commentStringEnd = results.source.commentStringEnd;
 
         if (!options || !options.replacements && !options.stamps) {
-          console.log(_get__('chalk').magenta('taking options for file ' + target));
+          _get__('debug')('taking options for file ' + target);
           options = _get__('takeOptions')(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd);
         }
 
@@ -316,6 +313,7 @@ function synchronize(source, target, options) {
               // only if matchs in the source too it worth to take it here
               var itWorthToTakeIt = false;
               if (options.sourceStamps) {
+                console.log('testing stamp ' + stampBegin.name + ' with the regexp ' + options.sourceStamps.toString());
                 itWorthToTakeIt = options.sourceStamps.test(stampBegin.name);
               }
 
@@ -431,8 +429,8 @@ function _get_original__(variableName) {
     case 'getBlocks':
       return _getMeta.getBlocks;
 
-    case 'chalk':
-      return _chalk2.default;
+    case 'debug':
+      return debug;
 
     case 'takeOptions':
       return takeOptions;

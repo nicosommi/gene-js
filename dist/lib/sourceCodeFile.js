@@ -34,13 +34,11 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var _chalk = require('chalk');
-
-var _chalk2 = _interopRequireDefault(_chalk);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var debug = require('debug')('nicosommi.gddify.gene-js.sourceCodeFile');
 
 var SourceCodeFile = function () {
   function SourceCodeFile(name, filePath, options) {
@@ -96,7 +94,7 @@ var SourceCodeFile = function () {
       } else {
         var rootFullPath = rootSourceCodeFile.getFullPath();
         var targetFullPath = this.getFullPath();
-        console.log(_get__('chalk').magenta('Syncing ' + rootFullPath + ' with ' + targetFullPath + '...'));
+        _get__('debug')('Syncing ' + rootFullPath + ' with ' + targetFullPath + '...');
         return _get__('synchronize')(rootFullPath, targetFullPath, this.options);
       }
     }
@@ -111,7 +109,7 @@ var SourceCodeFile = function () {
         this.options.dirtyPhs = dirtyPhs || [];
         var rootFullPath = this.getFullPath();
         var targetFullPath = this.getFullCleanPath();
-        console.log(_get__('chalk').magenta('Cleaning ' + rootFullPath + ' to ' + targetFullPath + '...'));
+        _get__('debug')('Cleaning ' + rootFullPath + ' to ' + targetFullPath + '...');
         return _get__('cleanTo')(rootFullPath, targetFullPath, this.options);
       }
     }
@@ -173,8 +171,8 @@ function _get_original__(variableName) {
     case 'path':
       return _path2.default;
 
-    case 'chalk':
-      return _chalk2.default;
+    case 'debug':
+      return debug;
 
     case 'synchronize':
       return _synchronize2.default;
