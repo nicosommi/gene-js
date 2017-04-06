@@ -1,5 +1,4 @@
 import Promise from './promise.js'
-import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
 import readline from 'readline'
@@ -7,6 +6,7 @@ import regexParser from 'regex-parser'
 import { takeMeta, getBlocks } from './getMeta.js'
 import cuid from 'cuid'
 
+const debug = require('debug')('nicosommi.gene-js.synchronize')
 const ensureFile = Promise.promisify(fs.ensureFile)
 const stat = Promise.promisify(fs.stat)
 
@@ -149,7 +149,7 @@ export default function synchronize (source, target, options) {
                   commentStringEnd = results.source.commentStringEnd
 
                   if (!options || (!options.replacements && !options.stamps)) {
-                    console.log(chalk.magenta(`taking options for file ${target}`))
+                    debug(`taking options for file ${target}`)
                     options = takeOptions(sourcePhBlocks, targetPhBlocks, commentStringStart, commentStringEnd)
                   }
 
@@ -179,9 +179,7 @@ export default function synchronize (source, target, options) {
                     result.push(placeHolder)
                   })
 
-                  deprecated = targetPhBlocks.find((targetPlaceHolder) => {
-                    return (targetPlaceHolder.name === 'deprecated')
-                  })
+                  deprecated = targetPhBlocks.find((targetPlaceHolder) => (targetPlaceHolder.name === 'deprecated'))
 
                   // find if there is a deprecated ph already there
                   if (!deprecated) {
@@ -289,6 +287,7 @@ export default function synchronize (source, target, options) {
                           // only if matchs in the source too it worth to take it here
                           let itWorthToTakeIt = false
                           if(options.sourceStamps) {
+                            console.log(`testing stamp ${stampBegin.name} with the regexp ${options.sourceStamps.toString()}`);
                             itWorthToTakeIt = options.sourceStamps.test(stampBegin.name)
                           }
 
@@ -302,9 +301,7 @@ export default function synchronize (source, target, options) {
                               // keep his content for stamps that the other is ignoring
                               if (targetStampBlocks) {
                                 const currentStamp = targetStampBlocks.find(
-                                  targetStamp => {
-                                    return targetStamp.name === stampBegin.name
-                                  }
+                                  targetStamp => targetStamp.name === stampBegin.name
                                 )
                                 if (currentStamp && currentStamp.content) {
                                   concreteFileContent += `${currentStamp.content}\n`

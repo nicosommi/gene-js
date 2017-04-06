@@ -5,7 +5,8 @@ import setMeta from './setMeta.js'
 import cleanTo from './cleanTo.js'
 import Promise from './promise.js'
 import path from 'path'
-import chalk from 'chalk'
+
+const debug = require('debug')('nicosommi.gddify.gene-js.sourceCodeFile')
 
 export default class SourceCodeFile {
   constructor (name, filePath, options) {
@@ -50,7 +51,7 @@ export default class SourceCodeFile {
     } else {
       const rootFullPath = rootSourceCodeFile.getFullPath()
       const targetFullPath = this.getFullPath()
-      console.log(chalk.magenta(`Syncing ${rootFullPath} with ${targetFullPath}...`))
+      debug(`Syncing ${rootFullPath} with ${targetFullPath}...`)
       return synchronize(rootFullPath, targetFullPath, this.options)
     }
   }
@@ -64,7 +65,7 @@ export default class SourceCodeFile {
       this.options.dirtyPhs = dirtyPhs || []
       const rootFullPath = this.getFullPath()
       const targetFullPath = this.getFullCleanPath()
-      console.log(chalk.magenta(`Cleaning ${rootFullPath} to ${targetFullPath}...`))
+      debug(`Cleaning ${rootFullPath} to ${targetFullPath}...`)
       return cleanTo(rootFullPath, targetFullPath, this.options)
     }
   }
