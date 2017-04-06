@@ -313,7 +313,7 @@ function synchronize(source, target, options) {
               // only if matchs in the source too it worth to take it here
               var itWorthToTakeIt = false;
               if (options.sourceStamps) {
-                console.log('testing stamp ' + stampBegin.name + ' with the regexp ' + options.sourceStamps.toString());
+                _get__('debug')('testing stamp ' + stampBegin.name + ' with the regexp ' + options.sourceStamps.toString());
                 itWorthToTakeIt = options.sourceStamps.test(stampBegin.name);
               }
 
