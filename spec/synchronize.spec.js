@@ -31,7 +31,7 @@ function synchronizeMechanism (source, target, expectation, options, customAsser
     // read expectation
     .then(() => readFile(expectationComplete))
   if (!customAssertion) {
-    return processPromise.then((contents) => contents.toString('utf8').should.eql(targetContents))
+    return processPromise.then((contents) => targetContents.should.eql(contents.toString('utf8')))
   } else {
     return processPromise
   }
@@ -112,6 +112,10 @@ describe('synchronize', () => {
 
       it('should avoid replacement substring error', () => {
         return synchronizeMechanism('accounts.js', 'linkedAccounts.js', 'linkedAccounts.js')
+      })
+      
+      it('should allow escaped characters', () => {
+        return synchronizeMechanism('escapedApple.js', 'escapedLemon.js', 'escapedLemon.js')
       })
     })
   })

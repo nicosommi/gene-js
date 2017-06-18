@@ -13,11 +13,14 @@ describe('setMeta', () => {
   beforeEach(() => {
     newMeta = {
       replacements: {
-        className: { regex: '/Banana/g', value: 'Banana' }
+        className: { regex: '/Banana/g', value: 'Banana' },
+        external: { regex: '/..\/tree/g', value: '../tree' }
       },
       stamps: '/^(?!throwAway{1}).*$/'
     }
-    expectedContent = '/* ph replacements */\n/* className, /Banana/g, Banana */\n/* endph */\n/* ph stamps */\n/* /^(?!throwAway{1}).*$/ */\n/* endph */\n'
+
+    // FIXME: this is not actually failing if the replace on the regex is not there... figure it out some day
+    expectedContent = '/* ph replacements */\n/* className, /Banana/g, Banana\nexternal, \/..\/tree\/g, ../tree */\n/* endph */\n/* ph stamps */\n/* /^(?!throwAway{1}).*$/ */\n/* endph */\n'
     filePath = `${__dirname}/../fixtures/sourceCodeFiles/sources/anewfile.js`
   })
 
