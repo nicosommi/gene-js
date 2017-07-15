@@ -121,6 +121,10 @@ describe('synchronize', () => {
   })
 
   describe('(phs)', () => {
+    it('should leave one line phs content as it was on the target originally', () => {
+      return synchronizeMechanism('oneLineApple.js', 'oneLineBanana.js', 'oneLineBanana.js', bananaOptions)
+    })
+    
     it('should leave the phs content as it was on the target originally', () => {
       return synchronizeMechanism('apple.js', 'banana.js', 'banana.js', bananaOptions)
     })

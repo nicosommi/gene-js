@@ -4,6 +4,7 @@ import path from 'path'
 import readline from 'readline'
 import regexParser from 'regex-parser'
 import { takeMeta, getBlocks } from './getMeta.js'
+import { getDelimiters } from 'block-js'
 import cuid from 'cuid'
 
 const debug = require('debug')('nicosommi.gene-js.synchronize')
@@ -119,6 +120,7 @@ export default function synchronize (source, target, options) {
 
       let commentStringStart
       let commentStringEnd
+      let delimiters = getDelimiters(source)
 
       let fileExist = true
 
@@ -218,68 +220,55 @@ export default function synchronize (source, target, options) {
                   lineReader.on('line',
                     (line) => {
                       lineNumber++
-                      const endPlaceholder = sourcePhBlocks
-                        .find(
-                          templatePlaceholder => {
-                            return templatePlaceholder.to === lineNumber
-                          }
-                      )
+                      const endPlaceholder = sourcePhBlocks.find(templatePlaceholder => templatePlaceholder.to === lineNumber)
                       if (endPlaceholder) {
                         ignoreLines = false
                       }
 
                       // if the line matches the line of a newPhs element, put the contents from the ph there
-                      const placeholder = sourcePhBlocks
-                        .find(
-                          templatePlaceholder => {
-                            return templatePlaceholder.from === lineNumber
-                          }
-                      )
+                      const placeholder = sourcePhBlocks.find(templatePlaceholder => templatePlaceholder.from === lineNumber)
 
                       const addLine = !ignoreLines
                       let isSpecialLine = (placeholder || endPlaceholder)
                       let stampBegin
                       let stampEnd
                       if (sourceStampBlocks) {
-                        stampBegin = sourceStampBlocks.find(
-                          templateStamp => {
-                            return (templateStamp.from === lineNumber)
-                          }
-                        )
+                        stampBegin = sourceStampBlocks.find(templateStamp => (templateStamp.from === lineNumber))
 
-                        stampEnd = sourceStampBlocks.find(
-                          templateStamp => {
-                            return (templateStamp.to === lineNumber)
-                          }
-                        )
+                        stampEnd = sourceStampBlocks.find(templateStamp => (templateStamp.to === lineNumber))
 
                         isSpecialLine = (placeholder || endPlaceholder || stampBegin || stampEnd)
                       }
 
-                      if (addLine) {
-                        let finalLine = line
-                        if (!isSpecialLine && options.replacements) { // do not replace ph/stamp lines!
-                          finalLine = executeReplacements(line, options.replacements)
+                      function addLineFunction () {
+                        if (addLine) {
+                          let finalLine = line
+                          if (!isSpecialLine && options.replacements) { // do not replace ph/stamp lines!
+                            finalLine = executeReplacements(line, options.replacements)
+                          }
+                          concreteFileContent += `${finalLine}\n`
                         }
-                        concreteFileContent += `${finalLine}\n`
                       }
 
                       if (placeholder) {
-                        const targetPlaceholder = targetPhBlocks
-                          .find(
-                            targetPlaceHolder => {
-                              return targetPlaceHolder.name === placeholder.name
-                            }
-                        )
+                        const targetPlaceholder = targetPhBlocks.find(targetPlaceHolder => targetPlaceHolder.name === placeholder.name)
                         if (targetPlaceholder) {
                           ignoreLines = true
                           if (!targetPlaceholder.content) {
+                            addLineFunction()
                             concreteFileContent += ''
+                          } else if(placeholder.from === placeholder.to && targetPlaceholder.content) {
+                            concreteFileContent += `${targetPlaceholder.content}${delimiters.inline} ph ${placeholder.name}\n`
+                            ignoreLines = false
                           } else {
+                            addLineFunction()
                             concreteFileContent += `${targetPlaceholder.content}\n`
                           }
+                        } else {
+                          addLineFunction()
                         }
                       } else {
+                        addLineFunction()
                         if (stampBegin && options.stamps) {
                           ignoreLines = true
                           // if matchs stamps it is a candidate to be included

@@ -1,6 +1,6 @@
 /* ph replacements */
 /* name, /'name': 'gene-js'/g, 'name': 'gene-js' */
-/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.1.5' */
+/* version, /'version': '\bv?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?\b'/ig, 'version': '0.1.6' */
 /* description, /'description': 'a\ gdd\ utility'/g, 'description': 'a gdd utility' */
 /* main, /'main': '[a-zA-Z\.\/]+'/ig, 'main': 'index.js' */
 /* license, /MIT/g, MIT */
@@ -12,7 +12,7 @@
 module.exports =
 {
   'name': 'gene-js',
-  'version': '0.1.5',
+  'version': '0.1.6',
   'description': 'a gdd utility',
   'main': 'index.js',
   'standard': {
@@ -50,7 +50,7 @@ module.exports =
   'license': 'MIT',
   'dependencies': {
     /* ph componentDependencies */
-    'block-js': '0.0.3',
+    'block-js': '^0.0.5',
     'regex-parser': '^2.2.1',
     'semver': '^5.1.0',
     'fs-extra': '^0.26.7',
@@ -69,6 +69,7 @@ module.exports =
   },
   'devDependencies': {
     /* ph componentDevDependencies */
+    'babel-template': '^6.25.0',
     /* endph */
     /* stamp webapp_devDependencies */
     /* endstamp */
