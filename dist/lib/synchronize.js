@@ -32,6 +32,8 @@ var _regexParser2 = _interopRequireDefault(_regexParser);
 
 var _getMeta = require('./getMeta.js');
 
+var _blockJs = require('block-js');
+
 var _cuid = require('cuid');
 
 var _cuid2 = _interopRequireDefault(_cuid);
@@ -55,30 +57,24 @@ function executeReplacements(line, replacements) {
   var thereAreReplacements = replacements != null;
   var queue = [];
   if (thereAreReplacements && line && line.length > 0) {
-    var _ret = function () {
-      var finalLine = line;
-      Object.keys(replacements).forEach(function (replacementKey) {
-        var key = _get__('regexParser')(replacementKey);
-        if (replacementKey && replacementKey.indexOf('/') === 0 && replacementKey.lastIndexOf('/') > 0) {
-          key = _get__('regexParser')(replacementKey);
-        } else {
-          key = new RegExp(replacementKey, 'g');
-        }
-        var queueElement = {
-          id: _get__('cuid')(),
-          realValue: replacements[replacementKey]
-        };
-        finalLine = finalLine.replace(key, queueElement.id);
-
-        queue.push(queueElement);
-      });
-      finalLine = _get__('flushReplacementQueue')(finalLine, queue);
-      return {
-        v: finalLine
+    var finalLine = line;
+    Object.keys(replacements).forEach(function (replacementKey) {
+      var key = _get__('regexParser')(replacementKey);
+      if (replacementKey && replacementKey.indexOf('/') === 0 && replacementKey.lastIndexOf('/') > 0) {
+        key = _get__('regexParser')(replacementKey);
+      } else {
+        key = new RegExp(replacementKey, 'g');
+      }
+      var queueElement = {
+        id: _get__('cuid')(),
+        realValue: replacements[replacementKey]
       };
-    }();
+      finalLine = finalLine.replace(key, queueElement.id);
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+      queue.push(queueElement);
+    });
+    finalLine = _get__('flushReplacementQueue')(finalLine, queue);
+    return finalLine;
   } else {
     return line;
   }
@@ -87,55 +83,37 @@ function executeReplacements(line, replacements) {
 function mergeReplacements(sourceReplacements, targetReplacements) {
   if (!sourceReplacements) {
     if (targetReplacements) {
-      var _ret2 = function () {
-        var replacements = {};
-        Object.keys(targetReplacements).forEach(function (targetReplacementKey) {
-          replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value;
-        });
-        return {
-          v: replacements
-        };
-      }();
-
-      if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+      var replacements = {};
+      Object.keys(targetReplacements).forEach(function (targetReplacementKey) {
+        replacements[targetReplacements[targetReplacementKey].regex] = targetReplacements[targetReplacementKey].value;
+      });
+      return replacements;
     } else {
       return undefined;
     }
   } else if (!targetReplacements) {
-    var _ret3 = function () {
-      var replacements = {};
-      Object.keys(sourceReplacements).forEach(function (sourceReplacementKey) {
-        replacements[sourceReplacements[sourceReplacementKey].regex] = sourceReplacements[sourceReplacementKey].value;
-      });
-      return {
-        v: replacements
-      };
-    }();
-
-    if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
+    var _replacements = {};
+    Object.keys(sourceReplacements).forEach(function (sourceReplacementKey) {
+      _replacements[sourceReplacements[sourceReplacementKey].regex] = sourceReplacements[sourceReplacementKey].value;
+    });
+    return _replacements;
   } else {
-    var _ret4 = function () {
-      var replacements = {};
-      var sourceReplacementKeys = Object.keys(sourceReplacements);
-      var targetReplacementKeys = Object.keys(targetReplacements);
-      targetReplacementKeys.forEach(function (targetReplacementKey) {
-        var matchingSourceReplacementKey = sourceReplacementKeys.find(function (sourceReplacementKey) {
-          return sourceReplacementKey === targetReplacementKey;
-        });
-        if (matchingSourceReplacementKey) {
-          var regex = sourceReplacements[matchingSourceReplacementKey].regex;
-          var value = targetReplacements[targetReplacementKey].value;
-          replacements[regex] = value;
-        } else {
-          throw new Error('Missing replacement key on the source (' + targetReplacementKey + ')');
-        }
+    var _replacements2 = {};
+    var sourceReplacementKeys = Object.keys(sourceReplacements);
+    var targetReplacementKeys = Object.keys(targetReplacements);
+    targetReplacementKeys.forEach(function (targetReplacementKey) {
+      var matchingSourceReplacementKey = sourceReplacementKeys.find(function (sourceReplacementKey) {
+        return sourceReplacementKey === targetReplacementKey;
       });
-      return {
-        v: replacements
-      };
-    }();
-
-    if ((typeof _ret4 === 'undefined' ? 'undefined' : _typeof(_ret4)) === "object") return _ret4.v;
+      if (matchingSourceReplacementKey) {
+        var regex = sourceReplacements[matchingSourceReplacementKey].regex;
+        var value = targetReplacements[targetReplacementKey].value;
+        _replacements2[regex] = value;
+      } else {
+        throw new Error('Missing replacement key on the source (' + targetReplacementKey + ')');
+      }
+    });
+    return _replacements2;
   }
 }
 
@@ -165,6 +143,7 @@ function synchronize(source, target, options) {
 
     var commentStringStart = void 0;
     var commentStringEnd = void 0;
+    var delimiters = _get__('getDelimiters')(source);
 
     var fileExist = true;
 
@@ -284,13 +263,18 @@ function synchronize(source, target, options) {
             isSpecialLine = placeholder || endPlaceholder || stampBegin || stampEnd;
           }
 
-          if (addLine) {
-            var finalLine = line;
-            if (!isSpecialLine && options.replacements) {
-              // do not replace ph/stamp lines!
-              finalLine = _get__('executeReplacements')(line, options.replacements);
+          function addLineFunction() {
+            if (addLine) {
+              var finalLine = line;
+              if (!isSpecialLine && options.replacements) {
+                // do not replace ph/stamp title lines!
+                finalLine = _get__('executeReplacements')(line, options.replacements);
+              }
+              if (stampBegin && stampBegin.from === stampBegin.to) {
+                finalLine = '' + _get__('executeReplacements')(stampBegin.content, options.replacements) + delimiters.inline + ' stamp ' + stampBegin.name;
+              }
+              concreteFileContent += finalLine + '\n';
             }
-            concreteFileContent += finalLine + '\n';
           }
 
           if (placeholder) {
@@ -300,14 +284,22 @@ function synchronize(source, target, options) {
             if (targetPlaceholder) {
               ignoreLines = true;
               if (!targetPlaceholder.content) {
+                addLineFunction();
                 concreteFileContent += '';
+              } else if (placeholder.from === placeholder.to && targetPlaceholder.content) {
+                concreteFileContent += '' + targetPlaceholder.content + delimiters.inline + ' ph ' + placeholder.name + '\n';
+                ignoreLines = false;
               } else {
+                addLineFunction();
                 concreteFileContent += targetPlaceholder.content + '\n';
               }
+            } else {
+              addLineFunction();
             }
           } else {
+            addLineFunction();
             if (stampBegin && options.stamps) {
-              ignoreLines = true;
+              if (stampBegin.from !== stampBegin.to) ignoreLines = true;
               // if matchs stamps it is a candidate to be included
               var candidate = options.stamps.test(stampBegin.name);
               // only if matchs in the source too it worth to take it here
@@ -317,11 +309,11 @@ function synchronize(source, target, options) {
                 itWorthToTakeIt = options.sourceStamps.test(stampBegin.name);
               }
 
-              if (candidate) {
+              if (candidate && stampBegin.from !== stampBegin.to) {
                 if (itWorthToTakeIt) {
-                  var _finalLine = _get__('executeReplacements')(stampBegin.content, options.replacements);
-                  if (_finalLine) {
-                    concreteFileContent += _finalLine + '\n';
+                  var finalLine = _get__('executeReplacements')(stampBegin.content, options.replacements);
+                  if (finalLine) {
+                    concreteFileContent += finalLine + '\n';
                   }
                 } else {
                   // keep his content for stamps that the other is ignoring
@@ -340,7 +332,7 @@ function synchronize(source, target, options) {
                 concreteFileContent += ''; // nothing
               }
             } else {
-              if (stampEnd && options.stamps) {
+              if (stampEnd && options.stamps && stampEnd.from !== stampEnd.to) {
                 ignoreLines = false;
                 concreteFileContent += line + '\n';
               }
@@ -360,7 +352,73 @@ function synchronize(source, target, options) {
   });
 }
 
-var _RewiredData__ = Object.create(null);
+function _getGlobalObject() {
+  try {
+    if (!!global) {
+      return global;
+    }
+  } catch (e) {
+    try {
+      if (!!window) {
+        return window;
+      }
+    } catch (e) {
+      return this;
+    }
+  }
+}
+
+;
+var _RewireModuleId__ = null;
+
+function _getRewireModuleId__() {
+  if (_RewireModuleId__ === null) {
+    var globalVariable = _getGlobalObject();
+
+    if (!globalVariable.__$$GLOBAL_REWIRE_NEXT_MODULE_ID__) {
+      globalVariable.__$$GLOBAL_REWIRE_NEXT_MODULE_ID__ = 0;
+    }
+
+    _RewireModuleId__ = __$$GLOBAL_REWIRE_NEXT_MODULE_ID__++;
+  }
+
+  return _RewireModuleId__;
+}
+
+function _getRewireRegistry__() {
+  var theGlobalVariable = _getGlobalObject();
+
+  if (!theGlobalVariable.__$$GLOBAL_REWIRE_REGISTRY__) {
+    theGlobalVariable.__$$GLOBAL_REWIRE_REGISTRY__ = Object.create(null);
+  }
+
+  return __$$GLOBAL_REWIRE_REGISTRY__;
+}
+
+function _getRewiredData__() {
+  var moduleId = _getRewireModuleId__();
+
+  var registry = _getRewireRegistry__();
+
+  var rewireData = registry[moduleId];
+
+  if (!rewireData) {
+    registry[moduleId] = Object.create(null);
+    rewireData = registry[moduleId];
+  }
+
+  return rewireData;
+}
+
+(function registerResetAll() {
+  var theGlobalVariable = _getGlobalObject();
+
+  if (!theGlobalVariable['__rewire_reset_all__']) {
+    theGlobalVariable['__rewire_reset_all__'] = function () {
+      theGlobalVariable.__$$GLOBAL_REWIRE_REGISTRY__ = Object.create(null);
+    };
+  }
+})();
 
 var INTENTIONAL_UNDEFINED = '__INTENTIONAL_UNDEFINED__';
 var _RewireAPI__ = {};
@@ -384,10 +442,12 @@ var _RewireAPI__ = {};
 })();
 
 function _get__(variableName) {
-  if (_RewiredData__ === undefined || _RewiredData__[variableName] === undefined) {
+  var rewireData = _getRewiredData__();
+
+  if (rewireData[variableName] === undefined) {
     return _get_original__(variableName);
   } else {
-    var value = _RewiredData__[variableName];
+    var value = rewireData[variableName];
 
     if (value === INTENTIONAL_UNDEFINED) {
       return undefined;
@@ -420,6 +480,9 @@ function _get_original__(variableName) {
     case 'mergeReplacements':
       return mergeReplacements;
 
+    case 'getDelimiters':
+      return _blockJs.getDelimiters;
+
     case 'stat':
       return stat;
 
@@ -449,10 +512,12 @@ function _get_original__(variableName) {
 }
 
 function _assign__(variableName, value) {
-  if (_RewiredData__ === undefined || _RewiredData__[variableName] === undefined) {
+  var rewireData = _getRewiredData__();
+
+  if (rewireData[variableName] === undefined) {
     return _set_original__(variableName, value);
   } else {
-    return _RewiredData__[variableName] = value;
+    return rewireData[variableName] = value;
   }
 }
 
@@ -473,15 +538,17 @@ function _update_operation__(operation, variableName, prefix) {
 }
 
 function _set__(variableName, value) {
+  var rewireData = _getRewiredData__();
+
   if ((typeof variableName === 'undefined' ? 'undefined' : _typeof(variableName)) === 'object') {
     Object.keys(variableName).forEach(function (name) {
-      _RewiredData__[name] = variableName[name];
+      rewireData[name] = variableName[name];
     });
   } else {
     if (value === undefined) {
-      _RewiredData__[variableName] = INTENTIONAL_UNDEFINED;
+      rewireData[variableName] = INTENTIONAL_UNDEFINED;
     } else {
-      _RewiredData__[variableName] = value;
+      rewireData[variableName] = value;
     }
 
     return function () {
@@ -491,23 +558,33 @@ function _set__(variableName, value) {
 }
 
 function _reset__(variableName) {
-  delete _RewiredData__[variableName];
+  var rewireData = _getRewiredData__();
+
+  delete rewireData[variableName];
+
+  if (Object.keys(rewireData).length == 0) {
+    delete _getRewireRegistry__()[_getRewireModuleId__];
+  }
+
+  ;
 }
 
 function _with__(object) {
+  var rewireData = _getRewiredData__();
+
   var rewiredVariableNames = Object.keys(object);
   var previousValues = {};
 
   function reset() {
     rewiredVariableNames.forEach(function (variableName) {
-      _RewiredData__[variableName] = previousValues[variableName];
+      rewireData[variableName] = previousValues[variableName];
     });
   }
 
   return function (callback) {
     rewiredVariableNames.forEach(function (variableName) {
-      previousValues[variableName] = _RewiredData__[variableName];
-      _RewiredData__[variableName] = object[variableName];
+      previousValues[variableName] = rewireData[variableName];
+      rewireData[variableName] = object[variableName];
     });
     var result = callback();
 
