@@ -13,6 +13,7 @@ const generateSeeds = Symbol("generateSeeds");
 export default class Banana {
 	constructor() {
 		this[generateSeeds](1, 2); // ph oneliner
+		this.initialized = true; // stamp init
 	}
 
 	/* stamp withSeeds */

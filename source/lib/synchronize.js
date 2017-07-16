@@ -243,8 +243,11 @@ export default function synchronize (source, target, options) {
                       function addLineFunction () {
                         if (addLine) {
                           let finalLine = line
-                          if (!isSpecialLine && options.replacements) { // do not replace ph/stamp lines!
+                          if (!isSpecialLine && options.replacements) { // do not replace ph/stamp title lines!
                             finalLine = executeReplacements(line, options.replacements)
+                          }
+                          if(stampBegin && stampBegin.from === stampBegin.to) {
+                            finalLine = `${executeReplacements(stampBegin.content, options.replacements)}${delimiters.inline} stamp ${stampBegin.name}`
                           }
                           concreteFileContent += `${finalLine}\n`
                         }
@@ -270,7 +273,7 @@ export default function synchronize (source, target, options) {
                       } else {
                         addLineFunction()
                         if (stampBegin && options.stamps) {
-                          ignoreLines = true
+                          if(stampBegin.from !== stampBegin.to) ignoreLines = true
                           // if matchs stamps it is a candidate to be included
                           let candidate = options.stamps.test(stampBegin.name)
                           // only if matchs in the source too it worth to take it here
@@ -280,7 +283,7 @@ export default function synchronize (source, target, options) {
                             itWorthToTakeIt = options.sourceStamps.test(stampBegin.name)
                           }
 
-                          if(candidate) {
+                          if(candidate && stampBegin.from !== stampBegin.to) {
                             if(itWorthToTakeIt) {
                               const finalLine = executeReplacements(stampBegin.content, options.replacements)
                               if (finalLine) {
@@ -303,7 +306,7 @@ export default function synchronize (source, target, options) {
                             concreteFileContent += `` // nothing
                           }
                         } else {
-                          if (stampEnd && options.stamps) {
+                          if (stampEnd && options.stamps && stampEnd.from !== stampEnd.to) {
                             ignoreLines = false
                             concreteFileContent += `${line}\n`
                           }

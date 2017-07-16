@@ -12,6 +12,7 @@ const generateSeeds = Symbol("generateSeeds");
 export default class Apple {
 	constructor() {
 		this[generateSeeds](4, 6); // ph oneliner
+		this.initialized = true; // stamp init
 	}
 
 	/* stamp withSeeds */
