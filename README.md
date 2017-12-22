@@ -10,6 +10,8 @@
 <!-- endph -->
 
 <!-- ph description -->
+> **NOTICE**: I'm working on something slightly different. *This package will change quite a lot*
+
 Utiliy that implements GDD (generation driven development) operations.  
 It's responsibility is to get the meta information from genes and synchronize them.  
 It is used by gddify and relies in block-js.  
